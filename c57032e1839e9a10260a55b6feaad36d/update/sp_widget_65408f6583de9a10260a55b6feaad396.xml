@@ -15,19 +15,40 @@
 	};
 
 	//ADD
-
 	c.newInve = {};
-	c.addnewInve = function(){
-		c.server.get({
-			action : "addnewInve",
-			newInve : c.newInve
-		}).then(function(r){
-			c.newInve = {};
-			c.data.inventories = r.data.inventories
-		}).catch(function (error) {
-			console.error('Error while adding new Inventory:', error);
-		});
-	}
+
+	c.addnewInve = function() {
+			var existingItem = c.data.inventories.find(function(inventoryItem) {
+					return inventoryItem.item_name === c.newInve.item_name;
+			});
+
+			if (existingItem) {
+					spUtil.addErrorMessage("The item name already exists in the inventory.");
+					return;
+			}
+
+			if (!c.newInve.quantity || c.newInve.quantity <= 0 || isNaN(c.newInve.quantity)) {
+					spUtil.addErrorMessage("Quantity must be a positive number greater than 0.");
+					return;
+			}
+
+			if (!c.newInve.price || c.newInve.price <= 0 || isNaN(c.newInve.price)) {
+					spUtil.addErrorMessage("Price must be a positive number greater than 0.");
+					return;
+			}
+
+			c.server.get({
+					action: "addnewInve",
+					newInve: c.newInve
+			}).then(function(r) {
+					c.newInve = {};
+					c.data.inventories = r.data.inventories;
+					spUtil.addTrivialMessage("New inventory has been added successfully.");
+			}).catch(function(error) {
+					console.error('Error while adding new inventory:', error);
+					spUtil.addErrorMessage("An error occurred while adding the inventory.");
+			});
+	};
 
 
 	// Detail
@@ -46,54 +67,109 @@
 
 	//Update
 
-	c.fillUpdate = function(inveId){
-		updateId = inveId;
-		c.showAdd = true;
-		c.server.get({
-			action:"fillField",
-			id:inveId
-		}).then(function(r){
-			c.newInve.item_name = r.data.fillField.item_name;
-			c.newInve.quantity = Number(r.data.fillField.quantity);
-			c.newInve.price = Number(r.data.fillField.price);
-			c.newInve.category = r.data.fillField.category;
-			c.newInve.remarks = r.data.fillField.remarks;
-		}).catch(function(e){
-			console.error('Error while Update Inventory:', e);
-		})
-	}
+	c.fillUpdate = function(inveId) {
+        updateId = inveId;
+        c.showAdd = true;
+        c.server.get({
+            action: "fillField",
+            id: inveId
+        }).then(function(r) {
+            c.newInve.item_name = r.data.fillField.item_name;
+            c.newInve.quantity = Number(r.data.fillField.quantity);
+            c.newInve.price = Number(r.data.fillField.price);
+            c.newInve.category = r.data.fillField.category;
+            c.newInve.remarks = r.data.fillField.remarks;
+        }).catch(function(e) {
+            console.error('Error while Update Inventory:', e);
+        });
+    };
 
-	c.update = function (){
-		c.server.get({
-			action:"updateInve",
-			newInve : c.newInve,
-			updateId:updateId
-		}).then(function(r){
-			c.showAdd = false;
-			c.newInve = {};
-			c.data.inventories = r.data.inventories
-		}).catch(function(e){
-			console.error('Error while Update Inventory:', e);
-		})
-	}
+   c.update = function() {
+    var existingItem = c.data.inventories.find(function(inventoryItem) {
+        return inventoryItem.item_name === c.newInve.item_name && inventoryItem.sys_id !== updateId;
+    });
+		 
+
+    if (existingItem) {
+        spUtil.addErrorMessage("The item name already exists in the inventory.");
+        return;
+    }
+
+    var quantity = Number(c.newInve.quantity);
+    if (isNaN(quantity) || quantity <= 0) {
+        spUtil.addErrorMessage("Quantity must be a positive number greater than 0.");
+        return;
+    }
+
+
+    var price = Number(c.newInve.price);
+    if (isNaN(price) || price <= 0) {
+        spUtil.addErrorMessage("Price must be a positive number greater than 0.");
+        return;
+    }
+
+    c.server.get({
+        action: "updateInve",
+        newInve: c.newInve,
+        updateId: updateId
+    }).then(function(r) {
+        c.showAdd = false;
+        c.newInve = {};
+        c.data.inventories = r.data.inventories;
+        spUtil.addTrivialMessage("Inventory has been updated successfully.");
+    }).catch(function(e) {
+        console.error('Error while updating inventory:', e);
+        spUtil.addErrorMessage("An error occurred while updating the inventory.");
+    });
+	};
 
 	//Delete
 
 	c.delete = function (inveId) {
-		spModal.confirm("Are you sure you want to delete this Note record?").then(function (confirmed) {
-			if (confirmed) {
-				c.server.get({
-					action:"deleteInve",
-					inveId:inveId
-				}).then(function(r){
-					c.data.inventories = r.data.inventories
-				}).catch(function(e){
-					console.error('Error while Delete Inventory:', e);
-					spUtil.addErrorMessage("Failed to delete the Inventory. Please try again.");
-				})
-			}
-		});
+    spModal.confirm("Are you sure you want to delete this Note record?").then(function (confirmed) {
+        if (confirmed) {
+            c.server.get({
+                action: "deleteInve",
+                inveId: inveId
+            }).then(function (r) {
+                spUtil.addTrivialMessage("Inventory has been deleted.");
+                c.data.inventories = r.data.inventories;
+                c.formData = {}; 
+
+            }).catch(function (e) {
+                console.error('Error while Delete Inventory:', e);
+                spUtil.addErrorMessage("Failed to delete the Inventory. Please try again.");
+            });
+        }
+    });
 	}
+
+	// Phân trang 
+
+	c.pageNumber = 1;
+	c.pageSize = 3; 
+	c.totalCount = 0;
+
+	c.loadPage = function (pageNumber) {
+		c.pageNumber = pageNumber;
+		c.server.get({
+			action: "getInventory",
+			pageNumber: c.pageNumber,
+			pageSize: c.pageSize,
+		}).then(function (r) {
+			c.data.inventories = r.data.inventories;
+			c.totalCount = r.data.totalCount;
+			console.log('count',r.data.totalCount)
+		}).catch(function (error) {
+			console.error('Error while fetching inventory:', error);
+		});
+	};
+	
+	c.getRoundedPageCount = function () {
+  return Math.ceil(c.totalCount / c.pageSize); 
+};
+
+	c.loadPage(c.pageNumber);
 
 };]]></client_script>
         <controller_as>c</controller_as>
@@ -305,111 +381,137 @@ thead{
         <public>false</public>
         <roles/>
         <script><![CDATA[(function() {
-	/* populate the 'data' object */
-	/* e.g., data.table = $sp.getValue('table'); */
+	/* Gán dữ liệu cho object 'data' */
 	data.detailInve = {};
-	data.inventories = getInventory();
-	if(input) {
-		if(input.action === "addnewInve"){
+	var pageNumber = 1; 
+	var pageSize = 3;   
+	//data.inventories = getInventory(pageNumber, pageSize);
+	//data.totalCount = getInventoryCount();
+
+	if (input) {
+		if (input.action === "getInventory") {
+			pageNumber = input.pageNumber;
+			pageSize = input.pageSize;    
+			data.inventories = getInventory(pageNumber, pageSize);
+			data.totalCount = getInventoryCount();
+		}
+
+		if (input.action === "addnewInve") {
 			var newInve = input.newInve;
 			try {
 				var ive = new GlideRecord('x_1568427_inventor_item');
-				ive.initialize()
+				ive.initialize();
 				ive.item_name = newInve.item_name;
 				ive.quantity = newInve.quantity;
 				ive.price = newInve.price;
 				ive.category = newInve.category;
 				ive.remarks = newInve.remarks;
-				ive.insert()
-			}catch(e){
-				gs.error('Error Add inventoríes : ' + e.message);
+				ive.insert();
+			} catch (e) {
+				gs.error('Lỗi thêm mới dữ liệu: ' + e.message);
 			}
 		}
 
-		if(input.action === "detailInve"){
+		if (input.action === "detailInve") {
 			var inveId = input.inveId;
 			data.detailInve = detailInve(inveId);
 		}
 
-		if(input.action === "fillField"){
+		if (input.action === "fillField") {
 			var id = input.id;
 			data.fillField = detailInve(id);
 		}
 
-		if(input.action === "updateInve"){
+		if (input.action === "updateInve") {
 			var gr = new GlideRecord('x_1568427_inventor_item');
-			if(gr.get(input.updateId)){
-				if(input.newInve.item_name) {gr.item_name = input.newInve.item_name}
-				if(input.newInve.quantity) {gr.quantity = input.newInve.quantity}
-				if(input.newInve.price) {gr.price = input.newInve.price}
-				if(input.newInve.category) {gr.category = input.newInve.category}
-				if(input.newInve.remarks) {gr.remarks = input.newInve.remarks}
+			if (gr.get(input.updateId)) {
+				if (input.newInve.item_name) { gr.item_name = input.newInve.item_name; }
+				if (input.newInve.quantity) { gr.quantity = input.newInve.quantity; }
+				if (input.newInve.price) { gr.price = input.newInve.price; }
+				if (input.newInve.category) { gr.category = input.newInve.category; }
+				if (input.newInve.remarks) { gr.remarks = input.newInve.remarks; }
 				gr.update();
 			}
 		}
 
-		if(input.action === "deleteInve"){
+		if (input.action === "deleteInve") {
 			var inventor = new GlideRecord('x_1568427_inventor_item');
-			if(inventor.get(input.inveId)){
-					inventor.deleteRecord()
+			if (inventor.get(input.inveId)) {
+				inventor.deleteRecord();
 			}
 		}
-
-		data.inventories = getInventory();
 	}
-
 })();
 
-function getInventory() {
+function getInventory(pageNumber, pageSize) {
 	var inventories = [];
-	try{
+	try {
 		var ive = new GlideRecord('x_1568427_inventor_item');
-		ive.orderBy('number')
+		ive.orderBy('number');
 		ive.query();
-		while(ive.next()) {
-			inventories.push({
-				sys_id : ive.getValue('sys_id'),
-				item_name : ive.getValue('item_name'),
-				number : ive.getValue('number'),
-				quantity : ive.getValue('quantity'),
-				price : ive.getValue('price'),
-				category : ive.getValue('category'),
-				remarks : ive.getValue('remarks'),
+		var start = (pageNumber - 1) * pageSize; 
+		var end = start + pageSize;             
+		var index = 0;                          
 
-			})
+		while (ive.next()) {
+			if (index >= start && index < end) {
+				inventories.push({
+					sys_id: ive.getValue('sys_id'),
+					item_name: ive.getValue('item_name'),
+					number: ive.getValue('number'),
+					quantity: ive.getValue('quantity'),
+					price: ive.getValue('price'),
+					category: ive.getValue('category'),
+					remarks: ive.getValue('remarks'),
+				});
+			}
+			index++;
+			if (index >= end) break; 
 		}
-	} catch(e){
-		gs.error('Error fetching inventoríes : ' + e.message);
+	} catch (e) {
+		gs.error('Lỗi lấy dữ liệu: ' + e.message);
 	}
 	return inventories;
 }
 
-function detailInve (inveId){
+function detailInve(inveId) {
 	var detailInve = {};
 	try {
 		var gr = new GlideRecord('x_1568427_inventor_item');
-		if(gr.get(inveId)){
-			$sp.getRecordValues(detailInve,gr,'item_name,number,quantity,price,category,remarks,sys_updated_on,sys_created_on,sys_created_by,sys_updated_by');
-
+		if (gr.get(inveId)) {
+			$sp.getRecordValues(detailInve, gr, 'item_name,number,quantity,price,category,remarks,sys_updated_on,sys_created_on,sys_created_by,sys_updated_by');
 		}
-	}catch(e){
-		gs.error('Error Add inventoríes : ' + e.message);
+	} catch (e) {
+		gs.error('Lỗi lấy chi tiết: ' + e.message);
 	}
 	return detailInve;
-}]]></script>
+}
+
+function getInventoryCount() {
+	var count = 0;
+	try {
+		var gr = new GlideRecord('x_1568427_inventor_item');
+		gr.query();
+		count = gr.getRowCount();
+	} catch (e) {
+		gs.error('Lỗi đếm dữ liệu: ' + e.message);
+	}
+	return count;
+}
+]]></script>
         <servicenow>false</servicenow>
         <sys_class_name>sp_widget</sys_class_name>
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2024-12-06 02:51:03</sys_created_on>
         <sys_id>65408f6583de9a10260a55b6feaad396</sys_id>
-        <sys_mod_count>93</sys_mod_count>
+        <sys_mod_count>111</sys_mod_count>
         <sys_name>Add and List Inventory</sys_name>
         <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
         <sys_policy/>
         <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
         <sys_update_name>sp_widget_65408f6583de9a10260a55b6feaad396</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2024-12-06 09:26:44</sys_updated_on>
+        <sys_updated_on>2024-12-09 07:48:17</sys_updated_on>
         <template><![CDATA[<div>
 
   <div class="card mb-4 mt-4">
@@ -520,6 +622,22 @@ function detailInve (inveId){
         </tr>
       </tbody>
     </table>   
+  </div>
+
+  <div class="pagination-controls">
+    <button class="btn btn-secondary"
+            ng-disabled="c.pageNumber === 1"
+            ng-click="c.loadPage(c.pageNumber - 1)">
+      Previous
+    </button>
+
+    <span>Page {{ c.pageNumber }} of {{ c.getRoundedPageCount() }}</span>
+
+    <button class="btn btn-secondary"
+            ng-disabled="c.pageNumber >= c.getRoundedPageCount()"
+            ng-click="c.loadPage(c.pageNumber + 1)">
+      Next
+    </button>
   </div>
 
   <div ng-show="c.showModal" class="custom-modal-overlay">
