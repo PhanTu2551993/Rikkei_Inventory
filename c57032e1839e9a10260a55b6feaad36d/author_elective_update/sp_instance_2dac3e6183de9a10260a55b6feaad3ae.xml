@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_instance">
+    <sp_instance action="DELETE">
+        <active>true</active>
+        <class_name/>
+        <color>default</color>
+        <css/>
+        <glyph/>
+        <id/>
+        <order>1</order>
+        <roles/>
+        <short_description/>
+        <size>md</size>
+        <sp_column display_value="1">e85c76a183de9a10260a55b6feaad349</sp_column>
+        <sp_widget display_value="EC Common Calendar Header">fb50f2bbeb400210e94634d78f5228d9</sp_widget>
+        <sys_class_name>sp_instance</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-06 02:35:12</sys_created_on>
+        <sys_id>2dac3e6183de9a10260a55b6feaad3ae</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name/>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_update_name>sp_instance_2dac3e6183de9a10260a55b6feaad3ae</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-06 02:35:12</sys_updated_on>
+        <title/>
+        <url/>
+        <widget_parameters/>
+    </sp_instance>
+    <sys_translated_text action="DELETE" query="documentkey=2dac3e6183de9a10260a55b6feaad3ae"/>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</application>
+        <file_path/>
+        <instance_id>612674ef1be5b9986a85eb9b2d4bcb35</instance_id>
+        <instance_name>dev181071</instance_name>
+        <name>sp_instance_2dac3e6183de9a10260a55b6feaad3ae</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_instance"><sp_instance action="INSERT_OR_UPDATE"><active>true</active><class_name/><color>default</color><css/><glyph/><id/><order>1</order><roles/><short_description/><size>md</size><sp_column display_value="1">e85c76a183de9a10260a55b6feaad349</sp_column><sp_widget display_value="EC Common Calendar Header">fb50f2bbeb400210e94634d78f5228d9</sp_widget><sys_class_name>sp_instance</sys_class_name><sys_created_by>admin</sys_created_by><sys_created_on>2024-12-06 02:35:12</sys_created_on><sys_id>2dac3e6183de9a10260a55b6feaad3ae</sys_id><sys_mod_count>0</sys_mod_count><sys_name/><sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package><sys_policy/><sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope><sys_update_name>sp_instance_2dac3e6183de9a10260a55b6feaad3ae</sys_update_name><sys_updated_by>admin</sys_updated_by><sys_updated_on>2024-12-06 02:35:12</sys_updated_on><title/><url/><widget_parameters/></sp_instance><sys_translated_text action="delete_multiple" query="documentkey=2dac3e6183de9a10260a55b6feaad3ae"/></record_update>]]></payload>
+        <payload_hash>-417823095</payload_hash>
+        <record_name/>
+        <reverted_from/>
+        <source>897032e1839e9a10260a55b6feaad372</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-06 02:35:12</sys_created_on>
+        <sys_id>61ac3ea183de9a10260a55b6feaad356</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>19399d23ecc0000001</sys_recorded_at>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-06 02:35:12</sys_updated_on>
+        <type>Instance</type>
+        <update_guid>65ac3ea1d3de9a1005b587e89d249b55</update_guid>
+        <update_guid_history>65ac3ea1d3de9a1005b587e89d249b55:-417823095</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">2e8dbae183de9a10260a55b6feaad351</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-06 02:39:06</sys_created_on>
+        <sys_db_object display_value="" name="sp_instance">sp_instance</sys_db_object>
+        <sys_id>5dd8e86718bb42b2a29a14245f986861</sys_id>
+        <sys_metadata>2dac3e6183de9a10260a55b6feaad3ae</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name/>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_scope_delete display_value="">861d2658792a49508d448ee8b3268100</sys_scope_delete>
+        <sys_update_name>sp_instance_2dac3e6183de9a10260a55b6feaad3ae</sys_update_name>
+        <sys_update_version display_value="sp_instance_2dac3e6183de9a10260a55b6feaad3ae">61ac3ea183de9a10260a55b6feaad356</sys_update_version>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-06 02:39:06</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

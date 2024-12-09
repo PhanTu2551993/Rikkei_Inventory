@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_number">
+    <sys_number action="INSERT_OR_UPDATE">
+        <category display_value="" name="x_1568427_inventor_item">x_1568427_inventor_item</category>
+        <maximum_digits>7</maximum_digits>
+        <number>1000</number>
+        <prefix>ITE</prefix>
+        <sys_class_name>sys_number</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-06 01:50:24</sys_created_on>
+        <sys_id>dd62f665839e9a10260a55b6feaad3d5</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>ITE</sys_name>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_update_name>sys_number_dd62f665839e9a10260a55b6feaad3d5</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-06 01:50:24</sys_updated_on>
+    </sys_number>
+</record_update>

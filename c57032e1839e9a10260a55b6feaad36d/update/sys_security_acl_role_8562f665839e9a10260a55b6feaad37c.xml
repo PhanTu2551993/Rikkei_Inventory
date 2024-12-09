@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_security_acl_role">
+    <sys_security_acl_role action="INSERT_OR_UPDATE">
+        <sys_class_name>sys_security_acl_role</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-06 01:50:24</sys_created_on>
+        <sys_id>8562f665839e9a10260a55b6feaad37c</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>x_1568427_inventor_item.x_1568427_inventor.item_user</sys_name>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_security_acl display_value="x_1568427_inventor_item">8d62f665839e9a10260a55b6feaad378</sys_security_acl>
+        <sys_update_name>sys_security_acl_role_8562f665839e9a10260a55b6feaad37c</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-06 01:50:24</sys_updated_on>
+        <sys_user_role display_value="x_1568427_inventor.item_user" name="x_1568427_inventor.item_user">20627225839e9a10260a55b6feaad3a3</sys_user_role>
+    </sys_security_acl_role>
+</record_update>

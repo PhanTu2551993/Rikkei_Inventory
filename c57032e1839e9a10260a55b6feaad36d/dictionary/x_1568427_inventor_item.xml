@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?><database>
+    <element db_object_id="12a076e1839e9a10260a55b6feaad364" label="Item" max_length="40" name="x_1568427_inventor_item" type="collection">
+        <element choice="1" label="Unit" max_length="40" name="unit" type="choice">
+            <choice/>
+        </element>
+        <element label="Remarks" max_length="40" name="remarks" type="string"/>
+        <element label="Description" max_length="1000" name="description" type="string"/>
+        <element label="Category" max_length="40" name="category" type="string"/>
+        <element attributes="ignore_filter_on_new=true" default="javascript:global.getNextObjNumberPadded();" label="Number" max_length="40" name="number" type="string"/>
+        <element label="Price" max_length="40" name="price" type="integer"/>
+        <element default="0" label="Quantity" max_length="40" name="quantity" type="integer"/>
+        <element label="Item Name" max_length="100" name="item_name" type="string"/>
+    </element>
+</database>
