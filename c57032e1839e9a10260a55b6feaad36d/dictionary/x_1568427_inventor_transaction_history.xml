@@ -1,17 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?><database>
     <element db_object_id="25e3b2e5839e9a10260a55b6feaad350" label="Transaction History" max_length="40" name="x_1568427_inventor_transaction_history" type="collection">
+        <element label="Quantity New" max_length="40" name="quantity_new" type="integer"/>
+        <element label="Time" max_length="40" name="time" type="glide_date_time"/>
         <element label="Item Id" max_length="32" name="item_id" reference="x_1568427_inventor_item" type="reference"/>
         <element label="Action By" max_length="40" name="action_by" type="string"/>
         <element choice="1" label="Type" max_length="40" name="type" type="choice">
             <choice>
-                <element inactive_on_update="false" label="Borrow" value="borrow"/>
-                <element inactive_on_update="false" label="Remove" value="remove"/>
-                <element inactive_on_update="false" label="Add" value="add"/>
+                <element inactive_on_update="false" label="Borrowed" value="borrowed"/>
+                <element inactive_on_update="false" label="Removed" value="removed"/>
+                <element inactive_on_update="false" label="Added" value="added"/>
+                <element inactive_on_update="false" label="Updated" value="updated"/>
             </choice>
         </element>
+        <element label="Description" max_length="40" name="description" type="string"/>
+        <element label="Borrow Id" max_length="32" name="borrow_id" reference="x_1568427_inventor_borrowrequests" type="reference"/>
         <element label="Remarks" max_length="40" name="remarks" type="string"/>
+        <element label="Item Name" max_length="40" name="item_name" type="string"/>
+        <element attributes="ignore_filter_on_new=true" default="javascript:global.getNextObjNumberPadded();" label="Number" max_length="40" name="number" type="string"/>
+        <element label="Quantity Old" max_length="40" name="quantity_old" type="integer"/>
         <element label="Quantity Changed" max_length="40" name="quantity_changed" type="integer"/>
         <index name="index">
+            <element name="borrow_id"/>
+        </index>
+        <index name="index2">
             <element name="item_id"/>
         </index>
     </element>

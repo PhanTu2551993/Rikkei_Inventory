@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[api.controller=function() {
+  /* widget controller */
+  var c = this;
+	
+		// Phân trang 
+
+	c.pageNumber = 1;
+	c.pageSize = 10; 
+	c.totalCount = 0;
+
+	c.loadPage = function (pageNumber) {
+		c.pageNumber = pageNumber;
+		c.server.get({
+			action: "getHistory",
+			pageNumber: c.pageNumber,
+			pageSize: c.pageSize,
+		}).then(function (r) {
+			c.data.borroweds = r.data.borroweds;
+			console.log("11111",r.data.borroweds)
+			c.totalCount = r.data.totalCount;
+		}).catch(function (error) {
+			console.error('Error while fetching inventory:', error);
+		});
+	};
+
+	c.getRoundedPageCount = function () {
+		return Math.ceil(c.totalCount / c.pageSize); 
+	};
+
+	c.loadPage(c.pageNumber);
+};]]></client_script>
+        <controller_as>c</controller_as>
+        <css>body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.title {
+  border-top: 1px solid #ddd;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  display: inline-block;
+  padding: 0 16px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  background-color:  #f7f7f7;
+  
+}
+
+.title h3 {
+  line-height: 40px;
+  height: 40px;
+  margin : 0;
+}
+
+.layout_wrapper {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  margin: 0 auto;
+}
+
+.layout_wrapper h5 {
+  margin: 0;
+  padding-left: 16px;
+  line-height: 40px;
+  background-color: #f7f7f7;
+  border-bottom: 1px solid #ddd;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table_inner {
+  margin: 16px;
+  overflow: auto;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+th {
+  background-color: #343a40;
+  color: white;
+}
+
+tr:hover {
+  color: #212529;
+  background-color: rgba(0, 0, 0, 0.075);
+}
+.pagination-controls{
+margin : 20px
+}
+</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>true</has_preview>
+        <id>user_history</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>user History</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+	/* populate the 'data' object */
+	/* e.g., data.table = $sp.getValue('table'); */
+	var user = gs.getUser();
+	var userName = user.getName();
+	var pageNumber = 1; 
+	var pageSize = 3;   
+	data.borroweds = getBorroweds(userName, pageNumber, pageSize);
+
+	if (input) {
+		if (input.action === "getHistory") {
+			pageNumber = input.pageNumber;
+			pageSize = input.pageSize;    
+			data.borroweds = getBorroweds(userName, pageNumber, pageSize);
+			data.totalCount = getBorrowedCount(userName);
+		}
+		
+			data.borroweds = getBorroweds(userName, pageNumber, pageSize);
+			data.totalCount = getBorrowedCount(userName);
+	}
+})();
+
+function getBorroweds(userName, pageNumber, pageSize) {
+	var borroweds = [];
+	try {
+		var ive = new GlideRecord('x_1568427_inventor_borrowrequests');
+		ive.addQuery('sys_created_by', userName); 
+		ive.orderByDesc('sys_created_on');
+		ive.query();
+		var start = (pageNumber - 1) * pageSize; 
+		var end = start + pageSize;             
+		var index = 0;                          
+
+		while (ive.next()) {
+			if (index >= start && index < end) {
+				var borrowed = {
+					sys_id: ive.getValue('sys_id'),
+					borrower_quantity: ive.getValue('borrower_quantity'),
+					created_by: ive.getValue('sys_created_by'),
+					created_on: ive.getValue('sys_created_on'),
+					status: ive.getValue('status'),
+					start: start,
+				};
+				
+				var itemRecord = new GlideRecord('x_1568427_inventor_item');
+				if (itemRecord.get(ive.getValue('item_id'))) {
+					borrowed.item_name = itemRecord.getValue('item_name');
+					borrowed.item_id = itemRecord.getValue('number');
+				}
+				
+				borroweds.push(borrowed);
+			}
+			index++;
+			if (index >= end) break; 
+		}
+	} catch (e) {
+		gs.error('Lỗi lấy dữ liệu: ' + e.message);
+	}
+	return borroweds;
+}
+
+function getBorrowedCount(userName) {
+	var count = 0;
+	try {
+	var ive = new GlideRecord('x_1568427_inventor_borrowrequests');
+		ive.addQuery('sys_created_by', userName); 
+		ive.orderByDesc('sys_created_on');
+		ive.query();
+		count = ive.getRowCount();
+	} catch (e) {
+		gs.error('Lỗi đếm dữ liệu: ' + e.message);
+	}
+	return count;
+}
+]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-13 05:53:44</sys_created_on>
+        <sys_id>b93de77f835e5210260a55b6feaad390</sys_id>
+        <sys_mod_count>12</sys_mod_count>
+        <sys_name>user History</sys_name>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_update_name>sp_widget_b93de77f835e5210260a55b6feaad390</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-13 07:32:51</sys_updated_on>
+        <template><![CDATA[<body>
+  <div class="heading">
+    <h1>Borrowed History</h1>
+  </div>
+  <div class="layout_wrapper">
+    <h5>Borrowed My History</h5>
+
+    <div class="table_inner">
+      <table>
+        <thead>
+          <tr>
+            <th>Index</th>
+            <th>Date & Time</th>
+            <th>Item ID</th>
+            <th>Item Name</th>
+            <th>Borrowed Quantity</th>
+            <th>Requester</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="bor in data.borroweds">
+            <td>{{ bor.start + $index + 1 }}</td>
+            <td>{{ bor.created_on }}</td>
+            <td>{{ bor.item_id }}</td>
+            <td>{{ bor.item_name }}</td>
+            <td>{{ bor.borrower_quantity }}</td>
+            <td>{{ bor.created_by }}</td>
+            <td>{{ bor.status }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination-controls">
+      <button class="btn btn-secondary" ng-disabled="c.pageNumber === 1" ng-click="c.loadPage(c.pageNumber - 1)">
+        Previous
+      </button>
+
+      <span>Page {{ c.pageNumber }} of {{ c.getRoundedPageCount() }}</span>
+
+      <button class="btn btn-secondary" ng-disabled="c.pageNumber >= c.getRoundedPageCount()"
+              ng-click="c.loadPage(c.pageNumber + 1)">
+        Next
+      </button>
+    </div>
+
+  </div>
+</body>]]></template>
+    </sp_widget>
+</record_update>

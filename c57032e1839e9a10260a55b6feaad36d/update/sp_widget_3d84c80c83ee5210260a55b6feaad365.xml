@@ -1,0 +1,1136 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[api.controller = function() {
+	/* widget controller */
+	var c = this;
+	var totalItems;
+	c.inventories = c.data.inventories;
+	c.borroweds = c.data.borroweds;
+	c.totalItems = c.inventories.length;
+	console.log("Tổng số items:", c.totalItems);
+	console.log("c.data.borroweds", c.data.borroweds);
+	console.log("c.data.inventories", c.data.inventories);
+
+	var totalQuantity = 0;
+	var totalBorrowed = 0;
+	var totalPrice = 0;
+	var totalInventoryPrice = 0;
+
+	var totalPriceBooks = 0;
+	var totalInventoryPriceBooks = 0;
+	var totalborrowedBooks = 0;
+	var totalQuantityBooks = 0;
+
+	var totalPriceElectronics = 0;
+	var totalInventoryPriceElectronics = 0;
+	var totalborrowedElectronics = 0;
+	var totalQuantityElectronics = 0;
+
+	var totalPriceOffice = 0;
+	var totalInventorylPriceOffice = 0;
+	var totalborrowedOffice = 0;
+	var totalQuantityOffice = 0;
+
+	var totalPriceVehicles = 0;
+	var totalInventoryPriceVehicles = 0;
+	var totalborrowedVehicles = 0;
+	var totalQuantityVehicles = 0;
+
+	var percentBorrowTotal = 0;
+	for (var i = 0; i < c.inventories.length; i++) {
+		var quantity = parseInt(c.inventories[i].quantity, 10) || 0;
+		var borrowedQuantity = parseInt(c.inventories[i].borrowed_quantity, 10) || 0;
+		var price = parseInt(c.inventories[i].price, 10) || 0;
+
+		totalQuantity += quantity;
+		totalBorrowed += borrowedQuantity;
+		totalPrice += price * quantity;
+		totalInventoryPrice += price * borrowedQuantity;
+		c.totalInventoryPrice = totalPrice - totalInventoryPrice;
+		c.totalPrice = totalPrice;
+		if (totalQuantity !== 0) {
+			percentBorrowTotal = Math.round((totalBorrowed / totalQuantity) * 100);
+		}
+
+
+		if (c.inventories[i].category === 'Books') {
+			totalborrowedBooks += borrowedQuantity;
+			totalQuantityBooks += quantity;
+			totalPriceBooks += quantity * price;
+			totalInventoryPriceBooks += borrowedQuantity*price;
+			c.totalQuantityBooks = totalQuantityBooks;
+			c.totalborrowedBooks = totalborrowedBooks;
+			c.totalPriceBooks = totalPriceBooks;
+			c.totalInventoryPriceBooks = totalPriceBooks - totalInventoryPriceBooks;
+		}
+
+		if (c.inventories[i].category === 'Electronics') {
+			totalborrowedElectronics += borrowedQuantity;
+			totalQuantityElectronics += quantity;
+			totalPriceElectronics += quantity * price;
+			totalInventoryPriceElectronics += borrowedQuantity*price;
+			c.totalQuantityElectronics = totalQuantityElectronics;
+			c.totalborrowedElectronics = totalborrowedElectronics;
+			c.totalPriceElectronics = totalPriceElectronics;
+			c.totalInventoryPriceElectronics = totalPriceElectronics - totalInventoryPriceElectronics;
+		}
+
+		if (c.inventories[i].category === 'Office') {
+			totalborrowedOffice += borrowedQuantity;
+			totalQuantityOffice += quantity;
+			totalPriceOffice += quantity * price;
+			totalInventorylPriceOffice += borrowedQuantity*price;
+			c.totalborrowedOffice = totalborrowedOffice;
+			c.totalQuantityOffice = totalQuantityOffice;
+			c.totalPriceOffice = totalPriceOffice;
+			c.totalInventorylPriceOffice = totalPriceOffice - totalInventorylPriceOffice;
+		}
+
+		if (c.inventories[i].category === 'Vehicles') {
+			totalborrowedVehicles += borrowedQuantity;
+			totalQuantityVehicles += quantity;
+			totalPriceVehicles += quantity * price;
+			totalInventoryPriceVehicles += borrowedQuantity*price;
+			c.totalborrowedVehicles = totalborrowedVehicles;
+			c.totalQuantityVehicles = totalQuantityVehicles;
+			c.totalPriceVehicles = totalPriceVehicles;
+			c.totalInventoryPriceVehicles = totalPriceVehicles - totalInventoryPriceVehicles;
+		}
+
+	}
+
+	var percentBorrowBooks = totalQuantityBooks !== 0 ? Math.round((totalborrowedBooks / totalQuantityBooks) * 100) : 0;
+
+	var percentTotalPriceBooks = totalPrice !== 0 ? Math.round((totalPriceBooks / totalPrice) * 100) : 0;
+
+	var percentTotalInventoryPriceBooks = totalInventoryPrice !== 0 ? Math.round((totalInventoryPriceBooks / totalInventoryPrice) * 100) : 0;
+
+	var percentElectronics = totalQuantityElectronics !== 0 ? Math.round((totalborrowedElectronics / totalQuantityElectronics) * 100) : 0;
+
+	var percentTotalPriceElectronics = totalPrice !== 0 ? Math.round((totalPriceElectronics / totalPrice) * 100) : 0;
+
+	var percentTotalInventoryPriceElectronics = totalInventoryPrice !== 0 ? Math.round((totalInventoryPriceElectronics / totalInventoryPrice) * 100) : 0;
+
+	var percentBorrowOffice = totalQuantityOffice !== 0 ? Math.round((totalborrowedOffice / totalQuantityOffice) * 100) : 0;
+
+	var percentTotalPriceOffice = totalPrice !== 0 ? Math.round((totalPriceOffice / totalPrice) * 100) : 0;
+
+	var percentTotalInventoryPriceOffice = totalInventoryPrice !== 0 ? Math.round((totalInventorylPriceOffice / totalInventoryPrice) * 100) : 0;
+
+	var percentBorrowVehicles = totalQuantityVehicles !== 0 ? Math.round((totalborrowedVehicles / totalQuantityVehicles) * 100) : 0;
+
+	var percentTotalPriceVehicles = 100 - percentTotalPriceBooks - percentTotalPriceElectronics - percentTotalPriceOffice;
+
+	var percentTotalInventoryPriceVehicles = 100 - percentTotalInventoryPriceBooks - percentTotalInventoryPriceElectronics - percentTotalInventoryPriceOffice;
+
+
+	c.totalQuantity = totalQuantity;
+	c.totalBorrowed = totalBorrowed;
+	c.totalPrice = totalPrice;
+	c.percentBorrowBooks = percentBorrowBooks;
+	c.percentTotalPriceBooks = percentTotalPriceBooks;
+	c.percentTotalInventoryPriceBooks = percentTotalInventoryPriceBooks;
+	c.percentTotalPriceElectronics = percentTotalPriceElectronics;
+	c.percentTotalInventoryPriceElectronics = percentTotalInventoryPriceElectronics;
+	c.percentElectronics = percentElectronics;
+	c.percentBorrowOffice = percentBorrowOffice;
+	c.percentTotalPriceOffice = percentTotalPriceOffice;
+	c.percentTotalInventoryPriceOffice = percentTotalInventoryPriceOffice;
+	c.percentBorrowVehicles = percentBorrowVehicles;
+	c.percentTotalPriceVehicles = percentTotalPriceVehicles;
+	c.percentTotalInventoryPriceVehicles = percentTotalInventoryPriceVehicles;
+	c.percentBorrowTotal = percentBorrowTotal;
+
+	// Borrowed
+
+	var borrowerQuantityBooks = [0, 0, 0, 0];
+	var borrowerQuantityElectronics = [0, 0, 0, 0];
+	var borrowerQuantityOffice = [0, 0, 0, 0];
+	var borrowerQuantityVehicles = [0, 0, 0, 0];
+	var totalborrowerQuantity = [0, 0, 0, 0];
+
+	var today = new Date();
+	var startDate = new Date(today);
+	startDate.setDate(today.getDate() - 28);
+
+	for (var j = 0; j < c.borroweds.length; j++) {
+		var borrowerQuantity = parseInt(c.borroweds[j].borrower_quantity, 10) || 0;
+		var updatedOn = c.borroweds[j].updated_on;
+		var updatedDate = new Date(updatedOn);
+
+		if (updatedDate >= startDate && updatedDate <= today) {
+			var daysSinceStart = Math.floor((updatedDate - startDate) / (1000 * 60 * 60 * 24)); // Số ngày từ startDate
+			var weekNumber = Math.floor(daysSinceStart / 7);
+
+			if (weekNumber >= 0 && weekNumber < 4) {
+				switch (c.borroweds[j].category) {
+					case 'Books':
+						borrowerQuantityBooks[weekNumber] += borrowerQuantity;
+						break;
+					case 'Electronics':
+						borrowerQuantityElectronics[weekNumber] += borrowerQuantity;
+						break;
+					case 'Office':
+						borrowerQuantityOffice[weekNumber] += borrowerQuantity;
+						break;
+					case 'Vehicles':
+						borrowerQuantityVehicles[weekNumber] += borrowerQuantity;
+						break;
+				}
+				totalborrowerQuantity[weekNumber] += borrowerQuantity;
+			}
+		}
+	}
+
+	var result = {
+		books: {
+			week1: borrowerQuantityBooks[0],
+			week2: borrowerQuantityBooks[1],
+			week3: borrowerQuantityBooks[2],
+			week4: borrowerQuantityBooks[3],
+		},
+		electronics: {
+			week1: borrowerQuantityElectronics[0],
+			week2: borrowerQuantityElectronics[1],
+			week3: borrowerQuantityElectronics[2],
+			week4: borrowerQuantityElectronics[3],
+		},
+		office: {
+			week1: borrowerQuantityOffice[0],
+			week2: borrowerQuantityOffice[1],
+			week3: borrowerQuantityOffice[2],
+			week4: borrowerQuantityOffice[3],
+		},
+		vehicles: {
+			week1: borrowerQuantityVehicles[0],
+			week2: borrowerQuantityVehicles[1],
+			week3: borrowerQuantityVehicles[2],
+			week4: borrowerQuantityVehicles[3],
+		},
+	};
+
+	c.result = result;
+	console.log(result);
+
+	var totalborrowerQuanWeek1 = totalborrowerQuantity[0];
+	var totalborrowerQuanWeek2 = totalborrowerQuantity[1];
+	var totalborrowerQuanWeek3 = totalborrowerQuantity[2];
+	var totalborrowerQuanWeek4 = totalborrowerQuantity[3];
+
+	c.totalborrowerQuanWeek1 = totalborrowerQuanWeek1;
+	c.totalborrowerQuanWeek2 = totalborrowerQuanWeek2;
+	c.totalborrowerQuanWeek3 = totalborrowerQuanWeek3;
+	c.totalborrowerQuanWeek4 = totalborrowerQuanWeek4;
+
+	if (totalborrowerQuanWeek1 > 0) {
+		c.pixelHeightBooks1 = (c.result.books.week1 / totalborrowerQuanWeek1) * 350;
+		c.pixelHeightElectronics1 = (c.result.electronics.week1 / totalborrowerQuanWeek1) * 350;
+		c.pixelHeightOffice1 = (c.result.office.week1 / totalborrowerQuanWeek1) * 350;
+		c.pixelHeightVehicles1 = (c.result.vehicles.week1 / totalborrowerQuanWeek1) * 350;
+	} else {
+		c.pixelHeightBooks1 = 0;
+		c.pixelHeightElectronics1 = 0;
+		c.pixelHeightOffice1 = 0;
+		c.pixelHeightVehicles1 = 0;
+	}
+
+	if (totalborrowerQuanWeek2 > 0) {
+		c.pixelHeightBooks2 = (c.result.books.week2 / totalborrowerQuanWeek2) * 350;
+		c.pixelHeightElectronics2 = (c.result.electronics.week2 / totalborrowerQuanWeek2) * 350;
+		c.pixelHeightOffice2 = (c.result.office.week2 / totalborrowerQuanWeek2) * 350;
+		c.pixelHeightVehicles2 = (c.result.vehicles.week2 / totalborrowerQuanWeek2) * 350;
+	} else {
+		c.pixelHeightBooks2 = 0;
+		c.pixelHeightElectronics2 = 0;
+		c.pixelHeightOffice2 = 0;
+		c.pixelHeightVehicles2 = 0;
+	}
+
+	if (totalborrowerQuanWeek3 > 0) {
+		c.pixelHeightBooks3 = (c.result.books.week3 / totalborrowerQuanWeek3) * 350;
+		c.pixelHeightElectronics3 = (c.result.electronics.week3 / totalborrowerQuanWeek3) * 350;
+		c.pixelHeightOffice3 = (c.result.office.week3 / totalborrowerQuanWeek3) * 350;
+		c.pixelHeightVehicles3 = (c.result.vehicles.week3 / totalborrowerQuanWeek3) * 350;
+	} else {
+		c.pixelHeightBooks3 = 0;
+		c.pixelHeightElectronics3 = 0;
+		c.pixelHeightOffice3 = 0;
+		c.pixelHeightVehicles3 = 0;
+	}
+
+	if (totalborrowerQuanWeek4 > 0) {
+		c.pixelHeightBooks4 = (c.result.books.week4 / totalborrowerQuanWeek4) * 350;
+		c.pixelHeightElectronics4 = (c.result.electronics.week4 / totalborrowerQuanWeek4) * 350;
+		c.pixelHeightOffice4 = (c.result.office.week4 / totalborrowerQuanWeek4) * 350;
+		c.pixelHeightVehicles4 = (c.result.vehicles.week4 / totalborrowerQuanWeek4) * 350;
+	} else {
+		c.pixelHeightBooks4 = 0;
+		c.pixelHeightElectronics4 = 0;
+		c.pixelHeightOffice4 = 0;
+		c.pixelHeightVehicles4 = 0;
+	}
+
+	console.log(c.result.books.week4)
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f7fc;
+  display: flex;
+  /*height: 100vh;*/
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  background-color: #2c3e50;
+  color: white;
+  padding-top: 30px;
+  position: fixed;
+  height: 100%;
+}
+
+.sidebar a {
+  color: white;
+  text-decoration: none;
+  display: block;
+  padding: 15px;
+  font-size: 18px;
+  border-bottom: 1px solid #34495e;
+}
+
+.sidebar a:hover {
+  background-color: #34495e;
+}
+
+.sidebar .active {
+  background-color: #1abc9c;
+}
+
+/* Main Content */
+.content {
+  /*margin-left: 250px;*/
+  padding: 20px 0 20px 20px;
+  /*width: calc(100% - 250px);*/
+  width: 100%;
+  margin-bottom: 30px;
+}
+
+.content h1 {
+  color: #333;
+  margin-bottom: 30px;
+}
+
+/* Dashboard Cards */
+.dashboard-cards {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.card {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
+  width: 24%;
+  text-align: center;
+}
+
+.card h2 {
+  font-size: 30px;
+  color: #2c3e50;
+}
+
+.card p {
+  font-size: 18px;
+  color: #7f8c8d;
+}
+
+.chart_group {
+  display: flex;
+  width: 1200px;
+  max-width: 100%;
+  gap: 14px;
+}
+
+/* Column Chart */
+.column-chart {
+  display: block;
+  width: 100%; /* Giảm từ 100% xuống 70% */
+  height: 617px;; /* 0.7 x 650px */
+  margin-bottom: 21px; /* 0.7 x 30px */
+  padding: 14px; /* 0.7 x 20px */
+  background-color: #fff;
+  border-radius: 5.6px; /* 0.7 x 8px */
+
+  box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.175em, rgba(90, 125, 188, 0.05) 0px 0.175em 0.7em;
+}
+
+.column-chart h2 {
+  text-align: center;
+  margin-bottom: 14px; /* 0.7 x 20px */
+  font-size: 16.8px; /* 0.7 x 24px */
+  color: #2c3e50;
+  
+}
+
+.chart {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: 350px; /* 0.7 x 500px */
+  padding: 7px; /* 0.7 x 10px */
+  gap: 21px; /* 0.7 x 30px */
+  border-bottom: 1.4px solid #000; 
+  margin-top:60px;
+}
+
+.bar {
+  width: 18%; /* 0.7 x 18% */
+  background-color: #3498db;
+  border-radius: 3.5px; /* 0.7 x 5px */
+  position: relative;
+  transition: background-color 0.3s ease;
+}
+
+.bar:hover {
+  background-color: #2980b9;
+}
+
+.bar_heading {
+  position: absolute;
+  bottom: -56px; /* 0.7 x -80px */
+  text-align: center;
+  padding-top: 8.4px; /* 0.7 x 12px */
+  font-size: 16px;
+  color: black;
+  left: 100%;
+  transform: translateX(-50%);
+}
+
+.bar_percent {
+  position: absolute;
+  top: -17.5px; /* 0.7 x -25px */
+  font-size: 14px; /* 0.7 x 14px */
+  font-weight: bold;
+  color: black;
+  text-align: center;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.bar_title {
+  position: absolute;
+  font-weight: bold;
+  bottom: -38.5px; /* 0.7 x -55px */
+  width: 100%;
+  display: block;
+  text-align: center;
+  font-size: 15px; 
+  color: black;
+  left:10px;
+}
+
+.bar_quan {
+  position: absolute;
+  bottom: -19.6px; /* 0.7 x -28px */
+  font-size: 9.8px; /* 0.7 x 14px */
+  font-weight: bold;
+  color: black;
+  text-align: center;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.bar-total {
+  width: 18%; /* 0.7 x 18% */
+  background-color: #1abc9c;
+  border-radius: 3.5px; /* 0.7 x 5px */
+  position: relative;
+  transition: background-color 0.3s ease;
+  height: 70%; /* Giảm chiều cao xuống 70% */
+  right:20px;
+  
+}
+
+.bar-total .bar_percent {
+  font-size: 14px; /* 0.7 x 14px */
+  position: relative;
+  top:-30px;
+}
+
+/* Pie Chart */
+.pie-chart {
+  display: block;
+  width: 100%;
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
+}
+
+.pie-chart h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #2c3e50;
+}
+
+.pie-container {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto;
+}
+
+.pie {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: conic-gradient(#1abc9c 0% 90%, #3498db 90% 100%);
+}
+
+.pie-note { 
+  margin-top: 30px;
+  display:block;
+  font-size: 16px;
+  font-weight: 600;
+}
+.pie-note-list {
+  margin-top: 16px;
+}
+
+.pie-note-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+
+.pie-note-item span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  display: block;
+}
+
+.pie-note-item h6, .pie-note-item p {
+  margin: 0px;
+  display : inline-block;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 26px;
+}
+
+.pie-label {
+  position: absolute;
+  top: 50%; 
+  left: 75%; 
+  transform-origin: center;
+  font-size: 14px;
+  font-weight: bold;
+  color: black;
+  transform: 
+    rotate(calc(var(--start) * 3.6deg)) /* Xoay nhãn đến góc của vùng */
+    translate(100px) /* Đẩy nhãn ra khỏi tâm biểu đồ */
+    rotate(calc(var(--start) * 3deg)); /* Giữ nhãn thẳng */
+  text-align: center;
+  rotate: -70deg;
+}
+.pie-label::after {
+  content: attr(data-label);
+}
+
+.column-chart-2 {
+  width: 700px;
+  margin-left: 100px;
+  margin-right: 30px;
+  text-align: center;
+  padding-bottom:60px;
+  
+}
+
+/* Chart Container */
+.chart_with_axis {
+  display: flex;
+  align-items: flex-end;
+  border-left: 2px solid #333;
+  border-bottom: 2px solid #333;
+  height: 600px; /* Điều chỉnh chiều cao tổng */
+  padding: 10px;
+  position: relative;
+}
+
+/* Trục Y và Nhãn */
+.chart_axis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%; 
+  margin-right: 10px;
+}
+.axis_label {
+  font-size: 12px;
+  color: #333;
+}
+
+/* Stacked Bar */
+.stacked-bar {
+  width: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left:50px;
+  //border: 1px solid #ddd;
+  //background-color: #f9f9f9;
+  position: relative;
+}
+
+.stacked-segment {
+  width: 100%;
+  position: relative;
+  text-align: center;
+  color: #fff;
+  font-size: 12px;
+}
+
+
+.stacked-total {
+  position: absolute;
+  top: -30px; /* Đẩy tổng lên phía trên */
+  text-align: center;
+  font-weight: bold;
+  font-size: 14px;
+  color: #333;
+}
+
+.total_value {
+  margin: 0;
+}
+
+.stacked-note {
+    position: absolute;
+    bottom: -60px; /* Đưa phần tử xuống dưới cùng của cột */
+    width: 100%;
+    text-align: center; /* Căn giữa chữ */
+    padding-top: 5px; /* Để có một chút khoảng cách với phần cuối cột */
+    font-weight: bold;
+    color: #333; /* Màu chữ có thể thay đổi tùy ý */
+}
+
+
+.pie-note {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+
+.pie-note span {
+  width: 25px;
+  height: 15px;
+  border-radius: 5px;
+  display: block;
+}
+
+.pie-note h6, .pie-note p {
+  margin: 0px;
+  display : inline-block;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 26px;
+}
+
+.chart_group-2 {
+  display: flex;
+  width: 1200px;
+  max-width: 100%;
+  gap: 14px;
+  border-radius: 8px;
+  box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
+}
+</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>true</has_preview>
+        <id>a_dashboard</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>A_dashboard</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+	/* populate the 'data' object */
+	data.isAdmin = gs.hasRole('x_1568427_inventor.admin'); 
+	data.isUser = gs.hasRole('x_1568427_inventor.user');
+	data.inventories = getInventory();
+	data.borroweds = getBorroweds();
+})();
+
+function getInventory() {
+	var inventories = [];
+	try {
+		var ive = new GlideRecord('x_1568427_inventor_item');
+		ive.query(); 
+		while (ive.next()) {
+			inventories.push({
+				sys_id: ive.getValue('sys_id'),
+				item_name: ive.getValue('item_name'),
+				number: ive.getValue('number'),
+				quantity: ive.getValue('quantity'),
+				borrowed_quantity: ive.getValue('borrowed_quantity'),
+				warning_quantity: ive.getValue('warning_quantity'),
+				current_quantity: ive.getValue('current_quantity'),
+				low_stock: parseInt(ive.getValue('current_quantity')) < parseInt(ive.getValue('warning_quantity')),
+				price: ive.getValue('price'),
+				active: ive.getValue('active'),
+				category: ive.getValue('category'),
+				remarks: ive.getValue('remarks'),
+			});
+		}
+	} catch (e) {
+		gs.error('Lỗi lấy dữ liệu: ' + e.message);
+	}
+	return inventories;
+}
+
+function getBorroweds() {
+	var borroweds = [];
+	try {
+		var ive = new GlideRecord('x_1568427_inventor_borrowrequests');
+		ive.addQuery('status','approved')
+		ive.orderByDesc('sys_created_on');
+		ive.query();                       
+		while (ive.next()) {
+			var borrowed = {
+				sys_id: ive.getValue('sys_id'),
+				borrower_quantity: ive.getValue('borrower_quantity'),
+				created_by: ive.getValue('sys_created_by'),
+				created_on: ive.getValue('sys_created_on'),
+				updated_on: ive.getValue('sys_updated_on'),
+				status: ive.getValue('status'),
+			};
+
+			var itemRecord = new GlideRecord('x_1568427_inventor_item');
+			if (itemRecord.get(ive.getValue('item_id'))) {
+				borrowed.item_name = itemRecord.getValue('item_name');
+				borrowed.item_id = itemRecord.getValue('number');
+				borrowed.category = itemRecord.getValue('category');
+			}
+
+			borroweds.push(borrowed);
+		}
+	} catch (e) {
+		gs.error('Lỗi lấy dữ liệu: ' + e.message);
+	}
+	return borroweds;
+}
+]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-13 07:35:36</sys_created_on>
+        <sys_id>3d84c80c83ee5210260a55b6feaad365</sys_id>
+        <sys_mod_count>399</sys_mod_count>
+        <sys_name>A_dashboard</sys_name>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_update_name>sp_widget_3d84c80c83ee5210260a55b6feaad365</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-16 10:23:07</sys_updated_on>
+        <template><![CDATA[<div ng-if="data.isAdmin">
+  <!-- Sidebar -->
+  <!--<div class="sidebar">
+    <h2 style="text-align: center; color: #ecf0f1;">Dashboard</h2>
+    <a href="#" class="active"></a>
+    <a href="#">Log Out</a>
+  </div>-->
+
+  <!-- Main Content -->
+  <div class="content">
+    <h1 >Dashboard Inventory Managerment</h1>
+
+    <!-- Dashboard Cards -->
+    <div class="dashboard-cards">
+      <div class="card">
+        <h2>{{c.totalItems}}</h2>
+        <p>Total Item Inventory</p>
+      </div>
+      <div class="card">
+        <h2>{{ c.totalQuantity}}</h2>
+        <p>Total Quantity</p>
+      </div>
+      <div class="card">
+        <h2>{{ c.totalBorrowed}}</h2>
+        <p>Total Borrowing</p>
+      </div>
+      <div class="card">
+        <h2>{{ c.totalPrice.toLocaleString('vi-VN') }} $</h2>
+        <p>Total Price</p>
+      </div>
+    </div>
+
+    <div class="chart_group">
+      <!-- Column Chart -->
+      <div class="column-chart">
+        <h2 style="font-size: 24px;">Borrowed chart by Category </h2>
+        <div class="chart">
+          <div class="bar" style="height: {{ c.percentBorrowBooks }}%; background-color: #1abc9c;">
+
+            <p class="bar_heading">
+              {{ c.percentBorrowBooks }}%
+            </p>
+            <p class="bar_percent">
+              {{ c.totalborrowedBooks }}
+            </p>
+            <h6 class= "bar_title">
+              Books
+            </h6>
+          </div>
+          <div class="bar-total" style="height: 100%; background-color: #BEBEBE;">
+            <h6 class= "bar_percent">
+              {{ c.totalQuantityBooks }}
+            </h6>
+          </div>
+
+
+          <div class="bar" style="height: {{ c.percentElectronics }}%; background-color: #3498db;">
+            <p class="bar_heading">
+              {{ c.percentElectronics }}%
+            </p>
+            <p class="bar_percent">
+              {{ c.totalborrowedElectronics }}
+            </p>
+            <h6 class= "bar_title">
+              Electronics
+            </h6>
+          </div>
+          <div class="bar-total" style="height: 100%; background-color: #BEBEBE;">
+            <h6 class= "bar_percent" style="font-size: 14px;">
+              {{ c.totalQuantityElectronics }}
+            </h6>
+          </div>
+
+
+          <div class="bar" style="height: {{ c.percentBorrowOffice }}%; background-color: #9b59b6;">
+            <p class="bar_heading">
+              {{ c.percentBorrowOffice }}%
+            </p>
+            <p class="bar_percent">
+              {{ c.totalborrowedOffice }}
+            </p>
+            <h6 class= "bar_title">
+              Offices
+            </h6>
+          </div>
+          <div class="bar-total" style="height: 100%; background-color: #BEBEBE;">
+            <h6 class= "bar_percent">
+              {{ c.totalQuantityOffice }}
+            </h6>
+          </div>
+
+
+          <div class="bar" style="height: {{ c.percentBorrowVehicles }}%; background-color: #f39c12;">
+            <p class="bar_heading">
+              {{ c.percentBorrowVehicles }}%
+            </p>
+
+            <p class="bar_percent">
+              {{ c.totalborrowedVehicles }}
+            </p>
+            <h6 class= "bar_title">
+              Vehicles
+            </h6>
+
+          </div>
+          <div class="bar-total" style="height: 100%; background-color: #BEBEBE;">
+            <h6 class= "bar_percent">
+              {{ c.totalQuantityVehicles }}
+            </h6>
+          </div>
+
+
+          <div class="bar" style="height: {{ c.percentBorrowTotal }}%; background-color: #e74c3c;">
+            <p class="bar_heading">
+              {{ c.percentBorrowTotal }}%
+            </p>
+            <p class="bar_percent">
+              {{ c.totalBorrowed }}
+            </p>
+            <h6 class= "bar_title">
+              Total
+            </h6>
+          </div>
+          <div class="bar-total" style="height: 100%; background-color: #BEBEBE;">
+            <h6 class= "bar_percent">
+              {{ c.totalQuantity }}
+            </h6>
+          </div>
+
+        </div>
+
+      </div>
+
+
+
+      <!-- Pie Chart -->
+      <div class="pie-chart">
+        <div style="display:flex;justify-content: flex-start">
+          <div>
+            <h2>Total Price by Category</h2>
+            <div class="pie-container">
+              <div 
+                   class="pie"
+                   style="background: conic-gradient(
+                          #1abc9c 0% {{c.percentTotalPriceBooks}}%, 
+                          #3498db {{c.percentTotalPriceBooks}}% {{c.percentTotalPriceBooks + c.percentTotalPriceElectronics}}%, 
+                          #9b59b6 {{c.percentTotalPriceBooks + c.percentTotalPriceElectronics}}% {{c.percentTotalPriceBooks + c.percentTotalPriceElectronics + c.percentTotalPriceOffice}}%, 
+                          #f39c12 {{c.percentTotalPriceBooks + c.percentTotalPriceElectronics + c.percentTotalPriceOffice}}% {{c.percentTotalPriceBooks + c.percentTotalPriceElectronics + c.percentTotalPriceOffice + c.percentTotalPriceVehicles}}%, 
+                          #e74c3c {{c.percentTotalPriceBooks + c.percentTotalPriceElectronics + c.percentTotalPriceOffice + c.percentTotalPriceVehicles}}% 100%
+                          );">
+              </div>
+            </div>
+          </div>
+
+          <!-- Note -->
+          <div style="margin-top: 40px;">
+            <div class="pie-note">
+              Notes:
+            </div>
+            <ul class="pie-note-list">
+              <li class="pie-note-item">
+                <span style="background-color: #1abc9c"></span>
+                <h6>PriceBooks:</h6>
+                <p>{{ c.totalPriceBooks.toLocaleString('vi-VN') }} $ ({{c.percentTotalPriceBooks}}%)</p>
+              </li>
+              <li class="pie-note-item">
+                <span style="background-color: #3498db"></span>
+                <h6>PriceElectronics:</h6>
+                <p>{{ c.totalPriceElectronics.toLocaleString('vi-VN') }} $ ({{c.percentTotalPriceElectronics}}%)</p>
+              </li>
+              <li class="pie-note-item">
+                <span style="background-color: #9b59b6"></span>
+                <h6>PriceOffice:</h6>
+                <p>{{ c.totalPriceOffice.toLocaleString('vi-VN') }} $ ({{c.percentTotalPriceOffice}}%)</p>
+              </li>
+              <li class="pie-note-item">
+                <span style="background-color: #f39c12"></span>
+                <h6>PriceVehicles:</h6>
+                <p>{{ c.totalPriceVehicles.toLocaleString('vi-VN') }} $ ({{c.percentTotalPriceVehicles}}%)</p>
+              </li>
+              <li class="pie-note-item">
+                <span style="background-color: #e74c3c"></span>
+                <h6>Total Price :</h6>
+                <p>{{ c.totalPrice.toLocaleString('vi-VN') }} $</p>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+
+
+        <div style="display:flex;justify-content: flex-start">
+          <div>
+            <h2>Total Price Inventory</h2>
+            <div class="pie-container">
+              <div 
+                   class="pie"
+                   style="background: conic-gradient(
+                          #1abc9c 0% {{c.percentTotalInventoryPriceBooks}}%, 
+                          #3498db {{c.percentTotalInventoryPriceBooks}}% {{c.percentTotalInventoryPriceBooks + c.percentTotalInventoryPriceElectronics}}%, 
+                          #9b59b6 {{c.percentTotalInventoryPriceBooks + c.percentTotalInventoryPriceElectronics}}% {{c.percentTotalInventoryPriceBooks + c.percentTotalInventoryPriceElectronics + c.percentTotalInventoryPriceOffice}}%, 
+                          #f39c12 {{c.percentTotalInventoryPriceBooks + c.percentTotalInventoryPriceElectronics + c.percentTotalInventoryPriceOffice}}% {{c.percentTotalInventoryPriceBooks + c.percentTotalInventoryPriceElectronics + c.percentTotalInventoryPriceOffice + c.percentTotalInventoryPriceVehicles}}%, 
+                          #e74c3c {{c.percentTotalInventoryPriceBooks + c.percentTotalInventoryPriceElectronics + c.percentTotalInventoryPriceOffice + c.percentTotalInventoryPriceVehicles}}% 100%
+                          );">
+              </div>
+            </div>
+          </div>
+
+          <!-- Note -->
+          <div style="margin-top: 40px;">
+            <div class="pie-note">
+              Notes:
+            </div>
+            <ul class="pie-note-list">
+              <li class="pie-note-item">
+                <span style="background-color: #1abc9c"></span>
+                <h6>Inventory Books:</h6>
+                <p> {{ c.totalInventoryPriceBooks.toLocaleString('vi-VN') }} $ ({{c.percentTotalInventoryPriceBooks}}%)</p>
+              </li>
+              <li class="pie-note-item">
+                <span style="background-color: #3498db"></span>
+                <h6>Inv Electronics:</h6>
+                <p> {{ c.totalInventoryPriceElectronics.toLocaleString('vi-VN') }} $ ({{c.percentTotalInventoryPriceElectronics}}%)</p>
+              </li>
+              <li class="pie-note-item">
+                <span style="background-color: #9b59b6"></span>
+                <h6>Inventory Office:</h6>
+                <p>{{ c.totalInventorylPriceOffice.toLocaleString('vi-VN') }} $ ({{c.percentTotalInventoryPriceOffice}}%)</p>
+              </li>
+              <li class="pie-note-item">
+                <span style="background-color: #f39c12"></span>
+                <h6>Inventory Vehicles:</h6>
+                <p>{{ c.totalInventoryPriceVehicles.toLocaleString('vi-VN') }} $ ({{c.percentTotalInventoryPriceVehicles}}%)</p>
+              </li>
+              <li class="pie-note-item">
+                <span style="background-color: #e74c3c"></span>
+                <h6>Total Price Inventory:</h6>
+                <p>{{ c.totalInventoryPrice.toLocaleString('vi-VN') }} $</p>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart_group-2">
+      <!-- Column Chart -->
+      <div class="column-chart-2">
+        <h2 style="text-align: center;">Borrowed chart by Category by Week</h2>
+        <div class="chart_with_axis">
+          <!-- Viền và Mức số bên trái -->
+          <div class="chart_axis">
+            <div class="axis_label">600</div>
+            <div class="axis_label">500</div>
+            <div class="axis_label">400</div>
+            <div class="axis_label">300</div>
+            <div class="axis_label">200</div>
+            <div class="axis_label">100</div>
+            <div class="axis_label">0</div>
+          </div>
+          <!-- Cột Chồng -->
+          <div class="stacked-bar">
+            <!-- Cột cho Week 1 -->
+            <div class="stacked-total">
+              <p class="total_value">{{ c.totalborrowerQuanWeek1 }}</p>
+            </div>
+            <div class="stacked-segment" style="height: {{ c.pixelHeightBooks1 }}px; background-color: #1abc9c;border-top-left-radius: 5px;border-top-right-radius: 5px;">
+              <p class="bar_value">{{ c.result.books.week1 }}</p>
+            </div>
+            <div class="stacked-segment" style="height: {{ c.pixelHeightElectronics1 }}px; background-color: #3498db;">
+              <p class="bar_value">{{ c.result.electronics.week1 }}</p>
+            </div>
+            <div class="stacked-segment" style="height: {{ c.pixelHeightOffice1 }}px; background-color: #9b59b6;">
+              <p class="bar_value">{{ c.result.office.week1 }}</p>
+            </div>
+            <div class="stacked-segment" style="height: {{ c.pixelHeightVehicles1 }}px; background-color: #f39c12;">
+              <p class="bar_value">{{ c.result.vehicles.week1 }}</p>
+            </div>
+            <div class="stacked-note">
+              <p >Week 1</p>
+            </div>
+          </div>
+
+          <!-- Cột cho Week 2 -->
+          <div class="stacked-bar">
+            <div class="stacked-total">
+              <p class="total_value">{{ c.totalborrowerQuanWeek2 }}</p>
+            </div>
+            <div class="stacked-segment" style="height: {{ c.pixelHeightBooks2 }}px; background-color: #1abc9c;border-top-left-radius: 5px;border-top-right-radius: 5px;">
+              <p class="bar_value">{{ c.result.books.week2 }}</p>
+            </div>
+            <div class="stacked-segment" style="height: {{ c.pixelHeightElectronics2 }}px; background-color: #3498db;">
+              <p class="bar_value">{{ c.result.electronics.week2 }}</p>
+            </div>
+            <div class="stacked-segment" style="height: {{ c.pixelHeightOffice2 }}px; background-color: #9b59b6;">
+              <p class="bar_value">{{ c.result.office.week2 }}</p>
+            </div>
+            <div class="stacked-segment" style="height: {{ c.pixelHeightVehicles2 }}px; background-color: #f39c12;">
+              <p class="bar_value">{{ c.result.vehicles.week2 }}</p>
+            </div>
+            <div class="stacked-note">
+              <p >Week 2</p>
+            </div>
+          </div>
+
+          <!-- Cột cho Week 3 -->
+          <div class="stacked-bar">
+            <div class="stacked-total">
+              <p class="total_value">{{ c.totalborrowerQuanWeek3 }}</p>
+            </div>
+            <div class="stacked-segment" style="height: {{ c.pixelHeightBooks3 }}px; background-color: #1abc9c;border-top-left-radius: 5px;border-top-right-radius: 5px;">
+              <p class="bar_value">{{ c.result.books.week3 }}</p>
+            </div>
+            <div class="stacked-segment" style="height: {{ c.pixelHeightElectronics3 }}px; background-color: #3498db;">
+              <p class="bar_value">{{ c.result.electronics.week3 }}</p>
+            </div>
+            <div class="stacked-segment" style="height: {{ c.pixelHeightOffice3 }}px; background-color: #9b59b6;">
+              <p class="bar_value">{{ c.result.office.week3 }}</p>
+            </div>
+            <div class="stacked-segment" style="height: {{ c.pixelHeightVehicles3 }}px; background-color: #f39c12;">
+              <p class="bar_value">{{ c.result.vehicles.week3 }}</p>
+            </div>
+            <div class="stacked-note">
+              <p >Week 3</p>
+            </div>
+          </div>
+
+          <!-- Cột cho Week 4 -->
+          <div class="stacked-bar">
+            <div class="stacked-total">
+              <p class="total_value">{{ c.totalborrowerQuanWeek4 }}</p>
+            </div>
+            <div class="stacked-segment" style="height: {{ c.pixelHeightBooks4 }}px; background-color: #1abc9c;  border-top-left-radius: 5px;border-top-right-radius: 5px;">
+              <p class="bar_value">{{ c.result.books.week4 }}</p>
+            </div>
+            <div class="stacked-segment" style="height: {{ c.pixelHeightElectronics4 }}px; background-color: #3498db;">
+              <p class="bar_value">{{ c.result.electronics.week4 }}</p>
+            </div>
+            <div class="stacked-segment" style="height: {{ c.pixelHeightOffice4 }}px; background-color: #9b59b6;">
+              <p class="bar_value">{{ c.result.office.week4 }}</p>
+            </div>
+            <div class="stacked-segment" style="height: {{ c.pixelHeightVehicles4 }}px; background-color: #f39c12;">
+              <p class="bar_value">{{ c.result.vehicles.week4 }}</p>
+            </div>
+            <div class="stacked-note">
+              <p >Week 4</p>
+            </div>
+          </div>
+        </div>
+      </div>
+			
+       <!-- Note -->
+          <div style="margin-top: 40px;">
+            <div class="pie-note">
+              Notes:
+            </div>
+            <ul class="pie-note-list">
+              <li class="pie-note">
+                <span style="background-color: #1abc9c"></span>
+                <h6>Books</h6>
+              </li>
+              <li class="pie-note">
+                <span style="background-color: #3498db"></span>
+                <h6>Electronics</h6>
+              </li>
+              <li class="pie-note">
+                <span style="background-color: #9b59b6"></span>
+                <h6>Office</h6>
+              </li>
+              <li class="pie-note">
+                <span style="background-color: #f39c12"></span>
+                <h6>Vehicles</h6>
+              </li>
+            </ul>
+          </div>
+			
+    </div>
+  </div>
+
+</div>
+]]></template>
+    </sp_widget>
+</record_update>

@@ -4,9 +4,21 @@
             <choice/>
         </element>
         <element label="Remarks" max_length="40" name="remarks" type="string"/>
+        <element default="0" label="Borrowed Quantity" max_length="40" name="borrowed_quantity" type="integer"/>
         <element label="Description" max_length="1000" name="description" type="string"/>
+        <element default="true" label="Active" max_length="40" name="active" type="boolean"/>
+        <element label="Quantity Change" max_length="40" name="quantity_change" type="integer"/>
+        <element label="Warning Quantity" max_length="40" name="warning_quantity" type="integer"/>
         <element label="Category" max_length="40" name="category" type="string"/>
+        <element choice="1" label="Action Type" max_length="40" name="action_type" type="choice">
+            <choice>
+                <element inactive_on_update="false" label="Return borrowed" value="return_borrowed"/>
+                <element inactive_on_update="false" label="Update Quantity" value="update_quantity"/>
+                <element inactive_on_update="false" label="Add new Item" value="add_new_item"/>
+            </choice>
+        </element>
         <element attributes="ignore_filter_on_new=true" default="javascript:global.getNextObjNumberPadded();" label="Number" max_length="40" name="number" type="string"/>
+        <element label="Current Quantity" max_length="40" name="current_quantity" type="integer"/>
         <element label="Price" max_length="40" name="price" type="integer"/>
         <element default="0" label="Quantity" max_length="40" name="quantity" type="integer"/>
         <element label="Item Name" max_length="100" name="item_name" type="string"/>

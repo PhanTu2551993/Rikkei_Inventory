@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_container">
+    <sp_container action="DELETE">
+        <background_color/>
+        <background_image/>
+        <background_style>default</background_style>
+        <bootstrap_alt>false</bootstrap_alt>
+        <class_name/>
+        <container_class_name/>
+        <name>Rikkei Iventory - Container 2</name>
+        <order>2</order>
+        <semantic_tag/>
+        <sp_page display_value="rikkei_iventory">22e8ba6d839e9a10260a55b6feaad3f4</sp_page>
+        <subheader>false</subheader>
+        <sys_class_name>sp_container</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-13 04:08:22</sys_created_on>
+        <sys_id>d2155bbf83da5210260a55b6feaad3a4</sys_id>
+        <sys_mod_count>1</sys_mod_count>
+        <sys_name>Rikkei Iventory - Container 2</sys_name>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_update_name>sp_container_d2155bbf83da5210260a55b6feaad3a4</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-13 04:08:38</sys_updated_on>
+        <title/>
+        <width>container</width>
+    </sp_container>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</application>
+        <file_path/>
+        <instance_id>612674ef1be5b9986a85eb9b2d4bcb35</instance_id>
+        <instance_name>dev181071</instance_name>
+        <name>sp_container_d2155bbf83da5210260a55b6feaad3a4</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_container"><sp_container action="INSERT_OR_UPDATE"><background_color/><background_image/><background_style>default</background_style><bootstrap_alt>false</bootstrap_alt><class_name/><container_class_name/><name>Rikkei Iventory - Container 2</name><order>2</order><semantic_tag/><sp_page display_value="rikkei_iventory">22e8ba6d839e9a10260a55b6feaad3f4</sp_page><subheader>false</subheader><sys_class_name>sp_container</sys_class_name><sys_created_by>admin</sys_created_by><sys_created_on>2024-12-13 04:08:22</sys_created_on><sys_id>d2155bbf83da5210260a55b6feaad3a4</sys_id><sys_mod_count>1</sys_mod_count><sys_name>Rikkei Iventory - Container 2</sys_name><sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package><sys_policy/><sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope><sys_update_name>sp_container_d2155bbf83da5210260a55b6feaad3a4</sys_update_name><sys_updated_by>admin</sys_updated_by><sys_updated_on>2024-12-13 04:08:38</sys_updated_on><title/><width>container</width></sp_container></record_update>]]></payload>
+        <payload_hash>-2099964251</payload_hash>
+        <record_name>Rikkei Iventory - Container 2</record_name>
+        <reverted_from/>
+        <source>562c80fa839a1210260a55b6feaad3d8</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-13 04:08:38</sys_created_on>
+        <sys_id>12259bbf83da5210260a55b6feaad387</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>193be344c7d0000001</sys_recorded_at>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-13 04:08:38</sys_updated_on>
+        <type>Container</type>
+        <update_guid>96259bbf79da521052ef245956d7ba86</update_guid>
+        <update_guid_history>96259bbf79da521052ef245956d7ba86:-2099964251,52155bbfa2da52101d32645419638ca6:1225813796</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="Rikkei Iventory - Container 2">0ca51fbf83da5210260a55b6feaad348</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-13 04:10:41</sys_created_on>
+        <sys_db_object display_value="" name="sp_container">sp_container</sys_db_object>
+        <sys_id>2063121d30a446c28509502231f17a04</sys_id>
+        <sys_metadata>d2155bbf83da5210260a55b6feaad3a4</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Rikkei Iventory - Container 2</sys_name>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_scope_delete display_value="">861d2658792a49508d448ee8b3268100</sys_scope_delete>
+        <sys_update_name>sp_container_d2155bbf83da5210260a55b6feaad3a4</sys_update_name>
+        <sys_update_version display_value="sp_container_d2155bbf83da5210260a55b6feaad3a4">12259bbf83da5210260a55b6feaad387</sys_update_version>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-13 04:10:41</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

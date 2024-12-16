@@ -9,21 +9,21 @@
         <internal>false</internal>
         <omit_watcher>false</omit_watcher>
         <public>false</public>
-        <roles/>
+        <roles>x_1568427_inventor.user,x_1568427_inventor.admin</roles>
         <seo_script/>
         <short_description/>
         <sys_class_name>sp_page</sys_class_name>
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2024-12-06 02:18:54</sys_created_on>
         <sys_id>22e8ba6d839e9a10260a55b6feaad3f4</sys_id>
-        <sys_mod_count>0</sys_mod_count>
+        <sys_mod_count>1</sys_mod_count>
         <sys_name>rikkei_iventory</sys_name>
         <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
         <sys_policy/>
         <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
         <sys_update_name>sp_page_22e8ba6d839e9a10260a55b6feaad3f4</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2024-12-06 02:18:54</sys_updated_on>
+        <sys_updated_on>2024-12-12 09:55:58</sys_updated_on>
         <title>Rikkei Iventory</title>
         <use_seo_script>false</use_seo_script>
     </sp_page>
