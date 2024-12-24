@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_instance_link">
+    <sp_instance_link action="DELETE">
+        <active>true</active>
+        <class_name/>
+        <color>primary</color>
+        <css/>
+        <glyph>plus</glyph>
+        <id/>
+        <kb_article/>
+        <kb_category/>
+        <kb_topic/>
+        <order>1</order>
+        <roles/>
+        <sc_cat_item/>
+        <sc_category/>
+        <short_description>Add and  show list Inventory </short_description>
+        <size>md</size>
+        <sp_column display_value="1">ed9df6e183de9a10260a55b6feaad38a</sp_column>
+        <sp_page/>
+        <sp_widget display_value="Icon Link">3caa67afcb13020000f8d856634c9c2e</sp_widget>
+        <sys_class_name>sp_instance_link</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-06 02:39:36</sys_created_on>
+        <sys_id>75ad7ae183de9a10260a55b6feaad39d</sys_id>
+        <sys_mod_count>4</sys_mod_count>
+        <sys_name>Inventory Managerment</sys_name>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_update_name>sp_instance_link_75ad7ae183de9a10260a55b6feaad39d</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-06 02:47:06</sys_updated_on>
+        <title>Inventory Managerment</title>
+        <type>page</type>
+        <url/>
+        <widget_parameters><![CDATA[{
+	"link_template": {
+		"value": "Circle Icon",
+		"displayValue": "Circle Icon"
+	}
+}]]></widget_parameters>
+    </sp_instance_link>
+    <sys_translated_text action="DELETE" query="documentkey=75ad7ae183de9a10260a55b6feaad39d"/>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</application>
+        <file_path/>
+        <instance_id>612674ef1be5b9986a85eb9b2d4bcb35</instance_id>
+        <instance_name>dev181071</instance_name>
+        <name>sp_instance_link_75ad7ae183de9a10260a55b6feaad39d</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sp_instance_link"&gt;&lt;sp_instance_link action="INSERT_OR_UPDATE"&gt;&lt;active&gt;true&lt;/active&gt;&lt;class_name/&gt;&lt;color&gt;primary&lt;/color&gt;&lt;css/&gt;&lt;glyph&gt;plus&lt;/glyph&gt;&lt;id/&gt;&lt;kb_article/&gt;&lt;kb_category/&gt;&lt;kb_topic/&gt;&lt;order&gt;1&lt;/order&gt;&lt;roles/&gt;&lt;sc_cat_item/&gt;&lt;sc_category/&gt;&lt;short_description&gt;Add and  show list Inventory &lt;/short_description&gt;&lt;size&gt;md&lt;/size&gt;&lt;sp_column display_value="1"&gt;ed9df6e183de9a10260a55b6feaad38a&lt;/sp_column&gt;&lt;sp_page/&gt;&lt;sp_widget display_value="Icon Link"&gt;3caa67afcb13020000f8d856634c9c2e&lt;/sp_widget&gt;&lt;sys_class_name&gt;sp_instance_link&lt;/sys_class_name&gt;&lt;sys_created_by&gt;admin&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2024-12-06 02:39:36&lt;/sys_created_on&gt;&lt;sys_id&gt;75ad7ae183de9a10260a55b6feaad39d&lt;/sys_id&gt;&lt;sys_mod_count&gt;4&lt;/sys_mod_count&gt;&lt;sys_name&gt;Inventory Managerment&lt;/sys_name&gt;&lt;sys_package display_value="Inventory Management" source="x_1568427_inventor"&gt;c57032e1839e9a10260a55b6feaad36d&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_scope display_value="Inventory Management"&gt;c57032e1839e9a10260a55b6feaad36d&lt;/sys_scope&gt;&lt;sys_update_name&gt;sp_instance_link_75ad7ae183de9a10260a55b6feaad39d&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;admin&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2024-12-06 02:47:06&lt;/sys_updated_on&gt;&lt;title&gt;Inventory Managerment&lt;/title&gt;&lt;type&gt;page&lt;/type&gt;&lt;url/&gt;&lt;widget_parameters&gt;&lt;![CDATA[{
+	"link_template": {
+		"value": "Circle Icon",
+		"displayValue": "Circle Icon"
+	}
+}]]&gt;&lt;/widget_parameters&gt;&lt;/sp_instance_link&gt;&lt;sys_translated_text action="delete_multiple" query="documentkey=75ad7ae183de9a10260a55b6feaad39d"/&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>1648062456</payload_hash>
+        <record_name>Inventory Managerment</record_name>
+        <reverted_from/>
+        <source>897032e1839e9a10260a55b6feaad372</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-06 02:47:06</sys_created_on>
+        <sys_id>7b5f32a583de9a10260a55b6feaad3e2</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>19399dd238e0000001</sys_recorded_at>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-06 02:47:06</sys_updated_on>
+        <type>Instance with Link</type>
+        <update_guid>335f32a545de9a10a20f6883b12b6ce2</update_guid>
+        <update_guid_history>335f32a545de9a10a20f6883b12b6ce2:1648062456,824ffe6555de9a109226039e47793449:1731741656,813f3e6585de9a10d22b30d397e85379:1273079958,ce1f72250cde9a1006f81291487527eb:1648062456,75ad7ae149de9a10c61f5f9a9ea0809f:-525310162</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="Inventory Managerment">1ad7796783521210260a55b6feaad394</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-12 02:42:29</sys_created_on>
+        <sys_db_object display_value="" name="sp_instance_link">sp_instance_link</sys_db_object>
+        <sys_id>a4577380c12a48d0b37e733000978010</sys_id>
+        <sys_metadata>75ad7ae183de9a10260a55b6feaad39d</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Inventory Managerment</sys_name>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_scope_delete display_value="">861d2658792a49508d448ee8b3268100</sys_scope_delete>
+        <sys_update_name>sp_instance_link_75ad7ae183de9a10260a55b6feaad39d</sys_update_name>
+        <sys_update_version display_value="sp_instance_link_75ad7ae183de9a10260a55b6feaad39d">7b5f32a583de9a10260a55b6feaad3e2</sys_update_version>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-12 02:42:29</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

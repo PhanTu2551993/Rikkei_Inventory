@@ -1,0 +1,1235 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="DELETE">
+        <category>custom</category>
+        <client_script><![CDATA[api.controller = function (spModal, spUtil) {
+	/* widget controller */
+	var c = this;
+
+	c.newInve = {
+		category: "",
+		quantity: "",
+	};
+
+	c.addBorrow = function (id) {
+		
+		if (!c.newInve || !c.newInve.borrower_quantity || !(id in c.newInve.borrower_quantity)) {
+				spUtil.addErrorMessage("Invalid borrower quantity data. Please try again.");
+				return;
+		}
+		
+		var borrowQuantity = c.newInve.borrower_quantity[id];
+		console.log("dongf 12", borrowQuantity);
+		var availableQuantity = null;
+
+		if (borrowQuantity === undefined || borrowQuantity === '' || borrowQuantity < 0) {
+			spUtil.addErrorMessage("Borrow quantity cannot be empty or less than 0. Please enter a valid amount.");
+			return;
+		}
+
+		for (var i = 0; i < c.data.inventories.length; i++) {
+			if (c.data.inventories[i].sys_id === id) {
+				var quantity = parseInt(c.data.inventories[i].quantity, 10) || 0;
+				var borrowedQuantity = parseInt(c.data.inventories[i].borrowed_quantity, 10) || 0;
+				availableQuantity = quantity - borrowedQuantity;
+				break;
+			}
+		}
+
+
+		if (borrowQuantity > availableQuantity) {
+			spUtil.addErrorMessage("Borrow quantity has exceeded the available amount. Please enter again."
+														);
+			return;
+		}
+
+		c.server.get({
+			action: "addBorrow",
+			inveId: id,
+			newInveText: borrowQuantity,
+		})
+			.then(function (r) {
+			c.data.inventories = r.data.inventories;
+			//c.newInve.borrower_quantity[id] = {};
+			c.searchText = '';
+			c.newInve = '';
+			spUtil.addTrivialMessage("Borrow request submitted successfully.");
+		})
+			.catch(function (e) {
+			console.error("Error while Add Inventory:", e);
+		});
+	};
+
+	// Search by category and quantity
+	c.searchCateAndQty = function () {
+		c.loadPage(c.pageNumber);
+	};
+
+	// Search items (by text)
+	c.searchItems = function () {
+		c.loadPage(c.pageNumber);
+	};
+
+	// Pagination
+	c.pageNumber = 1;
+	c.pageSize = 3;
+	c.totalCount = 0;
+
+	c.loadPage = function (pageNumber) {
+    c.pageNumber = pageNumber;
+    var searchText = c.searchText && c.searchText.trim();
+    var action = "getInventory";
+
+    if (searchText) {
+        action = "searchInventory";
+    } else if (c.newInve.category || c.newInve.quantity) {
+        action = "searchInventoryByCategoryAndQuantity";
+    }
+
+    c.server.get({
+        action: action,
+        searchText: searchText || "",
+        category: c.newInve.category || "",
+        quantity: c.newInve.quantity || "",
+        pageNumber: c.pageNumber,
+        pageSize: c.pageSize,
+    })
+    .then(function (r) {
+        c.data.inventories = r.data.inventories;
+        c.totalCount = r.data.totalCount;
+        if (action === "searchInventory" && (c.newInve.category || c.newInve.quantity)) {
+            c.loadPage(c.pageNumber);
+        }
+    })
+    .catch(function (error) {
+        console.error("error", error);
+    });
+	};
+
+	c.getRoundedPageCount = function () {
+			return Math.ceil(c.totalCount / c.pageSize);
+	};
+
+c.loadPage(c.pageNumber);
+}]]></client_script>
+        <controller_as>c</controller_as>
+        <css>/* Card styling */
+.card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+ 
+  .card-header {
+    background-color: #f9f9f9;
+    padding: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+  }
+ 
+  .card-body {
+    padding: 20px;
+    display:flex;
+    justify-content: space-around
+  }
+ 
+  /* Form layout */
+  .form-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+ 
+  /* Form groups */
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+  }
+ 
+  .form-group label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 14px;
+  }
+ 
+  .form-group input {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+ 
+  /* Align the button to the bottom */
+  .form-group.align-self-end {
+    display: flex;
+    align-items: flex-end;
+  }
+ 
+  /* Button styling */
+ 
+  .btn {
+      border-radius: 0;
+  }
+ 
+  .btn:hover {
+    background-color: #0056b3;
+  }
+ 
+  .btn-block {
+    width: 100%;
+  }
+ 
+  .input-group {
+    display: flex;
+    align-items: center;
+  }
+ 
+  .input-group .form-control {
+    border-right: none;
+  }
+ 
+  .borrowQty_input {
+    width: 120px;
+    margin: 0 auto;
+  }
+ 
+  .input-group .btn {
+     border-top-right-radius: 4px;
+     border-bottom-right-radius: 4px;
+  }
+  .main-table{
+    width : 100%;
+    height : auto;
+    border-radius: 8px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+    margin-top:20px;
+  }
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+  white-space: nowrap;
+}
+  thead{
+    background-color: black;
+    color :white;
+    border-radius: 8px;
+  }
+ 
+  .header{
+    text-align: center;
+    margin-bottom:20px;
+  }
+ 
+  .custom-btn {
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    display: inline-block;
+    padding: 0 12px;
+    font-size: 14px;
+    vertical-align: middle;
+    margin-right:10px;
+  }
+ 
+  .btn-primary {
+      border-radius: 4px;
+  }
+ 
+ 
+  /*search*/
+  .search_item {
+      display: flex;
+    align-items: top;
+    gap: 10px;  
+  }
+ 
+  .btn-search {
+    height: 34px;
+    border-radius: 5px;
+  }</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>true</has_preview>
+        <id>add_borrow</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Add_Borrow</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+    /* populate the 'data' object */
+    /* e.g., data.table = $sp.getValue('table'); */
+    var pageNumber = 1;
+    var pageSize = 3;  
+    data.inventories = getInventory(pageNumber, pageSize);
+ 
+    if(input) {
+        if (input.action === "getInventory") {
+            pageNumber = input.pageNumber;
+            pageSize = input.pageSize;    
+            data.inventories = getInventory(pageNumber, pageSize);
+            data.totalCount = getInventoryCount();
+        }
+        if(input.action === "addBorrow"){
+            var newInveText = input.newInveText;
+            try {
+                var brr = new GlideRecord('x_1568427_inventor_borrowrequests');
+                brr.initialize()
+                brr.item_id = input.inveId;
+                brr.borrower_quantity = newInveText;
+                brr.insert()
+            }catch(e){
+                gs.error('Error Add inventoríes : ' + e.message);
+            }
+        }
+        data.inventories = getInventory(pageNumber, pageSize);
+        if (input.action === "searchInventory") {
+            var searchText = input.searchText || "";
+            gs.info('searchText', + searchText)
+            pageNumber = input.pageNumber;
+            pageSize = input.pageSize;
+            data.inventories = searchInve(searchText, pageNumber, pageSize);
+            data.totalCount = getSearchInventoryCount(searchText);
+        }
+ 
+        if(input.action === "searchInventoryByCategoryAndQuantity") {
+            var category = input.category || "";
+            var quantity = input.quantity || "";
+            data.inventories = getSearchCategoryAndQuantity(category, quantity, input.pageNumber, input.pageSize);
+            data.totalCount = getSearchInventoryCountByCategoryAndQuantity(category, quantity);
+        }
+    }
+ 
+})();
+ 
+function getInventory(pageNumber, pageSize) {
+    var inventories = [];
+    try {
+        var ive = new GlideRecord('x_1568427_inventor_item');
+				ive.addQuery('active','1')
+        ive.orderBy('number');
+        ive.query();
+        var start = (pageNumber - 1) * pageSize;
+        var end = start + pageSize;            
+        var index = 0;                          
+ 
+        while (ive.next()) {
+            if (index >= start && index < end) {
+                var quantity = parseInt(ive.getValue('quantity'), 10) || 0;
+                var borrowedQuantity = parseInt(ive.getValue('borrowed_quantity'), 10) || 0;
+
+                inventories.push({
+                    sys_id: ive.getValue('sys_id'),
+                    item_name: ive.getValue('item_name'),
+                    number: ive.getValue('number'),
+                    quantity: Number(quantity - borrowedQuantity),
+                    price: Number(ive.getValue('price')), 
+                    category: ive.getValue('category'),
+                    remarks: ive.getValue('remarks'),
+                    start: start
+                });
+            }
+            index++;
+            if (index >= end) break;
+        }
+    } catch (e) {
+        gs.error('Lỗi lấy dữ liệu: ' + e.message);
+    }
+    return inventories;
+}
+ 
+function searchInve(searchText,pageNumber, pageSize){
+    var inventories = [];
+    try {
+        var ive = new GlideRecord('x_1568427_inventor_item');
+				ive.addQuery('active','1')
+        var query = ive.addQuery('item_name', 'CONTAINS', searchText);
+        query.addOrCondition('number', 'CONTAINS', searchText);
+        ive.orderBy('number');
+        ive.query();
+        var start = (pageNumber - 1) * pageSize;
+        var end = start + pageSize;            
+        var index = 0;                          
+ 
+        while (ive.next()) {
+            if (index >= start && index < end) {
+                var quantity = parseInt(ive.getValue('quantity'), 10) || 0;
+                var borrowedQuantity = parseInt(ive.getValue('borrowed_quantity'), 10) || 0;
+
+                inventories.push({
+                    sys_id: ive.getValue('sys_id'),
+                    item_name: ive.getValue('item_name'),
+                    number: ive.getValue('number'),
+                    quantity: Number(quantity - borrowedQuantity),
+                    price: Number(ive.getValue('price')), 
+                    category: ive.getValue('category'),
+                    remarks: ive.getValue('remarks'),
+                    start: start
+                });
+            }
+            index++;
+            if (index >= end) break;
+        }
+    } catch (e) {
+        gs.error('Lỗi lấy dữ liệu: ' + e.message);
+    }
+    return inventories;
+}
+ 
+function getInventoryCount() {
+    var count = 0;
+    try {
+        var gr = new GlideRecord('x_1568427_inventor_item');
+				gr.addQuery('active','1');
+        gr.query();
+        count = gr.getRowCount();
+    } catch (e) {
+        gs.error('Lỗi đếm dữ liệu: ' + e.message);
+    }
+    return count;
+}
+ 
+function getSearchInventoryCount(searchText) {
+    var count = 0;
+    try {
+        var gr = new GlideRecord('x_1568427_inventor_item');
+				gr.addQuery('active','1');
+        var query = gr.addQuery('item_name', 'CONTAINS', searchText);
+        query.addOrCondition('number', 'CONTAINS', searchText);
+        gr.query();
+        count = gr.getRowCount();
+    } catch (e) {
+        gs.error('Error search ' + e.message);
+    }
+    return count;
+}
+ 
+function getSearchCategoryAndQuantity(category, quantity, pageNumber, pageSize) {
+    var inventories = [];
+    try {
+        var ive = new GlideRecord('x_1568427_inventor_item');
+ 
+        if (category) {
+            ive.addQuery('category', category);
+        }
+ 
+        if (quantity === "LowStock") {
+            ive.addQuery('quantity', '=<', 10);
+        } else if (quantity === "NormalStock") {
+            ive.addQuery('quantity', '>', 10);
+        }
+ 				ive.addQuery('active','1')
+        ive.orderBy('number');
+        ive.query();
+ 
+        var start = (pageNumber - 1) * pageSize;
+        var end = start + pageSize;
+        var index = 0;
+ 
+        while (ive.next()) {
+            if (index >= start && index < end) {
+                var quantity2 = parseInt(ive.getValue('quantity'), 10) || 0;
+                var borrowedQuantity = parseInt(ive.getValue('borrowed_quantity'), 10) || 0;
+
+                inventories.push({
+                    sys_id: ive.getValue('sys_id'),
+                    item_name: ive.getValue('item_name'),
+                    number: ive.getValue('number'),
+                    quantity: Number(quantity2 - borrowedQuantity),
+                    price: Number(ive.getValue('price')), 
+                    category: ive.getValue('category'),
+                    remarks: ive.getValue('remarks'),
+                    start: start
+                });
+            }
+            index++;
+            if (index >= end) break;
+        }
+    } catch (e) {
+        gs.error('Error during search by category and quantity: ' + e.message);
+    }
+    return inventories;
+}
+ 
+function getSearchInventoryCountByCategoryAndQuantity(category, quantity) {
+    var count = 0;
+    try {
+        var gr = new GlideRecord('x_1568427_inventor_item');
+ 
+        if (category) {
+            gr.addQuery('category', category);
+        }
+ 
+        if (quantity === "LowStock") {
+            gr.addQuery('quantity', '=<', 10);
+        } else if (quantity === "NormalStock") {
+            gr.addQuery('quantity', '>', 10);
+        }
+ 				gr.addQuery('active','1')
+        gr.query();
+        count = gr.getRowCount();
+    } catch (e) {
+        gs.error('Error during search count by category and quantity: ' + e.message);
+    }
+    return count;
+}]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>sonnguyen</sys_created_by>
+        <sys_created_on>2024-12-11 09:09:37</sys_created_on>
+        <sys_id>b3d6cedb831a1210260a55b6feaad3aa</sys_id>
+        <sys_mod_count>25</sys_mod_count>
+        <sys_name>Add_Borrow</sys_name>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_update_name>sp_widget_b3d6cedb831a1210260a55b6feaad3aa</sys_update_name>
+        <sys_updated_by>sonnguyen</sys_updated_by>
+        <sys_updated_on>2024-12-12 02:00:20</sys_updated_on>
+        <template><![CDATA[<div>
+    <div class="card mb-4 mt-4">
+      <div class="card-header">Browse and Request to Borrow Items</div>
+      <div class="card-body">
+        <!-- Search Field with Icon -->
+        <div class="form-group mb-3 position-relative">
+          <div class="input-group">
+            <input
+                   type="text"
+                   class="form-control"
+                   id="search"
+                   placeholder="Search items..."
+                   ng-model="c.searchText"
+                   style="width:30vw"
+                   />
+            <button
+                    type="button"
+                    class="btn btn-primary"
+                    ng-click="c.searchItems()"
+                    >
+              <i class="fa fa-search"></i>
+            </button>
+          </div>
+        </div>
+        <form id="addItemForm" class= "search_item"  ng-click="c.searchCateAndQty()">
+          <div class="form-row">
+            <div class="form-group">
+              <select class="form-control" id="category" ng-model="c.newInve.category" required>
+                <option value="" disabled selected>Select Category</option>
+                <option value="">All category</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Furniture">Furniture</option>
+                <option value="Clothing">Clothing</option>
+                <option value="Food">Food</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <select class="form-control" id="quantity" ng-model="c.newInve.quantity" required>
+                <option value="" disabled selected>Select Stock</option>
+                <option value="AllStock">All Stock Status</option>
+                <option value="LowStock">Low Stock</option>
+                <option value="NormalStock">Normal Stock</option>
+              </select>
+            </div>
+          </div>
+        </form>
+ 
+      </div>
+    </div>
+ 
+    <div class="main-table">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Index</th>
+            <th scope="col">Item Name</th>
+            <th scope="col">Item ID</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Unit Price</th>
+            <th scope="col">Category</th>
+            <th scope="col">Remarks</th>
+            <th scope="col">Borrow Quantity</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-if="data.inventories.length === 0">
+            <td colspan="9" class="text-center">No inventories found</td>
+          </tr>
+          <tr ng-repeat="ive in data.inventories">
+            <td>{{ ive.start + $index + 1 }}</td>
+            <td>{{ ive.item_name }}</td>
+            <td>{{ ive.number }}</td>
+            <td>{{ ive.quantity }}</td>
+            <td>{{ ive.price }}</td>
+            <td>{{ ive.category }}</td>
+            <td>{{ ive.remarks }}</td>
+            <td>
+              <input type="number"
+                     class="form-control borrowQty_input"
+                     ng-model="c.newInve.borrower_quantity[ive.sys_id]"
+                     required>
+            </td>
+            <td>
+              <button type="button" class="btn btn-primary" ng-click="c.addBorrow(ive.sys_id)">Request Borrow</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+ 
+    <div class="pagination-controls">
+      <button class="btn btn-secondary"
+              ng-disabled="c.pageNumber === 1"
+              ng-click="c.loadPage(c.pageNumber - 1)">
+        Previous
+      </button>
+ 
+      <span>Page {{ c.pageNumber }} of {{ c.getRoundedPageCount() }}</span>
+ 
+      <button class="btn btn-secondary"
+              ng-disabled="c.pageNumber >= c.getRoundedPageCount()"
+              ng-click="c.loadPage(c.pageNumber + 1)">
+        Next
+      </button>
+    </div>
+ 
+  </div>]]></template>
+    </sp_widget>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</application>
+        <file_path/>
+        <instance_id>612674ef1be5b9986a85eb9b2d4bcb35</instance_id>
+        <instance_name>dev181071</instance_name>
+        <name>sp_widget_b3d6cedb831a1210260a55b6feaad3aa</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sp_widget"&gt;&lt;sp_widget action="INSERT_OR_UPDATE"&gt;&lt;category&gt;custom&lt;/category&gt;&lt;client_script&gt;&lt;![CDATA[api.controller = function (spModal, spUtil) {
+	/* widget controller */
+	var c = this;
+
+	c.newInve = {
+		category: "",
+		quantity: "",
+	};
+
+	c.addBorrow = function (id) {
+		
+		if (!c.newInve || !c.newInve.borrower_quantity || !(id in c.newInve.borrower_quantity)) {
+				spUtil.addErrorMessage("Invalid borrower quantity data. Please try again.");
+				return;
+		}
+		
+		var borrowQuantity = c.newInve.borrower_quantity[id];
+		console.log("dongf 12", borrowQuantity);
+		var availableQuantity = null;
+
+		if (borrowQuantity === undefined || borrowQuantity === '' || borrowQuantity &lt; 0) {
+			spUtil.addErrorMessage("Borrow quantity cannot be empty or less than 0. Please enter a valid amount.");
+			return;
+		}
+
+		for (var i = 0; i &lt; c.data.inventories.length; i++) {
+			if (c.data.inventories[i].sys_id === id) {
+				var quantity = parseInt(c.data.inventories[i].quantity, 10) || 0;
+				var borrowedQuantity = parseInt(c.data.inventories[i].borrowed_quantity, 10) || 0;
+				availableQuantity = quantity - borrowedQuantity;
+				break;
+			}
+		}
+
+
+		if (borrowQuantity &gt; availableQuantity) {
+			spUtil.addErrorMessage("Borrow quantity has exceeded the available amount. Please enter again."
+														);
+			return;
+		}
+
+		c.server.get({
+			action: "addBorrow",
+			inveId: id,
+			newInveText: borrowQuantity,
+		})
+			.then(function (r) {
+			c.data.inventories = r.data.inventories;
+			//c.newInve.borrower_quantity[id] = {};
+			c.searchText = '';
+			c.newInve = '';
+			spUtil.addTrivialMessage("Borrow request submitted successfully.");
+		})
+			.catch(function (e) {
+			console.error("Error while Add Inventory:", e);
+		});
+	};
+
+	// Search by category and quantity
+	c.searchCateAndQty = function () {
+		c.loadPage(c.pageNumber);
+	};
+
+	// Search items (by text)
+	c.searchItems = function () {
+		c.loadPage(c.pageNumber);
+	};
+
+	// Pagination
+	c.pageNumber = 1;
+	c.pageSize = 3;
+	c.totalCount = 0;
+
+	c.loadPage = function (pageNumber) {
+    c.pageNumber = pageNumber;
+    var searchText = c.searchText &amp;&amp; c.searchText.trim();
+    var action = "getInventory";
+
+    if (searchText) {
+        action = "searchInventory";
+    } else if (c.newInve.category || c.newInve.quantity) {
+        action = "searchInventoryByCategoryAndQuantity";
+    }
+
+    c.server.get({
+        action: action,
+        searchText: searchText || "",
+        category: c.newInve.category || "",
+        quantity: c.newInve.quantity || "",
+        pageNumber: c.pageNumber,
+        pageSize: c.pageSize,
+    })
+    .then(function (r) {
+        c.data.inventories = r.data.inventories;
+        c.totalCount = r.data.totalCount;
+        if (action === "searchInventory" &amp;&amp; (c.newInve.category || c.newInve.quantity)) {
+            c.loadPage(c.pageNumber);
+        }
+    })
+    .catch(function (error) {
+        console.error("error", error);
+    });
+	};
+
+	c.getRoundedPageCount = function () {
+			return Math.ceil(c.totalCount / c.pageSize);
+	};
+
+c.loadPage(c.pageNumber);
+}]]&gt;&lt;/client_script&gt;&lt;controller_as&gt;c&lt;/controller_as&gt;&lt;css&gt;/* Card styling */
+.card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+ 
+  .card-header {
+    background-color: #f9f9f9;
+    padding: 15px;
+    font-size: 18px;
+    font-weight: bold;
+    border-bottom: 1px solid #ddd;
+    text-align: center;
+  }
+ 
+  .card-body {
+    padding: 20px;
+    display:flex;
+    justify-content: space-around
+  }
+ 
+  /* Form layout */
+  .form-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: space-between;
+    gap: 10px;
+  }
+ 
+  /* Form groups */
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    margin-bottom: 10px;
+  }
+ 
+  .form-group label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    font-size: 14px;
+  }
+ 
+  .form-group input {
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+ 
+  /* Align the button to the bottom */
+  .form-group.align-self-end {
+    display: flex;
+    align-items: flex-end;
+  }
+ 
+  /* Button styling */
+ 
+  .btn {
+      border-radius: 0;
+  }
+ 
+  .btn:hover {
+    background-color: #0056b3;
+  }
+ 
+  .btn-block {
+    width: 100%;
+  }
+ 
+  .input-group {
+    display: flex;
+    align-items: center;
+  }
+ 
+  .input-group .form-control {
+    border-right: none;
+  }
+ 
+  .borrowQty_input {
+    width: 120px;
+    margin: 0 auto;
+  }
+ 
+  .input-group .btn {
+     border-top-right-radius: 4px;
+     border-bottom-right-radius: 4px;
+  }
+  .main-table{
+    width : 100%;
+    height : auto;
+    border-radius: 8px;
+    box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+    margin-top:20px;
+  }
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+  white-space: nowrap;
+}
+  thead{
+    background-color: black;
+    color :white;
+    border-radius: 8px;
+  }
+ 
+  .header{
+    text-align: center;
+    margin-bottom:20px;
+  }
+ 
+  .custom-btn {
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    display: inline-block;
+    padding: 0 12px;
+    font-size: 14px;
+    vertical-align: middle;
+    margin-right:10px;
+  }
+ 
+  .btn-primary {
+      border-radius: 4px;
+  }
+ 
+ 
+  /*search*/
+  .search_item {
+      display: flex;
+    align-items: top;
+    gap: 10px;  
+  }
+ 
+  .btn-search {
+    height: 34px;
+    border-radius: 5px;
+  }&lt;/css&gt;&lt;data_table&gt;sp_instance&lt;/data_table&gt;&lt;demo_data/&gt;&lt;description/&gt;&lt;docs/&gt;&lt;field_list/&gt;&lt;has_preview&gt;true&lt;/has_preview&gt;&lt;id&gt;add_borrow&lt;/id&gt;&lt;internal&gt;false&lt;/internal&gt;&lt;link&gt;&lt;![CDATA[function link(scope, element, attrs, controller) {  }]]&gt;&lt;/link&gt;&lt;name&gt;Add_Borrow&lt;/name&gt;&lt;option_schema/&gt;&lt;public&gt;false&lt;/public&gt;&lt;roles/&gt;&lt;script&gt;&lt;![CDATA[(function() {
+    /* populate the 'data' object */
+    /* e.g., data.table = $sp.getValue('table'); */
+    var pageNumber = 1;
+    var pageSize = 3;  
+    data.inventories = getInventory(pageNumber, pageSize);
+ 
+    if(input) {
+        if (input.action === "getInventory") {
+            pageNumber = input.pageNumber;
+            pageSize = input.pageSize;    
+            data.inventories = getInventory(pageNumber, pageSize);
+            data.totalCount = getInventoryCount();
+        }
+        if(input.action === "addBorrow"){
+            var newInveText = input.newInveText;
+            try {
+                var brr = new GlideRecord('x_1568427_inventor_borrowrequests');
+                brr.initialize()
+                brr.item_id = input.inveId;
+                brr.borrower_quantity = newInveText;
+                brr.insert()
+            }catch(e){
+                gs.error('Error Add inventoríes : ' + e.message);
+            }
+        }
+        data.inventories = getInventory(pageNumber, pageSize);
+        if (input.action === "searchInventory") {
+            var searchText = input.searchText || "";
+            gs.info('searchText', + searchText)
+            pageNumber = input.pageNumber;
+            pageSize = input.pageSize;
+            data.inventories = searchInve(searchText, pageNumber, pageSize);
+            data.totalCount = getSearchInventoryCount(searchText);
+        }
+ 
+        if(input.action === "searchInventoryByCategoryAndQuantity") {
+            var category = input.category || "";
+            var quantity = input.quantity || "";
+            data.inventories = getSearchCategoryAndQuantity(category, quantity, input.pageNumber, input.pageSize);
+            data.totalCount = getSearchInventoryCountByCategoryAndQuantity(category, quantity);
+        }
+    }
+ 
+})();
+ 
+function getInventory(pageNumber, pageSize) {
+    var inventories = [];
+    try {
+        var ive = new GlideRecord('x_1568427_inventor_item');
+				ive.addQuery('active','1')
+        ive.orderBy('number');
+        ive.query();
+        var start = (pageNumber - 1) * pageSize;
+        var end = start + pageSize;            
+        var index = 0;                          
+ 
+        while (ive.next()) {
+            if (index &gt;= start &amp;&amp; index &lt; end) {
+                var quantity = parseInt(ive.getValue('quantity'), 10) || 0;
+                var borrowedQuantity = parseInt(ive.getValue('borrowed_quantity'), 10) || 0;
+
+                inventories.push({
+                    sys_id: ive.getValue('sys_id'),
+                    item_name: ive.getValue('item_name'),
+                    number: ive.getValue('number'),
+                    quantity: Number(quantity - borrowedQuantity),
+                    price: Number(ive.getValue('price')), 
+                    category: ive.getValue('category'),
+                    remarks: ive.getValue('remarks'),
+                    start: start
+                });
+            }
+            index++;
+            if (index &gt;= end) break;
+        }
+    } catch (e) {
+        gs.error('Lỗi lấy dữ liệu: ' + e.message);
+    }
+    return inventories;
+}
+ 
+function searchInve(searchText,pageNumber, pageSize){
+    var inventories = [];
+    try {
+        var ive = new GlideRecord('x_1568427_inventor_item');
+				ive.addQuery('active','1')
+        var query = ive.addQuery('item_name', 'CONTAINS', searchText);
+        query.addOrCondition('number', 'CONTAINS', searchText);
+        ive.orderBy('number');
+        ive.query();
+        var start = (pageNumber - 1) * pageSize;
+        var end = start + pageSize;            
+        var index = 0;                          
+ 
+        while (ive.next()) {
+            if (index &gt;= start &amp;&amp; index &lt; end) {
+                var quantity = parseInt(ive.getValue('quantity'), 10) || 0;
+                var borrowedQuantity = parseInt(ive.getValue('borrowed_quantity'), 10) || 0;
+
+                inventories.push({
+                    sys_id: ive.getValue('sys_id'),
+                    item_name: ive.getValue('item_name'),
+                    number: ive.getValue('number'),
+                    quantity: Number(quantity - borrowedQuantity),
+                    price: Number(ive.getValue('price')), 
+                    category: ive.getValue('category'),
+                    remarks: ive.getValue('remarks'),
+                    start: start
+                });
+            }
+            index++;
+            if (index &gt;= end) break;
+        }
+    } catch (e) {
+        gs.error('Lỗi lấy dữ liệu: ' + e.message);
+    }
+    return inventories;
+}
+ 
+function getInventoryCount() {
+    var count = 0;
+    try {
+        var gr = new GlideRecord('x_1568427_inventor_item');
+				gr.addQuery('active','1');
+        gr.query();
+        count = gr.getRowCount();
+    } catch (e) {
+        gs.error('Lỗi đếm dữ liệu: ' + e.message);
+    }
+    return count;
+}
+ 
+function getSearchInventoryCount(searchText) {
+    var count = 0;
+    try {
+        var gr = new GlideRecord('x_1568427_inventor_item');
+				gr.addQuery('active','1');
+        var query = gr.addQuery('item_name', 'CONTAINS', searchText);
+        query.addOrCondition('number', 'CONTAINS', searchText);
+        gr.query();
+        count = gr.getRowCount();
+    } catch (e) {
+        gs.error('Error search ' + e.message);
+    }
+    return count;
+}
+ 
+function getSearchCategoryAndQuantity(category, quantity, pageNumber, pageSize) {
+    var inventories = [];
+    try {
+        var ive = new GlideRecord('x_1568427_inventor_item');
+ 
+        if (category) {
+            ive.addQuery('category', category);
+        }
+ 
+        if (quantity === "LowStock") {
+            ive.addQuery('quantity', '=&lt;', 10);
+        } else if (quantity === "NormalStock") {
+            ive.addQuery('quantity', '&gt;', 10);
+        }
+ 				ive.addQuery('active','1')
+        ive.orderBy('number');
+        ive.query();
+ 
+        var start = (pageNumber - 1) * pageSize;
+        var end = start + pageSize;
+        var index = 0;
+ 
+        while (ive.next()) {
+            if (index &gt;= start &amp;&amp; index &lt; end) {
+                var quantity2 = parseInt(ive.getValue('quantity'), 10) || 0;
+                var borrowedQuantity = parseInt(ive.getValue('borrowed_quantity'), 10) || 0;
+
+                inventories.push({
+                    sys_id: ive.getValue('sys_id'),
+                    item_name: ive.getValue('item_name'),
+                    number: ive.getValue('number'),
+                    quantity: Number(quantity2 - borrowedQuantity),
+                    price: Number(ive.getValue('price')), 
+                    category: ive.getValue('category'),
+                    remarks: ive.getValue('remarks'),
+                    start: start
+                });
+            }
+            index++;
+            if (index &gt;= end) break;
+        }
+    } catch (e) {
+        gs.error('Error during search by category and quantity: ' + e.message);
+    }
+    return inventories;
+}
+ 
+function getSearchInventoryCountByCategoryAndQuantity(category, quantity) {
+    var count = 0;
+    try {
+        var gr = new GlideRecord('x_1568427_inventor_item');
+ 
+        if (category) {
+            gr.addQuery('category', category);
+        }
+ 
+        if (quantity === "LowStock") {
+            gr.addQuery('quantity', '=&lt;', 10);
+        } else if (quantity === "NormalStock") {
+            gr.addQuery('quantity', '&gt;', 10);
+        }
+ 				gr.addQuery('active','1')
+        gr.query();
+        count = gr.getRowCount();
+    } catch (e) {
+        gs.error('Error during search count by category and quantity: ' + e.message);
+    }
+    return count;
+}]]&gt;&lt;/script&gt;&lt;servicenow&gt;false&lt;/servicenow&gt;&lt;sys_class_name&gt;sp_widget&lt;/sys_class_name&gt;&lt;sys_created_by&gt;sonnguyen&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2024-12-11 09:09:37&lt;/sys_created_on&gt;&lt;sys_id&gt;b3d6cedb831a1210260a55b6feaad3aa&lt;/sys_id&gt;&lt;sys_mod_count&gt;25&lt;/sys_mod_count&gt;&lt;sys_name&gt;Add_Borrow&lt;/sys_name&gt;&lt;sys_package display_value="Inventory Management" source="x_1568427_inventor"&gt;c57032e1839e9a10260a55b6feaad36d&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_scope display_value="Inventory Management"&gt;c57032e1839e9a10260a55b6feaad36d&lt;/sys_scope&gt;&lt;sys_update_name&gt;sp_widget_b3d6cedb831a1210260a55b6feaad3aa&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;sonnguyen&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2024-12-12 02:00:20&lt;/sys_updated_on&gt;&lt;template&gt;&lt;![CDATA[&lt;div&gt;
+    &lt;div class="card mb-4 mt-4"&gt;
+      &lt;div class="card-header"&gt;Browse and Request to Borrow Items&lt;/div&gt;
+      &lt;div class="card-body"&gt;
+        &lt;!-- Search Field with Icon --&gt;
+        &lt;div class="form-group mb-3 position-relative"&gt;
+          &lt;div class="input-group"&gt;
+            &lt;input
+                   type="text"
+                   class="form-control"
+                   id="search"
+                   placeholder="Search items..."
+                   ng-model="c.searchText"
+                   style="width:30vw"
+                   /&gt;
+            &lt;button
+                    type="button"
+                    class="btn btn-primary"
+                    ng-click="c.searchItems()"
+                    &gt;
+              &lt;i class="fa fa-search"&gt;&lt;/i&gt;
+            &lt;/button&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;form id="addItemForm" class= "search_item"  ng-click="c.searchCateAndQty()"&gt;
+          &lt;div class="form-row"&gt;
+            &lt;div class="form-group"&gt;
+              &lt;select class="form-control" id="category" ng-model="c.newInve.category" required&gt;
+                &lt;option value="" disabled selected&gt;Select Category&lt;/option&gt;
+                &lt;option value=""&gt;All category&lt;/option&gt;
+                &lt;option value="Electronics"&gt;Electronics&lt;/option&gt;
+                &lt;option value="Furniture"&gt;Furniture&lt;/option&gt;
+                &lt;option value="Clothing"&gt;Clothing&lt;/option&gt;
+                &lt;option value="Food"&gt;Food&lt;/option&gt;
+              &lt;/select&gt;
+            &lt;/div&gt;
+            &lt;div class="form-group"&gt;
+              &lt;select class="form-control" id="quantity" ng-model="c.newInve.quantity" required&gt;
+                &lt;option value="" disabled selected&gt;Select Stock&lt;/option&gt;
+                &lt;option value="AllStock"&gt;All Stock Status&lt;/option&gt;
+                &lt;option value="LowStock"&gt;Low Stock&lt;/option&gt;
+                &lt;option value="NormalStock"&gt;Normal Stock&lt;/option&gt;
+              &lt;/select&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/form&gt;
+ 
+      &lt;/div&gt;
+    &lt;/div&gt;
+ 
+    &lt;div class="main-table"&gt;
+      &lt;table class="table table-hover"&gt;
+        &lt;thead&gt;
+          &lt;tr&gt;
+            &lt;th scope="col"&gt;Index&lt;/th&gt;
+            &lt;th scope="col"&gt;Item Name&lt;/th&gt;
+            &lt;th scope="col"&gt;Item ID&lt;/th&gt;
+            &lt;th scope="col"&gt;Quantity&lt;/th&gt;
+            &lt;th scope="col"&gt;Unit Price&lt;/th&gt;
+            &lt;th scope="col"&gt;Category&lt;/th&gt;
+            &lt;th scope="col"&gt;Remarks&lt;/th&gt;
+            &lt;th scope="col"&gt;Borrow Quantity&lt;/th&gt;
+            &lt;th scope="col"&gt;Actions&lt;/th&gt;
+          &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+          &lt;tr ng-if="data.inventories.length === 0"&gt;
+            &lt;td colspan="9" class="text-center"&gt;No inventories found&lt;/td&gt;
+          &lt;/tr&gt;
+          &lt;tr ng-repeat="ive in data.inventories"&gt;
+            &lt;td&gt;{{ ive.start + $index + 1 }}&lt;/td&gt;
+            &lt;td&gt;{{ ive.item_name }}&lt;/td&gt;
+            &lt;td&gt;{{ ive.number }}&lt;/td&gt;
+            &lt;td&gt;{{ ive.quantity }}&lt;/td&gt;
+            &lt;td&gt;{{ ive.price }}&lt;/td&gt;
+            &lt;td&gt;{{ ive.category }}&lt;/td&gt;
+            &lt;td&gt;{{ ive.remarks }}&lt;/td&gt;
+            &lt;td&gt;
+              &lt;input type="number"
+                     class="form-control borrowQty_input"
+                     ng-model="c.newInve.borrower_quantity[ive.sys_id]"
+                     required&gt;
+            &lt;/td&gt;
+            &lt;td&gt;
+              &lt;button type="button" class="btn btn-primary" ng-click="c.addBorrow(ive.sys_id)"&gt;Request Borrow&lt;/button&gt;
+            &lt;/td&gt;
+          &lt;/tr&gt;
+        &lt;/tbody&gt;
+      &lt;/table&gt;
+    &lt;/div&gt;
+ 
+    &lt;div class="pagination-controls"&gt;
+      &lt;button class="btn btn-secondary"
+              ng-disabled="c.pageNumber === 1"
+              ng-click="c.loadPage(c.pageNumber - 1)"&gt;
+        Previous
+      &lt;/button&gt;
+ 
+      &lt;span&gt;Page {{ c.pageNumber }} of {{ c.getRoundedPageCount() }}&lt;/span&gt;
+ 
+      &lt;button class="btn btn-secondary"
+              ng-disabled="c.pageNumber &gt;= c.getRoundedPageCount()"
+              ng-click="c.loadPage(c.pageNumber + 1)"&gt;
+        Next
+      &lt;/button&gt;
+    &lt;/div&gt;
+ 
+  &lt;/div&gt;]]&gt;&lt;/template&gt;&lt;/sp_widget&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>1241548252</payload_hash>
+        <record_name>Add_Borrow</record_name>
+        <reverted_from/>
+        <source>89e1137283d65210260a55b6feaad38b</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>sonnguyen</sys_created_by>
+        <sys_created_on>2024-12-12 02:00:20</sys_created_on>
+        <sys_id>413ee96b83121210260a55b6feaad37b</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>193b8987aa20000001</sys_recorded_at>
+        <sys_updated_by>sonnguyen</sys_updated_by>
+        <sys_updated_on>2024-12-12 02:00:20</sys_updated_on>
+        <type>Widget</type>
+        <update_guid>c53ee96b8c121210bb29940b5b739f7a</update_guid>
+        <update_guid_history>c53ee96b8c121210bb29940b5b739f7a:1241548252,fbcca1a7831212102bbd02ce285637ab:201482203,1bcc69a7ae1212103af9ae470112a051:1071897395,69a2965f895a12108974b594518adb76:1241548252,1b92565f1b5a12109b1fa5933183663c:1064664654,8c52da1fa35a12104fd7da844b2e8103:1455834882,db425a1f345a12108f6ecead9878ee3f:-23637354,66429a1f835a12104083558186477fb3:1455834882,2c9196db5d5a12102bbbea9f1481f6cd:1064664654,9d5192dbd75a12101509dc8c2899f13e:1241548252,3921929b875a12100dd3d8437b9829ca:650011355,8d21529b8f5a121063d572d463663cf5:-896921206,9311929b945a12109064a26852eee98d:650011355,4dbd8a97a85a12100c406a147bfe5e4d:1241548252,07ad0a973f5a1210ffa07cf9416a0061:1419550314,516d02977e5a121059fa654eb4e1df68:75110540,7e4d8257db5a1210e71246f6b6f0913e:-460604249,894d4a57005a12102fd21e29803cf831:107939530,491dc257d15a12108e67afd5b03dbf6a:75110540,beac8e172b5a12102d8565dd2af166a1:-1473550188,e59c8e17d05a1210a7886d89429fff3c:-2135678032,5c3aca13175a121075d143c0f3c0b3a3:-1513801085,9ec98e13f65a1210b5f094ebd75a8ad4:-1402676283,e65982134f5a12102b70a47b4220dc49:-1087062044,46198a9ff51a12109d509506ff44c553:-1438411193,37d6061f7e1a121039b984779d7a226f:-1558497064</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="Add_Borrow">e401c337839a5210260a55b6feaad3a6</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>sonnguyen</sys_created_by>
+        <sys_created_on>2024-12-13 02:40:35</sys_created_on>
+        <sys_db_object display_value="" name="sp_widget">sp_widget</sys_db_object>
+        <sys_id>9c4ea21f479f4398a5c443d72d7dfb19</sys_id>
+        <sys_metadata>b3d6cedb831a1210260a55b6feaad3aa</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Add_Borrow</sys_name>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_scope_delete display_value="">861d2658792a49508d448ee8b3268100</sys_scope_delete>
+        <sys_update_name>sp_widget_b3d6cedb831a1210260a55b6feaad3aa</sys_update_name>
+        <sys_update_version display_value="sp_widget_b3d6cedb831a1210260a55b6feaad3aa">413ee96b83121210260a55b6feaad37b</sys_update_version>
+        <sys_updated_by>sonnguyen</sys_updated_by>
+        <sys_updated_on>2024-12-13 02:40:35</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

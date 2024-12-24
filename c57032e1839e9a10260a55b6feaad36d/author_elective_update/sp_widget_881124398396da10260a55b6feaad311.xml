@@ -1,0 +1,1211 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="DELETE">
+        <category>custom</category>
+        <client_script><![CDATA[api.controller = function (spModal, spUtil) {
+  /* widget controller */
+  var c = this;
+
+  c.newInve = {
+    category: "",
+    quantity: "",
+  };
+
+  c.addBorrow = function (id) {
+		if (!c.newInve || !c.newInve.borrower_quantity || !(id in c.newInve.borrower_quantity)) {
+				spUtil.addErrorMessage("Invalid borrower quantity data. Please try again.");
+				console.log("dòng 13");
+				return;
+		}
+
+    console.log("id", id);
+    var borrowQuantity = c.newInve.borrower_quantity[id];
+    console.log("borrowQuantity for id " + id, borrowQuantity);
+
+    if (borrowQuantity === undefined || borrowQuantity === '' || borrowQuantity < 0) {
+        spUtil.addErrorMessage("Borrow quantity cannot be empty or less than 0. Please enter a valid amount.");
+        return; 
+    }
+
+    var availableQuantity = 0;
+
+    for (var i = 0; i < c.data.inventories.length; i++) {
+        if (c.data.inventories[i].sys_id === id) {
+            availableQuantity = c.data.inventories[i].quantity;
+            break;
+        }
+    }
+
+    if (borrowQuantity > availableQuantity) {
+        spUtil.addErrorMessage("Borrow quantity has exceeded the available amount. Please enter again.");
+        return;
+    }
+    c.server
+        .get({
+            action: "addBorrow",
+            inveId: id,
+            newInveText: borrowQuantity,
+        })
+        .then(function (r) {
+            c.data.inventories = r.data.inventories;
+            c.newInve.borrower_quantity[id] = {}; 
+            spUtil.addTrivialMessage("Borrow request submitted successfully.");
+        })
+        .catch(function (e) {
+            console.error("Error while Add Inventory:", e);
+        });
+	};
+
+
+  // Search by category and quantity
+  c.searchCateAndQty = function () {
+    c.loadPage(c.pageNumber);
+  };
+
+  // Search items (by text)
+  c.searchItems = function () {
+    c.loadPage(c.pageNumber);
+  };
+
+  // Pagination
+  c.pageNumber = 1;
+  c.pageSize = 3;
+  c.totalCount = 0;
+
+  c.loadPage = function (pageNumber) {
+    c.pageNumber = pageNumber;
+    var searchText = c.searchText && c.searchText.trim();
+    var action = "getInventory";
+
+    if (searchText) {
+      action = "searchInventory";
+    } else if (c.newInve.category || c.newInve.quantity) {
+      action = "searchInventoryByCategoryAndQuantity";
+    }
+		
+    c.server
+      .get({
+        action: action,
+        searchText: searchText || "",
+        category: c.newInve.category || "",
+        quantity: c.newInve.quantity || "",
+        pageNumber: c.pageNumber,
+        pageSize: c.pageSize,
+      })
+      .then(function (r) {
+        c.data.inventories = r.data.inventories;
+        c.totalCount = r.data.totalCount;
+      })
+      .catch(function (error) {
+        console.error("error", error);
+      });
+  };
+
+  c.getRoundedPageCount = function () {
+    return Math.ceil(c.totalCount / c.pageSize);
+  };
+	
+  c.loadPage(c.pageNumber);
+};
+]]></client_script>
+        <controller_as>c</controller_as>
+        <css>/* Card styling */
+.card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.card-header {
+  background-color: #f9f9f9;
+  padding: 15px;
+  font-size: 18px;
+  font-weight: bold;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+}
+
+.card-body {
+  padding: 20px;
+  display:flex;
+  justify-content: space-around
+}
+
+/* Form layout */
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* Form groups */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.form-group label {
+  margin-bottom: 5px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.form-group input {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* Align the button to the bottom */
+.form-group.align-self-end {
+  display: flex;
+  align-items: flex-end;
+}
+
+/* Button styling */
+
+.btn {
+	border-radius: 0;
+}
+
+.btn:hover {
+  background-color: #0056b3;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+}
+
+.input-group .form-control {
+  border-right: none;
+}
+
+.borrowQty_input {
+  width: 120px;
+  margin: 0 auto;
+}
+
+.input-group .btn {
+   border-top-right-radius: 4px;
+   border-bottom-right-radius: 4px;
+}
+.main-table{
+  width : 100%;
+  height : auto;
+  border-radius: 8px;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+  margin-top:20px;
+}
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+thead{
+  background-color: black;
+  color :white;
+  border-radius: 8px;
+}
+
+.header{
+  text-align: center;
+  margin-bottom:20px;
+}
+
+.custom-btn {
+  height: 30px;
+  line-height: 30px;
+  text-align: center; 
+  display: inline-block; 
+  padding: 0 12px; 
+  font-size: 14px; 
+  vertical-align: middle;
+  margin-right:10px;
+}
+
+.btn-primary {
+	border-radius: 4px;
+}
+
+
+/*search*/
+.search_item {
+	display: flex;
+  align-items: top;
+  gap: 10px;  
+}
+
+.btn-search {
+  height: 34px;
+  border-radius: 5px;
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>true</has_preview>
+        <id>add_borrow_request</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Add Borrow Request</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+	/* populate the 'data' object */
+	/* e.g., data.table = $sp.getValue('table'); */
+	var pageNumber = 1; 
+	var pageSize = 3;   
+	data.inventories = getInventory(pageNumber, pageSize);
+
+	if(input) {
+		if (input.action === "getInventory") {
+			pageNumber = input.pageNumber;
+			pageSize = input.pageSize;    
+			data.inventories = getInventory(pageNumber, pageSize);
+			data.totalCount = getInventoryCount();
+		}
+		if(input.action === "addBorrow"){
+			var newInveText = input.newInveText;
+			try {
+				var brr = new GlideRecord('x_1568427_inventor_borrowrequests');
+				brr.initialize()
+				brr.item_id = input.inveId;
+				brr.borrower_quantity = newInveText;
+				brr.insert()
+			}catch(e){
+				gs.error('Error Add inventoríes : ' + e.message);
+			}
+		}
+		data.inventories = getInventory(pageNumber, pageSize);
+		if (input.action === "searchInventory") {
+			var searchText = input.searchText || ""; 
+			gs.info('searchText', + searchText)
+			pageNumber = input.pageNumber;
+			pageSize = input.pageSize;
+			data.inventories = searchInve(searchText, pageNumber, pageSize);
+			data.totalCount = getSearchInventoryCount(searchText);
+		}
+
+		if(input.action === "searchInventoryByCategoryAndQuantity") {
+			var category = input.category || "";
+			var quantity = input.quantity || "";
+			data.inventories = getSearchCategoryAndQuantity(category, quantity, input.pageNumber, input.pageSize);
+			data.totalCount = getSearchInventoryCountByCategoryAndQuantity(category, quantity);
+		}
+	}
+
+})();
+
+function getInventory(pageNumber, pageSize) {
+	var inventories = [];
+	try {
+		var ive = new GlideRecord('x_1568427_inventor_item');
+		ive.orderBy('number');
+		ive.query();
+		var start = (pageNumber - 1) * pageSize; 
+		var end = start + pageSize;             
+		var index = 0;                          
+
+		while (ive.next()) {
+			if (index >= start && index < end) {
+				inventories.push({
+					sys_id: ive.getValue('sys_id'),
+					item_name: ive.getValue('item_name'),
+					number: ive.getValue('number'),
+					quantity: ive.getValue('quantity'),
+					price: ive.getValue('price'),
+					category: ive.getValue('category'),
+					remarks: ive.getValue('remarks'),
+					start:start,
+				});
+			}
+			index++;
+			if (index >= end) break; 
+		}
+	} catch (e) {
+		gs.error('Lỗi lấy dữ liệu: ' + e.message);
+	}
+	return inventories;
+}
+
+function searchInve(searchText,pageNumber, pageSize){
+	var inventories = [];
+	try {
+		var ive = new GlideRecord('x_1568427_inventor_item');
+		var query = ive.addQuery('item_name', 'CONTAINS', searchText);
+		query.addOrCondition('number', 'CONTAINS', searchText);
+		ive.orderBy('number');
+		ive.query();
+		var start = (pageNumber - 1) * pageSize; 
+		var end = start + pageSize;             
+		var index = 0;                          
+
+		while (ive.next()) {
+			if (index >= start && index < end) {
+				inventories.push({
+					sys_id: ive.getValue('sys_id'),
+					item_name: ive.getValue('item_name'),
+					number: ive.getValue('number'),
+					quantity: ive.getValue('quantity'),
+					price: ive.getValue('price'),
+					category: ive.getValue('category'),
+					remarks: ive.getValue('remarks'),
+					start:start,
+				});
+			}
+			index++;
+			if (index >= end) break; 
+		}
+	} catch (e) {
+		gs.error('Lỗi lấy dữ liệu: ' + e.message);
+	}
+	return inventories;
+}
+
+function getInventoryCount() {
+	var count = 0;
+	try {
+		var gr = new GlideRecord('x_1568427_inventor_item');
+		gr.query();
+		count = gr.getRowCount();
+	} catch (e) {
+		gs.error('Lỗi đếm dữ liệu: ' + e.message);
+	}
+	return count;
+}
+
+function getSearchInventoryCount(searchText) {
+	var count = 0;
+	try {
+		var gr = new GlideRecord('x_1568427_inventor_item');
+		var query = gr.addQuery('item_name', 'CONTAINS', searchText);
+		query.addOrCondition('number', 'CONTAINS', searchText);
+		gr.query();
+		count = gr.getRowCount();
+	} catch (e) {
+		gs.error('Error search ' + e.message);
+	}
+	return count;
+}
+
+function getSearchCategoryAndQuantity(category, quantity, pageNumber, pageSize) {
+    var inventories = [];
+    try {
+        var ive = new GlideRecord('x_1568427_inventor_item');
+
+        if (category) {
+            ive.addQuery('category', category);
+        }
+
+       
+        if (quantity === "LowStock") {
+            ive.addQuery('quantity', '<=', 10);
+        } else if (quantity === "NormalStock") {
+            ive.addQuery('quantity', '>', 10); 
+        }
+
+        ive.orderBy('number');
+        ive.query();
+
+        var start = (pageNumber - 1) * pageSize;
+        var end = start + pageSize;
+        var index = 0;
+
+        while (ive.next()) {
+            if (index >= start && index < end) {
+                inventories.push({
+                    sys_id: ive.getValue('sys_id'),
+                    item_name: ive.getValue('item_name'),
+                    number: ive.getValue('number'),
+                    quantity: ive.getValue('quantity'),
+                    price: ive.getValue('price'),
+                    category: ive.getValue('category'),
+                    remarks: ive.getValue('remarks'),
+                    start: start,
+                });
+            }
+            index++;
+            if (index >= end) break;
+        }
+    } catch (e) {
+        gs.error('Error during search by category and quantity: ' + e.message);
+    }
+    return inventories;
+}
+
+
+function getSearchInventoryCountByCategoryAndQuantity(category, quantity) {
+    var count = 0;
+    try {
+        var gr = new GlideRecord('x_1568427_inventor_item');
+
+        if (category) {
+            gr.addQuery('category', category);
+        }
+
+    
+        if (quantity === "LowStock") {
+            gr.addQuery('quantity', '<=', 10);  
+        } else if (quantity === "NormalStock") {
+            gr.addQuery('quantity', '>', 10); 
+        }
+
+        gr.query();
+        count = gr.getRowCount();
+    } catch (e) {
+        gs.error('Error during search count by category and quantity: ' + e.message);
+    }
+    return count;
+}]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-06 09:53:56</sys_created_on>
+        <sys_id>881124398396da10260a55b6feaad311</sys_id>
+        <sys_mod_count>211</sys_mod_count>
+        <sys_name>Add Borrow Request</sys_name>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_update_name>sp_widget_881124398396da10260a55b6feaad311</sys_update_name>
+        <sys_updated_by>sonnguyen</sys_updated_by>
+        <sys_updated_on>2024-12-11 07:07:55</sys_updated_on>
+        <template><![CDATA[<div>
+  <div class="card mb-4 mt-4">
+    <div class="card-header">Browse and Request to Borrow Items</div>
+    <div class="card-body">
+      <!-- Search Field with Icon -->
+      <div class="form-group mb-3 position-relative">
+        <div class="input-group">
+          <input
+                 type="text"
+                 class="form-control"
+                 id="search"
+                 placeholder="Search items..."
+                 ng-model="c.searchText"
+                 style="width:30vw"
+                 />
+          <button
+                  type="button"
+                  class="btn btn-primary"
+                  ng-click="c.searchItems()"
+                  >
+            <i class="fa fa-search"></i>
+          </button>
+        </div>
+      </div>
+      <form id="addItemForm" class= "search_item"  ng-click="c.searchCateAndQty()">
+        <div class="form-row">
+          <div class="form-group">
+            <select class="form-control" id="category" ng-model="c.newInve.category" required>
+              <option value="" disabled selected>Select Category</option>
+              <option value="">All category</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Furniture">Furniture</option>
+              <option value="Clothing">Clothing</option>
+              <option value="Food">Food</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <select class="form-control" id="quantity" ng-model="c.newInve.quantity" required>
+              <option value="" disabled selected>Select Stock</option>
+              <option value="AllStock">All Stock Status</option>
+              <option value="LowStock">Low Stock</option>
+              <option value="NormalStock">Normal Stock</option>
+            </select>
+          </div>
+        </div>
+      </form>
+
+    </div>
+  </div>
+
+  <div class="main-table">
+    <table class="table table-hover">
+      <thead>
+        <tr>
+          <th scope="col">Index</th>
+          <th scope="col">Item Name</th>
+          <th scope="col">Item ID</th>
+          <th scope="col">Quantity</th>
+          <th scope="col">Unit Price</th>
+          <th scope="col">Category</th>
+          <th scope="col">Remarks</th>
+          <th scope="col">Borrow Quantity</th>
+          <th scope="col">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-if="data.inventories.length === 0">
+          <td colspan="9" class="text-center">No inventories found</td>
+        </tr>
+        <tr ng-repeat="ive in data.inventories">
+          <td>{{ ive.start + $index + 1 }}</td>
+          <td>{{ ive.item_name }}</td>
+          <td>{{ ive.number }}</td>
+          <td>{{ ive.quantity }}</td>
+          <td>{{ ive.price }}</td>
+          <td>{{ ive.category }}</td>
+          <td>{{ ive.remarks }}</td>
+          <td>
+            <input type="number"
+                   class="form-control borrowQty_input"
+                   ng-model="c.newInve.borrower_quantity[ive.sys_id]"
+                   required>
+          </td>
+          <td>
+            <button type="button" class="btn btn-primary" ng-click="c.addBorrow(ive.sys_id)">Request Borrow</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="pagination-controls">
+    <button class="btn btn-secondary"
+            ng-disabled="c.pageNumber === 1"
+            ng-click="c.loadPage(c.pageNumber - 1)">
+      Previous
+    </button>
+
+    <span>Page {{ c.pageNumber }} of {{ c.getRoundedPageCount() }}</span>
+
+    <button class="btn btn-secondary"
+            ng-disabled="c.pageNumber >= c.getRoundedPageCount()"
+            ng-click="c.loadPage(c.pageNumber + 1)">
+      Next
+    </button>
+  </div>
+
+</div>
+]]></template>
+    </sp_widget>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</application>
+        <file_path/>
+        <instance_id>612674ef1be5b9986a85eb9b2d4bcb35</instance_id>
+        <instance_name>dev181071</instance_name>
+        <name>sp_widget_881124398396da10260a55b6feaad311</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sp_widget"&gt;&lt;sp_widget action="INSERT_OR_UPDATE"&gt;&lt;category&gt;custom&lt;/category&gt;&lt;client_script&gt;&lt;![CDATA[api.controller = function (spModal, spUtil) {
+  /* widget controller */
+  var c = this;
+
+  c.newInve = {
+    category: "",
+    quantity: "",
+  };
+
+  c.addBorrow = function (id) {
+		if (!c.newInve || !c.newInve.borrower_quantity || !(id in c.newInve.borrower_quantity)) {
+				spUtil.addErrorMessage("Invalid borrower quantity data. Please try again.");
+				console.log("dòng 13");
+				return;
+		}
+
+    console.log("id", id);
+    var borrowQuantity = c.newInve.borrower_quantity[id];
+    console.log("borrowQuantity for id " + id, borrowQuantity);
+
+    if (borrowQuantity === undefined || borrowQuantity === '' || borrowQuantity &lt; 0) {
+        spUtil.addErrorMessage("Borrow quantity cannot be empty or less than 0. Please enter a valid amount.");
+        return; 
+    }
+
+    var availableQuantity = 0;
+
+    for (var i = 0; i &lt; c.data.inventories.length; i++) {
+        if (c.data.inventories[i].sys_id === id) {
+            availableQuantity = c.data.inventories[i].quantity;
+            break;
+        }
+    }
+
+    if (borrowQuantity &gt; availableQuantity) {
+        spUtil.addErrorMessage("Borrow quantity has exceeded the available amount. Please enter again.");
+        return;
+    }
+    c.server
+        .get({
+            action: "addBorrow",
+            inveId: id,
+            newInveText: borrowQuantity,
+        })
+        .then(function (r) {
+            c.data.inventories = r.data.inventories;
+            c.newInve.borrower_quantity[id] = {}; 
+            spUtil.addTrivialMessage("Borrow request submitted successfully.");
+        })
+        .catch(function (e) {
+            console.error("Error while Add Inventory:", e);
+        });
+	};
+
+
+  // Search by category and quantity
+  c.searchCateAndQty = function () {
+    c.loadPage(c.pageNumber);
+  };
+
+  // Search items (by text)
+  c.searchItems = function () {
+    c.loadPage(c.pageNumber);
+  };
+
+  // Pagination
+  c.pageNumber = 1;
+  c.pageSize = 3;
+  c.totalCount = 0;
+
+  c.loadPage = function (pageNumber) {
+    c.pageNumber = pageNumber;
+    var searchText = c.searchText &amp;&amp; c.searchText.trim();
+    var action = "getInventory";
+
+    if (searchText) {
+      action = "searchInventory";
+    } else if (c.newInve.category || c.newInve.quantity) {
+      action = "searchInventoryByCategoryAndQuantity";
+    }
+		
+    c.server
+      .get({
+        action: action,
+        searchText: searchText || "",
+        category: c.newInve.category || "",
+        quantity: c.newInve.quantity || "",
+        pageNumber: c.pageNumber,
+        pageSize: c.pageSize,
+      })
+      .then(function (r) {
+        c.data.inventories = r.data.inventories;
+        c.totalCount = r.data.totalCount;
+      })
+      .catch(function (error) {
+        console.error("error", error);
+      });
+  };
+
+  c.getRoundedPageCount = function () {
+    return Math.ceil(c.totalCount / c.pageSize);
+  };
+	
+  c.loadPage(c.pageNumber);
+};
+]]&gt;&lt;/client_script&gt;&lt;controller_as&gt;c&lt;/controller_as&gt;&lt;css&gt;/* Card styling */
+.card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.card-header {
+  background-color: #f9f9f9;
+  padding: 15px;
+  font-size: 18px;
+  font-weight: bold;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+}
+
+.card-body {
+  padding: 20px;
+  display:flex;
+  justify-content: space-around
+}
+
+/* Form layout */
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* Form groups */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.form-group label {
+  margin-bottom: 5px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.form-group input {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* Align the button to the bottom */
+.form-group.align-self-end {
+  display: flex;
+  align-items: flex-end;
+}
+
+/* Button styling */
+
+.btn {
+	border-radius: 0;
+}
+
+.btn:hover {
+  background-color: #0056b3;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+}
+
+.input-group .form-control {
+  border-right: none;
+}
+
+.borrowQty_input {
+  width: 120px;
+  margin: 0 auto;
+}
+
+.input-group .btn {
+   border-top-right-radius: 4px;
+   border-bottom-right-radius: 4px;
+}
+.main-table{
+  width : 100%;
+  height : auto;
+  border-radius: 8px;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+  margin-top:20px;
+}
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+thead{
+  background-color: black;
+  color :white;
+  border-radius: 8px;
+}
+
+.header{
+  text-align: center;
+  margin-bottom:20px;
+}
+
+.custom-btn {
+  height: 30px;
+  line-height: 30px;
+  text-align: center; 
+  display: inline-block; 
+  padding: 0 12px; 
+  font-size: 14px; 
+  vertical-align: middle;
+  margin-right:10px;
+}
+
+.btn-primary {
+	border-radius: 4px;
+}
+
+
+/*search*/
+.search_item {
+	display: flex;
+  align-items: top;
+  gap: 10px;  
+}
+
+.btn-search {
+  height: 34px;
+  border-radius: 5px;
+}&lt;/css&gt;&lt;data_table&gt;sp_instance&lt;/data_table&gt;&lt;demo_data/&gt;&lt;description/&gt;&lt;docs/&gt;&lt;field_list/&gt;&lt;has_preview&gt;true&lt;/has_preview&gt;&lt;id&gt;add_borrow_request&lt;/id&gt;&lt;internal&gt;false&lt;/internal&gt;&lt;link&gt;&lt;![CDATA[function link(scope, element, attrs, controller) {  }]]&gt;&lt;/link&gt;&lt;name&gt;Add Borrow Request&lt;/name&gt;&lt;option_schema/&gt;&lt;public&gt;false&lt;/public&gt;&lt;roles/&gt;&lt;script&gt;&lt;![CDATA[(function() {
+	/* populate the 'data' object */
+	/* e.g., data.table = $sp.getValue('table'); */
+	var pageNumber = 1; 
+	var pageSize = 3;   
+	data.inventories = getInventory(pageNumber, pageSize);
+
+	if(input) {
+		if (input.action === "getInventory") {
+			pageNumber = input.pageNumber;
+			pageSize = input.pageSize;    
+			data.inventories = getInventory(pageNumber, pageSize);
+			data.totalCount = getInventoryCount();
+		}
+		if(input.action === "addBorrow"){
+			var newInveText = input.newInveText;
+			try {
+				var brr = new GlideRecord('x_1568427_inventor_borrowrequests');
+				brr.initialize()
+				brr.item_id = input.inveId;
+				brr.borrower_quantity = newInveText;
+				brr.insert()
+			}catch(e){
+				gs.error('Error Add inventoríes : ' + e.message);
+			}
+		}
+		data.inventories = getInventory(pageNumber, pageSize);
+		if (input.action === "searchInventory") {
+			var searchText = input.searchText || ""; 
+			gs.info('searchText', + searchText)
+			pageNumber = input.pageNumber;
+			pageSize = input.pageSize;
+			data.inventories = searchInve(searchText, pageNumber, pageSize);
+			data.totalCount = getSearchInventoryCount(searchText);
+		}
+
+		if(input.action === "searchInventoryByCategoryAndQuantity") {
+			var category = input.category || "";
+			var quantity = input.quantity || "";
+			data.inventories = getSearchCategoryAndQuantity(category, quantity, input.pageNumber, input.pageSize);
+			data.totalCount = getSearchInventoryCountByCategoryAndQuantity(category, quantity);
+		}
+	}
+
+})();
+
+function getInventory(pageNumber, pageSize) {
+	var inventories = [];
+	try {
+		var ive = new GlideRecord('x_1568427_inventor_item');
+		ive.orderBy('number');
+		ive.query();
+		var start = (pageNumber - 1) * pageSize; 
+		var end = start + pageSize;             
+		var index = 0;                          
+
+		while (ive.next()) {
+			if (index &gt;= start &amp;&amp; index &lt; end) {
+				inventories.push({
+					sys_id: ive.getValue('sys_id'),
+					item_name: ive.getValue('item_name'),
+					number: ive.getValue('number'),
+					quantity: ive.getValue('quantity'),
+					price: ive.getValue('price'),
+					category: ive.getValue('category'),
+					remarks: ive.getValue('remarks'),
+					start:start,
+				});
+			}
+			index++;
+			if (index &gt;= end) break; 
+		}
+	} catch (e) {
+		gs.error('Lỗi lấy dữ liệu: ' + e.message);
+	}
+	return inventories;
+}
+
+function searchInve(searchText,pageNumber, pageSize){
+	var inventories = [];
+	try {
+		var ive = new GlideRecord('x_1568427_inventor_item');
+		var query = ive.addQuery('item_name', 'CONTAINS', searchText);
+		query.addOrCondition('number', 'CONTAINS', searchText);
+		ive.orderBy('number');
+		ive.query();
+		var start = (pageNumber - 1) * pageSize; 
+		var end = start + pageSize;             
+		var index = 0;                          
+
+		while (ive.next()) {
+			if (index &gt;= start &amp;&amp; index &lt; end) {
+				inventories.push({
+					sys_id: ive.getValue('sys_id'),
+					item_name: ive.getValue('item_name'),
+					number: ive.getValue('number'),
+					quantity: ive.getValue('quantity'),
+					price: ive.getValue('price'),
+					category: ive.getValue('category'),
+					remarks: ive.getValue('remarks'),
+					start:start,
+				});
+			}
+			index++;
+			if (index &gt;= end) break; 
+		}
+	} catch (e) {
+		gs.error('Lỗi lấy dữ liệu: ' + e.message);
+	}
+	return inventories;
+}
+
+function getInventoryCount() {
+	var count = 0;
+	try {
+		var gr = new GlideRecord('x_1568427_inventor_item');
+		gr.query();
+		count = gr.getRowCount();
+	} catch (e) {
+		gs.error('Lỗi đếm dữ liệu: ' + e.message);
+	}
+	return count;
+}
+
+function getSearchInventoryCount(searchText) {
+	var count = 0;
+	try {
+		var gr = new GlideRecord('x_1568427_inventor_item');
+		var query = gr.addQuery('item_name', 'CONTAINS', searchText);
+		query.addOrCondition('number', 'CONTAINS', searchText);
+		gr.query();
+		count = gr.getRowCount();
+	} catch (e) {
+		gs.error('Error search ' + e.message);
+	}
+	return count;
+}
+
+function getSearchCategoryAndQuantity(category, quantity, pageNumber, pageSize) {
+    var inventories = [];
+    try {
+        var ive = new GlideRecord('x_1568427_inventor_item');
+
+        if (category) {
+            ive.addQuery('category', category);
+        }
+
+       
+        if (quantity === "LowStock") {
+            ive.addQuery('quantity', '&lt;=', 10);
+        } else if (quantity === "NormalStock") {
+            ive.addQuery('quantity', '&gt;', 10); 
+        }
+
+        ive.orderBy('number');
+        ive.query();
+
+        var start = (pageNumber - 1) * pageSize;
+        var end = start + pageSize;
+        var index = 0;
+
+        while (ive.next()) {
+            if (index &gt;= start &amp;&amp; index &lt; end) {
+                inventories.push({
+                    sys_id: ive.getValue('sys_id'),
+                    item_name: ive.getValue('item_name'),
+                    number: ive.getValue('number'),
+                    quantity: ive.getValue('quantity'),
+                    price: ive.getValue('price'),
+                    category: ive.getValue('category'),
+                    remarks: ive.getValue('remarks'),
+                    start: start,
+                });
+            }
+            index++;
+            if (index &gt;= end) break;
+        }
+    } catch (e) {
+        gs.error('Error during search by category and quantity: ' + e.message);
+    }
+    return inventories;
+}
+
+
+function getSearchInventoryCountByCategoryAndQuantity(category, quantity) {
+    var count = 0;
+    try {
+        var gr = new GlideRecord('x_1568427_inventor_item');
+
+        if (category) {
+            gr.addQuery('category', category);
+        }
+
+    
+        if (quantity === "LowStock") {
+            gr.addQuery('quantity', '&lt;=', 10);  
+        } else if (quantity === "NormalStock") {
+            gr.addQuery('quantity', '&gt;', 10); 
+        }
+
+        gr.query();
+        count = gr.getRowCount();
+    } catch (e) {
+        gs.error('Error during search count by category and quantity: ' + e.message);
+    }
+    return count;
+}]]&gt;&lt;/script&gt;&lt;servicenow&gt;false&lt;/servicenow&gt;&lt;sys_class_name&gt;sp_widget&lt;/sys_class_name&gt;&lt;sys_created_by&gt;admin&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2024-12-06 09:53:56&lt;/sys_created_on&gt;&lt;sys_id&gt;881124398396da10260a55b6feaad311&lt;/sys_id&gt;&lt;sys_mod_count&gt;211&lt;/sys_mod_count&gt;&lt;sys_name&gt;Add Borrow Request&lt;/sys_name&gt;&lt;sys_package display_value="Inventory Management" source="x_1568427_inventor"&gt;c57032e1839e9a10260a55b6feaad36d&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_scope display_value="Inventory Management"&gt;c57032e1839e9a10260a55b6feaad36d&lt;/sys_scope&gt;&lt;sys_update_name&gt;sp_widget_881124398396da10260a55b6feaad311&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;sonnguyen&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2024-12-11 07:07:55&lt;/sys_updated_on&gt;&lt;template&gt;&lt;![CDATA[&lt;div&gt;
+  &lt;div class="card mb-4 mt-4"&gt;
+    &lt;div class="card-header"&gt;Browse and Request to Borrow Items&lt;/div&gt;
+    &lt;div class="card-body"&gt;
+      &lt;!-- Search Field with Icon --&gt;
+      &lt;div class="form-group mb-3 position-relative"&gt;
+        &lt;div class="input-group"&gt;
+          &lt;input
+                 type="text"
+                 class="form-control"
+                 id="search"
+                 placeholder="Search items..."
+                 ng-model="c.searchText"
+                 style="width:30vw"
+                 /&gt;
+          &lt;button
+                  type="button"
+                  class="btn btn-primary"
+                  ng-click="c.searchItems()"
+                  &gt;
+            &lt;i class="fa fa-search"&gt;&lt;/i&gt;
+          &lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+      &lt;form id="addItemForm" class= "search_item"  ng-click="c.searchCateAndQty()"&gt;
+        &lt;div class="form-row"&gt;
+          &lt;div class="form-group"&gt;
+            &lt;select class="form-control" id="category" ng-model="c.newInve.category" required&gt;
+              &lt;option value="" disabled selected&gt;Select Category&lt;/option&gt;
+              &lt;option value=""&gt;All category&lt;/option&gt;
+              &lt;option value="Electronics"&gt;Electronics&lt;/option&gt;
+              &lt;option value="Furniture"&gt;Furniture&lt;/option&gt;
+              &lt;option value="Clothing"&gt;Clothing&lt;/option&gt;
+              &lt;option value="Food"&gt;Food&lt;/option&gt;
+            &lt;/select&gt;
+          &lt;/div&gt;
+          &lt;div class="form-group"&gt;
+            &lt;select class="form-control" id="quantity" ng-model="c.newInve.quantity" required&gt;
+              &lt;option value="" disabled selected&gt;Select Stock&lt;/option&gt;
+              &lt;option value="AllStock"&gt;All Stock Status&lt;/option&gt;
+              &lt;option value="LowStock"&gt;Low Stock&lt;/option&gt;
+              &lt;option value="NormalStock"&gt;Normal Stock&lt;/option&gt;
+            &lt;/select&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/form&gt;
+
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;div class="main-table"&gt;
+    &lt;table class="table table-hover"&gt;
+      &lt;thead&gt;
+        &lt;tr&gt;
+          &lt;th scope="col"&gt;Index&lt;/th&gt;
+          &lt;th scope="col"&gt;Item Name&lt;/th&gt;
+          &lt;th scope="col"&gt;Item ID&lt;/th&gt;
+          &lt;th scope="col"&gt;Quantity&lt;/th&gt;
+          &lt;th scope="col"&gt;Unit Price&lt;/th&gt;
+          &lt;th scope="col"&gt;Category&lt;/th&gt;
+          &lt;th scope="col"&gt;Remarks&lt;/th&gt;
+          &lt;th scope="col"&gt;Borrow Quantity&lt;/th&gt;
+          &lt;th scope="col"&gt;Actions&lt;/th&gt;
+        &lt;/tr&gt;
+      &lt;/thead&gt;
+      &lt;tbody&gt;
+        &lt;tr ng-if="data.inventories.length === 0"&gt;
+          &lt;td colspan="9" class="text-center"&gt;No inventories found&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr ng-repeat="ive in data.inventories"&gt;
+          &lt;td&gt;{{ ive.start + $index + 1 }}&lt;/td&gt;
+          &lt;td&gt;{{ ive.item_name }}&lt;/td&gt;
+          &lt;td&gt;{{ ive.number }}&lt;/td&gt;
+          &lt;td&gt;{{ ive.quantity }}&lt;/td&gt;
+          &lt;td&gt;{{ ive.price }}&lt;/td&gt;
+          &lt;td&gt;{{ ive.category }}&lt;/td&gt;
+          &lt;td&gt;{{ ive.remarks }}&lt;/td&gt;
+          &lt;td&gt;
+            &lt;input type="number"
+                   class="form-control borrowQty_input"
+                   ng-model="c.newInve.borrower_quantity[ive.sys_id]"
+                   required&gt;
+          &lt;/td&gt;
+          &lt;td&gt;
+            &lt;button type="button" class="btn btn-primary" ng-click="c.addBorrow(ive.sys_id)"&gt;Request Borrow&lt;/button&gt;
+          &lt;/td&gt;
+        &lt;/tr&gt;
+      &lt;/tbody&gt;
+    &lt;/table&gt;
+  &lt;/div&gt;
+
+  &lt;div class="pagination-controls"&gt;
+    &lt;button class="btn btn-secondary"
+            ng-disabled="c.pageNumber === 1"
+            ng-click="c.loadPage(c.pageNumber - 1)"&gt;
+      Previous
+    &lt;/button&gt;
+
+    &lt;span&gt;Page {{ c.pageNumber }} of {{ c.getRoundedPageCount() }}&lt;/span&gt;
+
+    &lt;button class="btn btn-secondary"
+            ng-disabled="c.pageNumber &gt;= c.getRoundedPageCount()"
+            ng-click="c.loadPage(c.pageNumber + 1)"&gt;
+      Next
+    &lt;/button&gt;
+  &lt;/div&gt;
+
+&lt;/div&gt;
+]]&gt;&lt;/template&gt;&lt;/sp_widget&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>831820622</payload_hash>
+        <record_name>Add Borrow Request</record_name>
+        <reverted_from/>
+        <source>89e1137283d65210260a55b6feaad38b</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>sonnguyen</sys_created_by>
+        <sys_created_on>2024-12-11 07:07:55</sys_created_on>
+        <sys_id>0d0b25d783961210260a55b6feaad3dd</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>193b48bb8a50000001</sys_recorded_at>
+        <sys_updated_by>sonnguyen</sys_updated_by>
+        <sys_updated_on>2024-12-11 07:07:55</sys_updated_on>
+        <type>Widget</type>
+        <update_guid>810b25d77c961210fafa4a9c598b7fdd</update_guid>
+        <update_guid_history>810b25d77c961210fafa4a9c598b7fdd:831820622,0f2665530d961210dd1c6dca77519715:-223266177,c4062553da96121045276b6a5558c14e:-51278135,c1f521530d96121041d2d1153a57e7ac:2111041622,f8c5ed1309961210c28fa30d2521971a:-1925044744,288c0d93471612101da2a8b6217e6be0:2111041622,3b1c459397161210039d5d2497c8a0b9:60844934,7b3b095303161210262aa3b2dc2c644d:2111041622,4f3b8d13fa1612101d44949f8f30ae76:1147417571,371b815339161210c1a82c25b05ad0a5:2111041622,eada01535b1612102590e5a1176ad000:-846387803,fcda0113d216121005a18af9b942b69f:-2029733435,76ca8d13b6161210217d544404335859:-806944221,10c7051f30d212105b296e6a5617c56f:2111041622,25b7c91ffad21210def9c02dfed00476:-376540812,6e87c91f22d2121062a690a031cc5e5e:-1997427673,da870d1fe2d21210325116bf2303b013:-644411900,75870d1f93d21210b62f7b4a0ef03a05:-1997427673,f857c5dbc7d2121061e606126afa5dd7:1912636317,5527cddbf4d21210f212d9ced8ef87ba:-1820110979,d730349fda5212101020b25d9e5e1820:-1219308704,991b241b6e521210434d1c1b22d3ebc4:-423816437,7dda2cd7ed521210abc27a11b9583dae:1780517960,a8ca2c97365212102011261f7d4a018b:859848631,738a2497f852121024036020c3b4c458:-230083553,ff2a2c970252121059ebe0609913d129:-423816437,2419a057c4521210e5bafbd04b8a2052:-1451419536,a309285787521210c99407849a56759f:1351851238,00d86c173852121076a02fb30eac8fcc:-1385024554,75d6a093e25212103510268c5a932f5e:-855444406,fc76289378521210e11a5e65478b59fe:-93841243,6e16609321521210e99e480c75bad3e6:-855444406,fed52c533e5212102e74862488304acd:-1325972107,9cf215c7d8d2921093632d2173175f93:958506763,c2e25d8720d29210833ea0ec1b89821e:381194923,f860d9c34ed29210f4b9d49302199abe:-1950209627,f77f144391de52107fe297b03ce93c63:1386570181,587f5c03fdde5210065395206f3933e2:-2018335759,993f9c03dbde521052cd9dcb87e7c31d:347065713,003f9043cede521057c43c1b172c1e32:34364836,e6ee144390de5210c908a035edb63dbf:647453191,08de5c03cdde5210b0c64a2c43534502:-416497702,139e580301de52105fd71d3935645433:-848897652,ce9e1c0395de5210f6489aed039d13f9:2019423772,094e10035fde5210d903fa632eabe153:-124272211,4c0edccfd99e5210ee538c24413be3f5:954900301,73ed1ccfba9e52103aba16d626312f18:281793975,60dd988ff49e5210c2007633e5fa7bf6:-1540797801,66ad988fa69e521047f8d1b5950f66dc:1306983210,50ec188ff39e5210671b54d1762cdf32:954900301,78dc948f609e52109a5c1dd2910a1afe:-1588608242,2a6c584f169e521020803d812fc7e458:-578100495,f71c544f759e52105163b2316c838cbf:-1174358876,360c944f459e5210beb21b432e13d4da:-839506355,46eb1c0f9c9e52100d70330b6c81aaca:982670666,71ebd80f0e9e52100a6dce20497e2444:-119552348,42abdccbe19e5210a668126d2cf89474:-549689700,f5ab5c0fbf9e5210c8daee92d5587788:401058952,7003c4cf021e521093ea360540297bfa:935902002,880300cf8b1e52107d6b7e299f7580d8:-1215186458,4972cc8f4d1e521046a48424ad231c44:-1158043854,27628c8f4b1e521088d96a7539da7b7d:-2129831637,f862084f791e5210881d2d1c5728e42c:1636082054,b442c08f0b1e52107c8412c17498ad78:1228479055,6232488fd91e5210d19193519e36e031:-1111246294,df60400f341e52105921fb3ee130058f:279028369,cc8f37fa3d1e52108f6ea4ba55102dc3:-2070008798,2e7f3bbaa41e5210ee80ee1b63b8c159:-1331746179,7f6ff3fa291e5210568563b69492b613:-1621160589,73be37ba1e1e52102abac6bd24f1d521:-1255903426,e5ae3ff6ee1e5210dad9598f96596c72:-1846569896,315c3bb6321e52104aef06e91cc16f60:-2147244769,af8bf3b68b1e52107ce7f3b2fea76acc:-1608396655,3d3b33b6c11e52109e425de2f3e10a8f:2067786820,ae193bb2c01e5210045a7c26eaa45748:607194348,00d83bb26c1e521092efd5a07df8eb54:-2139878364,1745f7beb0da5210f169b179499284d3:2105636262,d335f7be3dda52107c8b8125e5875437:554913836,eab43b7ea8da5210ec031d0114ae40e5:2105636262,5c03f7fa31da521082083ea2280ecdb1:556577031,0052bbbaaada5210207d7804574f7e33:-322534462,4b427b7a70da52100c28d257d8d18080:582494360,4932bf7a74da521068129659e3b2145d:-1692558592,4322ffb6c4da5210ebe8a97f322196e1:-802048214,f7f13b7aedda52100f7b9eda31c8719f:-209906085,82713b7ab4da52105f7109251a084799:1083333482,ac90f33a3cda52101d1374eb564963d2:-585822038,c04033f6d5da52101de14356b5c44341:1132036219,005fafb65ada5210ea38a5a206915362:-516980488,05feeb76a6da5210fcee4624e539e977:-222972605,95ee67b6f0da5210050ce56825504835:-1068225991,c96eeb7681da5210c5a5f883f26ae735:99324056,875ea77670da5210f0885f0fde9928d9:1433305848,671eef36f7da521034d6b06669ff4d04:99324056,55adeb366dda5210ecf1019d40e0c412:1790925095,0accafb2a8da52103e1f8263c5487d09:320979608,ba6c6fb2c1da52101ba17cfcc5be6a8d:1292407020,d0fb6b7244da5210ba110256093b24e9:58458003,141b677281da5210da62305549f07d00:1683573759,83aaeb3258da5210b085b0e9ac217234:2046441107,19aaeffecf9a52101e3a69d3e7214ea7:1683573759,c20a63fe5b9a521092964e1ac59d5ebb:744110342,77e92ffe449a521073ecf8a102ffd9ad:859841744,bee92ffeb69a5210ad10bbd248f2e4a6:-1977300556,f1e86bbe909a521049ff74309fbd8768:-2030888302,a2f6633ed89a5210a97f4bc9d874ac29:1371862793,7dd667fab19a521054a57123bf01cfe4:-618578038,2f962bfa0c9a5210b68744d953a78264:-927073247,e756a3fa919a5210683fe4b02b54ba4f:-1043080856,dad3a7f64c9a52109267cd61bcb092aa:1609882578,1583e7f6759a5210936eda53fe218118:-547639586,e97363b6a09a52104b3517edbe6b039b:1039738907,8823afb6079a5210f7f5dd2685e07c70:-547639586,0d032fb6a09a52100467e0310fe40d28:-1164886452,3bf227b63a9a52109236635fb7f688ca:-382761835,ce52af76cd9a521095ec1fdde95aabe5:28898520,d0022f36499a52104c97b2a08686f3cb:-1039912799,d6d1e3768c9a5210e271f6af657f25b8:12752355,3a61eb361c9a521015cff2ded8138ea8:-1039912799,afa06bf2429a5210d01954772dce694c:28898520,4a6067b2499a5210a34865915ddda10f:2131976614,0d30af720b9a5210b24c6912405f7297:-1710555927,e01f5772fd9a52105d5ef7d9cb0cdf8e:1609882578,afde9372029a5210c53f9d28e5063e62:-544138085,658e1bbe815a5210450c9495dc7a0318:571368428,6d4e1b32e89a5210f3b99af101e11d8e:-516133440,465cd3be1e5a521007fe939f7255a47d:-1623933549,bdcb9f3e7b5a521058fd1fb2af14938a:1943125635,dd9b937e205a52103d4e892a20f8edc8:-1852806069,cd6b573ecc5a5210898948ea54f094a3:878909178,d95b5f3e2e5a5210fda88e15e95bff0b:1529338185,340b133e8a5a5210bdfa7177bb78bbb0:-281654190,bf7a97fa995a52104f2cbc9a7ff90b7a:-1433267293,d73a57faf15a52105506ad3380a1120b:1410304028,fc3adfba355a5210bcb4a37967d2a2c9:-757346002,43f9dbba6e5a52100c34679436976132:-455854701,2df9dbbac95a521015bc79a13ecbe33e:1753862116,47d91fbab85a52108a364a577cde008c:506268610,f2c993ba1d5a5210b9579a26fa2960d1:-1334901988,c2b997bac75a521008d3690c7ce1a9d4:-100576412,7c591f7a435a521047260818e64806f8:793517296,e9199b7ae15a5210e8d0c93d101f6379:723473869,1509977a405a5210a616000a9d6f9fe7:-1977955807,caf8577ae45a52102c3df89f056b70c9:138198471,6de8577a5e5a5210283a8e647bd56c9c:1660558058,9bd8937a955a5210ffc2e9bd97756987:178238954,2f785b76175a5210ca6945c23f8e9cca:477434355,0e3653b6f65a5210c8fb3090f550d2de:1596142967,c4c51776bd5a52107b5981f4d06f58e9:-494986077,ecb5d776a95a521032073c9d7b992d85:1762694165,b7755376375a5210456112fd163b1213:642687357,35c49ff2615a5210b7e9281a0328a2f6:1037485326,6eb45ff2925a521092b11f075ba60372:1096844694,f3a41bf28a5a52103a5e2d6a99aa98d5:1083958484,7c80cc3a375a1210327f4d8b73fcf400:1926330716,12ff33aa655a1210fa9084c09f58a887:86013239,51ffff6a9d5a12101dd1568cd24a5d9c:-972823049,e8fffb2a675a121049b11d1cf0cfe4e4:77814186,924fbf2a715a1210d0767ffa3e057a69:2130340457,762fb32aef5a1210c1aa2183fe91fc65:1438450249,4a0f3fe6fa5a1210c7fa250e83b7a8ee:1113212187,aafe7fe6115a1210c07ca24f134b9f20:-1026759416,e06ab7a2d85a121098cba16c4db523af:-1685907422,a12a73a2085a12108754128c222b85a0:649906171,1ff97b620d5a12103dc97d62d79bec64:168542345,0ab3da6e7c12121083931e8be4ac89b0:-1685907422,c3215eae54121210db9c2ce79cb86c8a:1263686877,eb20562e21121210ed953148a2fd5e06:-568954342,5d8f862e25121210e8bf2d57b42ff0fa:-1082601903,f25f422eb81212109b82394226f85937:-2146056128,c62f0eeaad121210e321633665b9d256:-388122204,1adec6eae612121034f2ab6e13063694:979498675,5eae4eea7d121210a3ad2f79c42fa417:-1120118489,1f9ec6ea1612121028bc6f92e57a3134:-1082601903,9e7ec6eaec121210cd1a51754cfb2ebc:2115911091,1a5ec6ea7a1212106f5aded8e5fb3e10:-873339373,001e86aa87121210e95f30d5b91e27b8:-1603881014,93bd86aa9d121210e8b79095a7eb7cf9:875512387,ab9dc26ab5121210bc58e6b588267d97:378813881,2e8dce2ad9121210c3f6718b025c8dae:-1961631674,5a2d4ea6641212100bd24c61464454c7:-437638160,238c02a68112121011e98c64ae27cedd:-1410865784,785f6cb9cfd6da10b3b249c3aa7d6d6a:177334275,111f2c3d03d6da10875bd5d5f6b79bce:-832147378,50fda83dd5d6da103464f79143d2798c:-579599863,79dda83d67d6da10c16355104dcad662:-837070198,106d603d48d6da106a600454531ee1c9:177334275,1a3ce8794ed6da101f531f8b3d63720f:1504952066,526ba039e8d6da10024d9064745b4946:1705636769,1ef9a8f563d6da103a677c3808e96625:-722128433,92e9acb574d6da10c5c2aebbffb503cc:1395859025,3db9a4f55ed6da10269b5f62cf22f572:1603197983,df69e0f5c8d6da107d51ffe94d5bab44:-254980974,d249a0f556d6da10c543520dd11241ef:-2041830900,b019acb574d6da100957776d55254dc2:-217235395,ed982835fcd6da10c3e47be3d007f5ca:-116996016,a4972835b6d6da1035f877083979dba4:-582242325,84476835ead6da10df935ba39f2fdb81:1302343553,9d17acf1aad6da100550cbd0f1bbb873:1155095522,09a6a8f1ead6da104a398f3ee35cd88d:-414448115,fa866cf140d6da1083c0a587698d8bc9:-693573055,1576a8b133d6da100b530e7290f8ba47:-386770069,cae5a8b1f1d6da10fef40e42f73fd107:386119578,9c25a07120d6da10bc9b3601cd64cdb7:1079388701,2394ac3175d6da10a96b87c15c3ec724:-1819218506,3e83603195d6da103fc6278741c58995:-1968359534,2973acfd0d96da10809a2c704aa20bde:-1936483141,3653a07d2496da10640c622e1f87e661:-706452457,631364bd4a96da1011ffaffb43b36b7c:-1976975113,306264bdfa96da10a6230b764c1c0505:-492348060,35412c390b96da10c64f6d1b43257363:512588880,001124395696da10e0b7aad421113614:1728981866</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="Add Borrow Request">e457ce1f831a1210260a55b6feaad3c2</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>sonnguyen</sys_created_by>
+        <sys_created_on>2024-12-11 09:11:35</sys_created_on>
+        <sys_db_object display_value="" name="sp_widget">sp_widget</sys_db_object>
+        <sys_id>050e15daec2347078322ad81647efaf1</sys_id>
+        <sys_metadata>881124398396da10260a55b6feaad311</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Add Borrow Request</sys_name>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_scope_delete display_value="">861d2658792a49508d448ee8b3268100</sys_scope_delete>
+        <sys_update_name>sp_widget_881124398396da10260a55b6feaad311</sys_update_name>
+        <sys_update_version display_value="sp_widget_881124398396da10260a55b6feaad311">0d0b25d783961210260a55b6feaad3dd</sys_update_version>
+        <sys_updated_by>sonnguyen</sys_updated_by>
+        <sys_updated_on>2024-12-11 09:11:35</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

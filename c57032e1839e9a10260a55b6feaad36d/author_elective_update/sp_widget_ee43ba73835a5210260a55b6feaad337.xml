@@ -1,0 +1,653 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="DELETE">
+        <category>custom</category>
+        <client_script><![CDATA[api.controller=function() {  /* widget controller */  var c = this;};]]></client_script>
+        <controller_as>c</controller_as>
+        <css>
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f7fc;
+  display: flex;
+  /*height: 100vh;*/
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  background-color: #2c3e50;
+  color: white;
+  padding-top: 30px;
+  position: fixed;
+  height: 100%;
+}
+
+.sidebar a {
+  color: white;
+  text-decoration: none;
+  display: block;
+  padding: 15px;
+  font-size: 18px;
+  border-bottom: 1px solid #34495e;
+}
+
+.sidebar a:hover {
+  background-color: #34495e;
+}
+
+.sidebar .active {
+  background-color: #1abc9c;
+}
+
+/* Main Content */
+.content {
+  margin-left: 250px;
+  padding: 20px 0 20px 20px;
+  width: calc(100% - 250px);
+}
+
+.content h1 {
+  color: #333;
+  margin-bottom: 30px;
+}
+
+/* Dashboard Cards */
+.dashboard-cards {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.card {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
+  width: 24%;
+  text-align: center;
+}
+
+.card h2 {
+  font-size: 30px;
+  color: #2c3e50;
+}
+
+.card p {
+  font-size: 18px;
+  color: #7f8c8d;
+}
+/* Column Chart */
+.column-chart {
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
+}
+
+.column-chart h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #2c3e50;
+}
+
+.chart {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: 300px;
+  padding: 10px;
+  gap: 50px;
+}
+
+.bar {
+  width: 18%;
+  background-color: #3498db;
+  border-radius: 5px;
+  position: relative;
+  transition: background-color 0.3s ease;
+}
+
+.bar:hover {
+  background-color: #2980b9;
+}
+
+.bar_heading {
+	text-align: center;
+  padding-top: 12px;
+  font-size: 18px;
+  color: #fafafa;
+}
+
+.bar_title {
+	position: absolute;
+  bottom: 6px;
+  width: 100%;
+  display: block;
+  text-align: center;
+  font-size: 15px;
+ 	color: #fafafa;
+}
+
+/* Pie Chart */
+.pie-chart {
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
+}
+
+.pie-chart h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #2c3e50;
+}
+
+.pie-container {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto;
+}
+
+.pie {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: conic-gradient(#1abc9c 0% 90%, #3498db 90% 100%);
+}
+
+.pie-labels {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.pie-labels p {
+  margin: 5px 0;
+  font-size: 16px;
+  color: #2c3e50;
+}
+
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 20px;
+  background-color: #2c3e50;
+  color: white;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>false</has_preview>
+        <id>dashboard</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>dashboard</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	data.isAdmin = gs.hasRole('x_1568427_inventor.admin'); 
+  data.isUser = gs.hasRole('x_1568427_inventor.user');
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>sonnguyen</sys_created_by>
+        <sys_created_on>2024-12-13 01:40:39</sys_created_on>
+        <sys_id>ee43ba73835a5210260a55b6feaad337</sys_id>
+        <sys_mod_count>69</sys_mod_count>
+        <sys_name>dashboard</sys_name>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_update_name>sp_widget_ee43ba73835a5210260a55b6feaad337</sys_update_name>
+        <sys_updated_by>sonnguyen</sys_updated_by>
+        <sys_updated_on>2024-12-13 04:20:38</sys_updated_on>
+        <template><![CDATA[<div ng-if="data.isAdmin">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <h2 style="text-align: center; color: #ecf0f1;">Dashboard</h2>
+    <!--<a href="#" class="active"></a>
+  <a href="#">Log Out</a>-->
+  </div>
+
+  <!-- Main Content -->
+  <div class="content">
+    <h1>Welcome to the Dashboard</h1>
+
+    <!-- Dashboard Cards -->
+    <div class="dashboard-cards">
+      <div class="card">
+        <h2>120</h2>
+        <p>Inventory</p>
+      </div>
+      <div class="card">
+        <h2>30</h2>
+        <p>Borrow</p>
+      </div>
+      <div class="card">
+        <h2>85</h2>
+        <p>Approval</p>
+      </div>
+      <div class="card">
+        <h2>15</h2>
+        <p>History</p>
+      </div>
+    </div>
+
+    <!-- Column Chart -->
+    <div class="column-chart">
+      <h2>Column Chart</h2>
+      <div class="chart">
+        <div class="bar" style="height: 80%; background-color: #1abc9c;">
+          <p class="bar_heading">
+            90%
+          </p>
+          <h6 class= "bar_title">
+            Inventory
+          </h6>
+        </div>
+        <div class="bar" style="height: 60%; background-color: #3498db;">
+          <p class="bar_heading">
+            50%
+          </p>
+          <h6 class= "bar_title">
+            Borrow
+          </h6>
+        </div>
+        <div class="bar" style="height: 50%; background-color: #9b59b6;">
+          <p class="bar_heading">
+            35%
+          </p>
+          <h6 class= "bar_title">
+            Approval
+          </h6>
+        </div>
+        <div class="bar" style="height: 70%; background-color: #f39c12;">
+          <p class="bar_heading">
+            65%
+          </p>
+          <h6 class= "bar_title">
+            History
+          </h6>
+        </div>
+        <div class="bar" style="height: 90%; background-color: #e74c3c;">
+          <p class="bar_heading">
+            95%
+          </p>
+          <h6 class= "bar_title">
+            quantity
+          </h6>
+        </div>
+      </div>
+    </div>
+
+    <!-- Pie Chart -->
+    <div class="pie-chart">
+      <h2>Pie Chart</h2>
+      <div class="pie-container">
+        <div class="pie" style="background: conic-gradient(#1abc9c 0% 90%, #3498db 90% 100%);"></div>
+        <div class="pie-labels">
+          <p><strong>Inventory: </strong> 90%</p>
+          <p><strong>Borrow: </strong> 10%</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <p>&copy; 2024 Dashboard. All rights reserved.</p>
+    </div>
+  </div>
+</div>
+]]></template>
+    </sp_widget>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</application>
+        <file_path/>
+        <instance_id>612674ef1be5b9986a85eb9b2d4bcb35</instance_id>
+        <instance_name>dev181071</instance_name>
+        <name>sp_widget_ee43ba73835a5210260a55b6feaad337</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sp_widget"&gt;&lt;sp_widget action="INSERT_OR_UPDATE"&gt;&lt;category&gt;custom&lt;/category&gt;&lt;client_script&gt;&lt;![CDATA[api.controller=function() {  /* widget controller */  var c = this;};]]&gt;&lt;/client_script&gt;&lt;controller_as&gt;c&lt;/controller_as&gt;&lt;css&gt;
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f7fc;
+  display: flex;
+  /*height: 100vh;*/
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 250px;
+  background-color: #2c3e50;
+  color: white;
+  padding-top: 30px;
+  position: fixed;
+  height: 100%;
+}
+
+.sidebar a {
+  color: white;
+  text-decoration: none;
+  display: block;
+  padding: 15px;
+  font-size: 18px;
+  border-bottom: 1px solid #34495e;
+}
+
+.sidebar a:hover {
+  background-color: #34495e;
+}
+
+.sidebar .active {
+  background-color: #1abc9c;
+}
+
+/* Main Content */
+.content {
+  margin-left: 250px;
+  padding: 20px 0 20px 20px;
+  width: calc(100% - 250px);
+}
+
+.content h1 {
+  color: #333;
+  margin-bottom: 30px;
+}
+
+/* Dashboard Cards */
+.dashboard-cards {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 30px;
+}
+
+.card {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
+  width: 24%;
+  text-align: center;
+}
+
+.card h2 {
+  font-size: 30px;
+  color: #2c3e50;
+}
+
+.card p {
+  font-size: 18px;
+  color: #7f8c8d;
+}
+/* Column Chart */
+.column-chart {
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
+}
+
+.column-chart h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #2c3e50;
+}
+
+.chart {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  height: 300px;
+  padding: 10px;
+  gap: 50px;
+}
+
+.bar {
+  width: 18%;
+  background-color: #3498db;
+  border-radius: 5px;
+  position: relative;
+  transition: background-color 0.3s ease;
+}
+
+.bar:hover {
+  background-color: #2980b9;
+}
+
+.bar_heading {
+	text-align: center;
+  padding-top: 12px;
+  font-size: 18px;
+  color: #fafafa;
+}
+
+.bar_title {
+	position: absolute;
+  bottom: 6px;
+  width: 100%;
+  display: block;
+  text-align: center;
+  font-size: 15px;
+ 	color: #fafafa;
+}
+
+/* Pie Chart */
+.pie-chart {
+  margin-bottom: 30px;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
+}
+
+.pie-chart h2 {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 24px;
+  color: #2c3e50;
+}
+
+.pie-container {
+  position: relative;
+  width: 200px;
+  height: 200px;
+  margin: 0 auto;
+}
+
+.pie {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: conic-gradient(#1abc9c 0% 90%, #3498db 90% 100%);
+}
+
+.pie-labels {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.pie-labels p {
+  margin: 5px 0;
+  font-size: 16px;
+  color: #2c3e50;
+}
+
+
+/* Footer */
+.footer {
+  text-align: center;
+  padding: 20px;
+  background-color: #2c3e50;
+  color: white;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  width: 100%;
+}&lt;/css&gt;&lt;data_table&gt;sp_instance&lt;/data_table&gt;&lt;demo_data/&gt;&lt;description/&gt;&lt;docs/&gt;&lt;field_list/&gt;&lt;has_preview&gt;false&lt;/has_preview&gt;&lt;id&gt;dashboard&lt;/id&gt;&lt;internal&gt;false&lt;/internal&gt;&lt;link&gt;&lt;![CDATA[function link(scope, element, attrs, controller) {  }]]&gt;&lt;/link&gt;&lt;name&gt;dashboard&lt;/name&gt;&lt;option_schema/&gt;&lt;public&gt;false&lt;/public&gt;&lt;roles/&gt;&lt;script&gt;&lt;![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	data.isAdmin = gs.hasRole('x_1568427_inventor.admin'); 
+  data.isUser = gs.hasRole('x_1568427_inventor.user');
+})();]]&gt;&lt;/script&gt;&lt;servicenow&gt;false&lt;/servicenow&gt;&lt;sys_class_name&gt;sp_widget&lt;/sys_class_name&gt;&lt;sys_created_by&gt;sonnguyen&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2024-12-13 01:40:39&lt;/sys_created_on&gt;&lt;sys_id&gt;ee43ba73835a5210260a55b6feaad337&lt;/sys_id&gt;&lt;sys_mod_count&gt;69&lt;/sys_mod_count&gt;&lt;sys_name&gt;dashboard&lt;/sys_name&gt;&lt;sys_package display_value="Inventory Management" source="x_1568427_inventor"&gt;c57032e1839e9a10260a55b6feaad36d&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_scope display_value="Inventory Management"&gt;c57032e1839e9a10260a55b6feaad36d&lt;/sys_scope&gt;&lt;sys_update_name&gt;sp_widget_ee43ba73835a5210260a55b6feaad337&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;sonnguyen&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2024-12-13 04:20:38&lt;/sys_updated_on&gt;&lt;template&gt;&lt;![CDATA[&lt;div ng-if="data.isAdmin"&gt;
+  &lt;!-- Sidebar --&gt;
+  &lt;div class="sidebar"&gt;
+    &lt;h2 style="text-align: center; color: #ecf0f1;"&gt;Dashboard&lt;/h2&gt;
+    &lt;!--&lt;a href="#" class="active"&gt;&lt;/a&gt;
+  &lt;a href="#"&gt;Log Out&lt;/a&gt;--&gt;
+  &lt;/div&gt;
+
+  &lt;!-- Main Content --&gt;
+  &lt;div class="content"&gt;
+    &lt;h1&gt;Welcome to the Dashboard&lt;/h1&gt;
+
+    &lt;!-- Dashboard Cards --&gt;
+    &lt;div class="dashboard-cards"&gt;
+      &lt;div class="card"&gt;
+        &lt;h2&gt;120&lt;/h2&gt;
+        &lt;p&gt;Inventory&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;div class="card"&gt;
+        &lt;h2&gt;30&lt;/h2&gt;
+        &lt;p&gt;Borrow&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;div class="card"&gt;
+        &lt;h2&gt;85&lt;/h2&gt;
+        &lt;p&gt;Approval&lt;/p&gt;
+      &lt;/div&gt;
+      &lt;div class="card"&gt;
+        &lt;h2&gt;15&lt;/h2&gt;
+        &lt;p&gt;History&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Column Chart --&gt;
+    &lt;div class="column-chart"&gt;
+      &lt;h2&gt;Column Chart&lt;/h2&gt;
+      &lt;div class="chart"&gt;
+        &lt;div class="bar" style="height: 80%; background-color: #1abc9c;"&gt;
+          &lt;p class="bar_heading"&gt;
+            90%
+          &lt;/p&gt;
+          &lt;h6 class= "bar_title"&gt;
+            Inventory
+          &lt;/h6&gt;
+        &lt;/div&gt;
+        &lt;div class="bar" style="height: 60%; background-color: #3498db;"&gt;
+          &lt;p class="bar_heading"&gt;
+            50%
+          &lt;/p&gt;
+          &lt;h6 class= "bar_title"&gt;
+            Borrow
+          &lt;/h6&gt;
+        &lt;/div&gt;
+        &lt;div class="bar" style="height: 50%; background-color: #9b59b6;"&gt;
+          &lt;p class="bar_heading"&gt;
+            35%
+          &lt;/p&gt;
+          &lt;h6 class= "bar_title"&gt;
+            Approval
+          &lt;/h6&gt;
+        &lt;/div&gt;
+        &lt;div class="bar" style="height: 70%; background-color: #f39c12;"&gt;
+          &lt;p class="bar_heading"&gt;
+            65%
+          &lt;/p&gt;
+          &lt;h6 class= "bar_title"&gt;
+            History
+          &lt;/h6&gt;
+        &lt;/div&gt;
+        &lt;div class="bar" style="height: 90%; background-color: #e74c3c;"&gt;
+          &lt;p class="bar_heading"&gt;
+            95%
+          &lt;/p&gt;
+          &lt;h6 class= "bar_title"&gt;
+            quantity
+          &lt;/h6&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Pie Chart --&gt;
+    &lt;div class="pie-chart"&gt;
+      &lt;h2&gt;Pie Chart&lt;/h2&gt;
+      &lt;div class="pie-container"&gt;
+        &lt;div class="pie" style="background: conic-gradient(#1abc9c 0% 90%, #3498db 90% 100%);"&gt;&lt;/div&gt;
+        &lt;div class="pie-labels"&gt;
+          &lt;p&gt;&lt;strong&gt;Inventory: &lt;/strong&gt; 90%&lt;/p&gt;
+          &lt;p&gt;&lt;strong&gt;Borrow: &lt;/strong&gt; 10%&lt;/p&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Footer --&gt;
+    &lt;div class="footer"&gt;
+      &lt;p&gt;&amp;copy; 2024 Dashboard. All rights reserved.&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+]]&gt;&lt;/template&gt;&lt;/sp_widget&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>1617068887</payload_hash>
+        <record_name>dashboard</record_name>
+        <reverted_from/>
+        <source>89e1137283d65210260a55b6feaad38b</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>sonnguyen</sys_created_by>
+        <sys_created_on>2024-12-13 04:20:38</sys_created_on>
+        <sys_id>35e797b3831e5210260a55b6feaad30e</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>193be3f46f40000001</sys_recorded_at>
+        <sys_updated_by>sonnguyen</sys_updated_by>
+        <sys_updated_on>2024-12-13 04:20:38</sys_updated_on>
+        <type>Widget</type>
+        <update_guid>b9e797b36e1e52108413db3e766c9b0d</update_guid>
+        <update_guid_history>b9e797b36e1e52108413db3e766c9b0d:1617068887,1087d3b35e1e5210fda4ba172e88a71e:-1482937636,bd8043f3349a5210fa9f30df7f7f9c58:-1847449443,bf6007f3c09a521059dc66c09272d574:1974953856,02408bb3649a521051a2aef628b231d9:-1359048740,a81043b3159a5210194bf2ca992df60a:1251819897,3fef7a73549a521063399acd8241241d:183343087,ba8ff233499a521042bd10e3886958be:813402001,7f6fbe734a9a5210da3bcd6c8a8bb0f2:-1426637681,ab4fb273f09a5210183fe3d2f885105e:-1556203169,442ffa33af9a521004885a71a0da1ec3:1478581193,5b0f3673969a52109315cab15b52853e:-2046165055,020fbaff4b5a5210f4c24eb207110ec2:818836671,80be3e33bf9a5210c56f3c55cf97d682:361515500,c29ebe33009a521065df04584516d083:442654772,2b6efa33669a5210712c71eb02631e63:1918041993,0f3ef633589a52100b4b87e9a4197c96:-1562968285,091ef233f29a5210018e3bbc3457229a:862454691,87fdfebf205a5210cbefdcfa3586b462:638059637,23dd32ff7c5a52103e22f281c6d8df9a:-2111222227,e6cdfabf475a521038d59208dd9308bc:-1617760010,54ad3affda5a52102f42e3030062b81c:173756383,824d32ffe65a5210de8558f19a6745a3:-778485459,33fcbabf505a5210c514912592a8d642:186518490,538cfe7f075a521052b79a9b7f18b2ab:-1356953927,626cfe7f015a52109b22ce924b0e0638:1549389096,4e3cba7f085a521012fed455292de02b:-650187435,553cba7ff65a52104481b8f77c57481f:125436318,322c3a7f2f5a5210a20de06dba17abd9:-548815395,361cb67fe65a5210cc5a060ff27542f7:-923507945,f90c7a3fea5a5210f5b9235472d483a3:-1749551366,1efbb27f315a5210b7f5eab3af45fa5b:-27476169,49ebb63f205a521061dbfbdff23caa2c:-735838404,87bbb63f455a5210d2c2ba4f4c8b52b4:-2139446475,0f2bfafb385a52100b6aad35162766c7:-1347872999,17cafafb695a5210bef30c27ac1923b3:-632878295,77aa3afb7a5a52107740b4568c0c8a68:-2139349185,b57ab2fb215a5210314b09885a3c357b:2023442311,253a7ebb035a52101bdec0035f6cdb27:-1925820661,f5c93a7b515a521038858253b8659a6c:-1071578611,63f8367bb75a521073dfb25fe476abe4:729801844,8b18faf7595a521014e1aafecebbee97:-509241112,88183af7985a5210dbdfc3daca4e7373:994013365,d9d77ef76f5a5210dc5533554b3f5313:93034118,f9c7fab7c85a52107384186b65b8ab92:-544976057,28a77eb77a5a5210556a20af81cdd6d0:-28086572,9897feb7ff5a521052b7b8b6aaa82ea2:1169867858,af5732f71f5a5210adae1c239ef9e905:-280885655,db177eb7705a5210b86ba3ed58cabc49:-820411676,d266f677275a52102094c4d8e6d06998:-1912578588,1e563a77785a521075ad502ab951e748:-1399974869,76e572770b5a5210e1b44be8ea82d207:-322163984,60e5f637f75a521033ad16462a98ca14:-1361000960,69c5be37e05a5210d072254ab99e1272:1434423226,95c53277635a52108dd86bd3d89dfc3e:1813476377,36a57e37a85a521032d2b4e536a1c3ff:-953685874,5e75b637495a5210ad105764da2c63c9:-518199962,9e65f6373b5a5210bb715e75ea608dfd:-837745776,9355f637825a5210a3ff58c14bca2ae1:2008099035,1b15b237075a52107ff644c2f05eff6f:697977234,2215b237675a5210bbdb007e7d98341a:-2073924915,8515fef36a5a52107faa1afff3356eef:2008099035,6ce43af3b05a52104bae0a1307c53eaf:-952159520,7bd47ef36f5a52103cfbe1cf790d400c:-1996171323,9e94f2f3785a521081841f7a6bfb581f:1813476377,2d64fab3905a5210776e732f72e51aa1:-953685874,0754bab3e15a5210531d04cdf549e8b5:-1517470160,67143eb3cf5a521025dee3f3270a77e9:1168591897,2cd3b6b39a5a5210d8c440041d3ea411:1365977339,6243ba73bb5a52101d1ccd20b7b3143b:132888625</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="dashboard">90595b37831e5210260a55b6feaad3cc</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>sonnguyen</sys_created_by>
+        <sys_created_on>2024-12-13 04:26:48</sys_created_on>
+        <sys_db_object display_value="" name="sp_widget">sp_widget</sys_db_object>
+        <sys_id>10f06b8b5acb4a4a96c577a087ecb104</sys_id>
+        <sys_metadata>ee43ba73835a5210260a55b6feaad337</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>dashboard</sys_name>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_scope_delete display_value="">861d2658792a49508d448ee8b3268100</sys_scope_delete>
+        <sys_update_name>sp_widget_ee43ba73835a5210260a55b6feaad337</sys_update_name>
+        <sys_update_version display_value="sp_widget_ee43ba73835a5210260a55b6feaad337">35e797b3831e5210260a55b6feaad30e</sys_update_version>
+        <sys_updated_by>sonnguyen</sys_updated_by>
+        <sys_updated_on>2024-12-13 04:26:48</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

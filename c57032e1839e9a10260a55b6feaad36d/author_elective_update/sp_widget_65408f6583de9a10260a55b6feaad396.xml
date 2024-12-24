@@ -1,0 +1,1579 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="DELETE">
+        <category>custom</category>
+        <client_script><![CDATA[api.controller=function(spModal,spUtil) {
+	/* widget controller */
+	var c = this;
+	var updateId = null;
+	c.showModal = false;
+	c.showAdd = false;
+	c.closeModal = function () {
+		c.showModal = false;
+	};
+	c.openModal = function () {
+		c.showModal = true;
+	};
+
+	//ADD
+	c.newInve = {};
+
+	c.addnewInve = function() {
+			var existingItem = c.data.inventories.find(function(inventoryItem) {
+					return inventoryItem.item_name === c.newInve.item_name;
+			});
+
+			if (existingItem) {
+					spUtil.addErrorMessage("The item name already exists in the inventory.");
+					return;
+			}
+
+			if (!c.newInve.quantity || c.newInve.quantity <= 0 || isNaN(c.newInve.quantity)) {
+					spUtil.addErrorMessage("Quantity must be a positive number greater than 0.");
+					return;
+			}
+
+			if (!c.newInve.price || c.newInve.price <= 0 || isNaN(c.newInve.price)) {
+					spUtil.addErrorMessage("Price must be a positive number greater than 0.");
+					return;
+			}
+
+			c.server.get({
+					action: "addnewInve",
+					newInve: c.newInve,
+					pageNumber: c.pageNumber,
+					pageSize: c.pageSize,
+			}).then(function(r) {
+					c.newInve = {};
+					c.data.inventories = r.data.inventories;
+					spUtil.addTrivialMessage("New inventory has been added successfully.");
+			}).catch(function(error) {
+					console.error('Error while adding new inventory:', error);
+					spUtil.addErrorMessage("An error occurred while adding the inventory.");
+			});
+	};
+
+
+	// Detail
+
+	c.detail = function(inveId){
+		c.showModal = true;
+		c.server.get({
+			action:"detailInve",
+			inveId:inveId
+		}).then(function(r){
+			c.data.detailInve = r.data.detailInve;
+		}).catch(function(e){
+			console.error('Error while Detail Inventory:', e);
+		})
+	}
+
+	//Update
+
+	c.fillUpdate = function(inveId) {
+        updateId = inveId;
+        c.showAdd = true;
+        c.server.get({
+            action: "fillField",
+            id: inveId
+        }).then(function(r) {
+            c.newInve.item_name = r.data.fillField.item_name;
+            c.newInve.quantity = Number(r.data.fillField.quantity);
+            c.newInve.price = Number(r.data.fillField.price);
+            c.newInve.category = r.data.fillField.category;
+            c.newInve.remarks = r.data.fillField.remarks;
+        }).catch(function(e) {
+            console.error('Error while Update Inventory:', e);
+        });
+    };
+
+   c.update = function() {
+    var existingItem = c.data.inventories.find(function(inventoryItem) {
+        return inventoryItem.item_name === c.newInve.item_name && inventoryItem.sys_id !== updateId;
+    });
+		 
+
+    if (existingItem) {
+        spUtil.addErrorMessage("The item name already exists in the inventory.");
+        return;
+    }
+
+    var quantity = Number(c.newInve.quantity);
+    if (isNaN(quantity) || quantity <= 0) {
+        spUtil.addErrorMessage("Quantity must be a positive number greater than 0.");
+        return;
+    }
+
+
+    var price = Number(c.newInve.price);
+    if (isNaN(price) || price <= 0) {
+        spUtil.addErrorMessage("Price must be a positive number greater than 0.");
+        return;
+    }
+
+    c.server.get({
+        action: "updateInve",
+        newInve: c.newInve,
+        updateId: updateId
+    }).then(function(r) {
+        c.showAdd = false;
+        c.newInve = {};
+        c.data.inventories = r.data.inventories;
+        spUtil.addTrivialMessage("Inventory has been updated successfully.");
+    }).catch(function(e) {
+        console.error('Error while updating inventory:', e);
+        spUtil.addErrorMessage("An error occurred while updating the inventory.");
+    });
+	};
+
+	//Delete
+
+	c.delete = function (inveId) {
+    spModal.confirm("Are you sure you want to delete this Note record?").then(function (confirmed) {
+        if (confirmed) {
+            c.server.get({
+                action: "deleteInve",
+                inveId: inveId
+            }).then(function (r) {
+                spUtil.addTrivialMessage("Inventory has been deleted.");
+                c.data.inventories = r.data.inventories;
+            }).catch(function (e) {
+                console.error('Error while Delete Inventory:', e);
+                spUtil.addErrorMessage("Failed to delete the Inventory. Please try again.");
+            });
+        }
+    });
+	}
+
+	// Phân trang 
+
+	c.pageNumber = 1;
+	c.pageSize = 3; 
+	c.totalCount = 0;
+
+	c.loadPage = function (pageNumber) {
+		c.pageNumber = pageNumber;
+		c.server.get({
+			action: "getInventory",
+			pageNumber: c.pageNumber,
+			pageSize: c.pageSize,
+		}).then(function (r) {
+			c.data.inventories = r.data.inventories;
+			c.totalCount = r.data.totalCount;
+		}).catch(function (error) {
+			console.error('Error while fetching inventory:', error);
+		});
+	};
+	
+	c.getRoundedPageCount = function () {
+  return Math.ceil(c.totalCount / c.pageSize); 
+	};
+
+	c.loadPage(c.pageNumber);
+
+};]]></client_script>
+        <controller_as>c</controller_as>
+        <css>/* Card styling */
+.card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.card-header {
+  background-color: #f9f9f9;
+  padding: 15px;
+  font-size: 18px;
+  font-weight: bold;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+}
+
+.card-body {
+  padding: 20px;
+}
+
+/* Form layout */
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* Form groups */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.form-group label {
+  margin-bottom: 5px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.form-group input {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* Align the button to the bottom */
+.form-group.align-self-end {
+  display: flex;
+  align-items: flex-end;
+}
+
+/* Button styling */
+
+
+.btn:hover {
+  background-color: #0056b3;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.main-table{
+  width : 100%;
+  height : auto;
+  border-radius: 8px;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+  margin-top:20px;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+
+thead{
+  background-color: black;
+  color :white;
+  border-radius: 8px;
+}
+
+.header{
+  text-align: center;
+  margin-bottom:20px;
+}
+
+.custom-btn {
+  height: 30px;
+  line-height: 30px;
+  text-align: center; 
+  display: inline-block; 
+  padding: 0 12px; 
+  font-size: 14px; 
+  vertical-align: middle;
+  margin-right:10px;
+}
+
+.custom-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+ 	display: block;
+  z-index: 1000;
+}
+
+.custom-modal {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+ 	width: 450px;
+  margin: 15% auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+   position: relative;
+}
+
+.custom-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.custom-modal-header h5 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.custom-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; 
+}
+
+.input_group {
+	display: flex;
+	align-items: center;
+  gap: 10px;
+}
+
+.input_growd {
+  flex: 1;
+}
+
+.input_inner label{
+  font-size: 14px;
+  font-weight: 500;
+  color: #3b3b3b;
+  min-width: 170px;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.input_inner input,textarea, select {
+  width: 100%;
+	max-width: 100%;
+  height: 36px;
+  border: 1px solid #4b4b4b;
+  border-radius: 4px;
+  outline: none;
+  display: block;
+  padding:0 6px;
+  font-size: 14px; 
+  font-weight: 400;
+  color: #3b3b3b;
+  cursor: pointer;
+}
+
+
+.input_inner textarea {
+ 	min-width: 100%;
+  font-size: 16px; 
+  line-height: 2;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #ddd;
+  padding: 8px;
+  border-radius: 4px;
+  position: relative;
+}
+
+.label {
+  flex: 1;
+  color: black;
+  font-weight: 700;
+  border-right: 1px solid #ddd; 
+  padding-right: 8px;
+}
+
+.value {
+  flex: 1;
+  text-align: center;
+  padding-left: 8px;
+}
+
+.custom-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 26px;
+}
+
+.btn-secondary {
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background-color: #e0e0e0;
+}
+
+</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>true</has_preview>
+        <id>add_and_list_inventory</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Add and List Inventory</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+	/* Gán dữ liệu cho object 'data' */
+	data.detailInve = {};
+	var pageNumber = 1; 
+	var pageSize = 3;   
+	data.inventories = getInventory(pageNumber, pageSize);
+	//data.totalCount = getInventoryCount();
+
+	if (input) {
+		if (input.action === "getInventory") {
+			pageNumber = input.pageNumber;
+			pageSize = input.pageSize;    
+			data.inventories = getInventory(pageNumber, pageSize);
+			data.totalCount = getInventoryCount();
+		}
+
+		if (input.action === "addnewInve") {
+			var newInve = input.newInve;
+			try {
+				var ive = new GlideRecord('x_1568427_inventor_item');
+				ive.initialize();
+				ive.item_name = newInve.item_name;
+				ive.quantity = newInve.quantity;
+				ive.price = newInve.price;
+				ive.category = newInve.category;
+				ive.remarks = newInve.remarks;
+				ive.insert();
+			} catch (e) {
+				gs.error('Lỗi thêm mới dữ liệu: ' + e.message);
+			}
+		}
+
+		if (input.action === "detailInve") {
+			var inveId = input.inveId;
+			data.detailInve = detailInve(inveId);
+		}
+
+		if (input.action === "fillField") {
+			var id = input.id;
+			data.fillField = detailInve(id);
+		}
+
+		if (input.action === "updateInve") {
+			var gr = new GlideRecord('x_1568427_inventor_item');
+			if (gr.get(input.updateId)) {
+				if (input.newInve.item_name) { gr.item_name = input.newInve.item_name; }
+				if (input.newInve.quantity) { gr.quantity = input.newInve.quantity; }
+				if (input.newInve.price) { gr.price = input.newInve.price; }
+				if (input.newInve.category) { gr.category = input.newInve.category; }
+				if (input.newInve.remarks) { gr.remarks = input.newInve.remarks; }
+				gr.update();
+			}
+		}
+
+		if (input.action === "deleteInve") {
+			var inventor = new GlideRecord('x_1568427_inventor_item');
+			if (inventor.get(input.inveId)) {
+				inventor.deleteRecord();
+			}
+		}
+	}
+	data.inventories = getInventory(pageNumber, pageSize);
+})();
+
+function getInventory(pageNumber, pageSize) {
+	var inventories = [];
+	try {
+		var ive = new GlideRecord('x_1568427_inventor_item');
+		ive.orderBy('number');
+		ive.query();
+		var start = (pageNumber - 1) * pageSize; 
+		var end = start + pageSize;             
+		var index = 0;                          
+
+		while (ive.next()) {
+			if (index >= start && index < end) {
+				inventories.push({
+					sys_id: ive.getValue('sys_id'),
+					item_name: ive.getValue('item_name'),
+					number: ive.getValue('number'),
+					quantity: ive.getValue('quantity'),
+					price: ive.getValue('price'),
+					category: ive.getValue('category'),
+					remarks: ive.getValue('remarks'),
+				});
+			}
+			index++;
+			if (index >= end) break; 
+		}
+	} catch (e) {
+		gs.error('Lỗi lấy dữ liệu: ' + e.message);
+	}
+	return inventories;
+}
+
+function detailInve(inveId) {
+	var detailInve = {};
+	try {
+		var gr = new GlideRecord('x_1568427_inventor_item');
+		if (gr.get(inveId)) {
+			$sp.getRecordValues(detailInve, gr, 'item_name,number,quantity,price,category,remarks,sys_updated_on,sys_created_on,sys_created_by,sys_updated_by');
+		}
+	} catch (e) {
+		gs.error('Lỗi lấy chi tiết: ' + e.message);
+	}
+	return detailInve;
+}
+
+function getInventoryCount() {
+	var count = 0;
+	try {
+		var gr = new GlideRecord('x_1568427_inventor_item');
+		gr.query();
+		count = gr.getRowCount();
+	} catch (e) {
+		gs.error('Lỗi đếm dữ liệu: ' + e.message);
+	}
+	return count;
+}
+]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-06 02:51:03</sys_created_on>
+        <sys_id>65408f6583de9a10260a55b6feaad396</sys_id>
+        <sys_mod_count>167</sys_mod_count>
+        <sys_name>Add and List Inventory</sys_name>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_update_name>sp_widget_65408f6583de9a10260a55b6feaad396</sys_update_name>
+        <sys_updated_by>sonnguyen</sys_updated_by>
+        <sys_updated_on>2024-12-11 03:42:49</sys_updated_on>
+        <template><![CDATA[<body>
+  <div>
+    <div class="card mb-4 mt-4">
+      <div class="card-header" ng-if="!c.showAdd">Add New Item</div>
+      <div class="card-header" ng-if="c.showAdd">Update Item</div>
+      <div class="card-body">
+        <form id="addItemForm" ng-submit="c.addnewInve()">
+          <div class="form-row">
+            <div class="form-group col-md-2">
+              <label for="itemName">Item Name</label>
+              <input type="text" class="form-control" id="itemName" required ng-model="c.newInve.item_name" />
+            </div>
+            <div class="form-group col-md-2">
+              <label for="quantity">Quantity</label>
+              <input type="number" class="form-control" id="quantity" ng-model="c.newInve.quantity" required />
+            </div>
+            <div class="form-group col-md-2">
+              <label for="unitPrice">Unit Price</label>
+              <input type="number" class="form-control" ng-model="c.newInve.price" required />
+            </div>
+            <div class="form-group col-md-2">
+              <label for="category">Category</label>
+              <select class="form-control" id="category" ng-model="c.newInve.category" required>
+                <option value="" disabled selected>Select Category</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Furniture">Furniture</option>
+                <option value="Clothing">Clothing</option>
+                <option value="Food">Food</option>
+              </select>
+            </div>
+            <div class="form-group col-md-2">
+              <label for="remarks">Remarks</label>
+              <input type="text" class="form-control" ng-model="c.newInve.remarks" id="remarks" />
+            </div>
+            <div class="form-group col-md-12">
+              <label for="Comment">Comment</label>
+              <textarea name="" id="" class="form-control"></textarea>
+            </div>
+            <div class="form-group col-md-2 align-self-end">
+              <button type="submit" class="btn btn-primary btn-block" ng-if="!c.showAdd">
+                Add Item
+              </button>
+              <button type="button" class="btn btn-primary btn-block" ng-click="c.update()" ng-if="c.showAdd">
+                Update
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <div class="main-table">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Index</th>
+            <th scope="col">Item Name</th>
+            <th scope="col">Item ID</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Unit Price</th>
+            <th scope="col">Category</th>
+            <th scope="col">Remarks</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="ive in data.inventories">
+            <td>{{(c.pageNumber - 1) * c.pageSize + $index + 1 }}</td>
+            <td>{{ ive.item_name }}</td>
+            <td>{{ ive.number }}</td>
+            <td>{{ ive.quantity }}</td>
+            <td>{{ ive.price }}</td>
+            <td>{{ ive.category }}</td>
+            <td>{{ ive.remarks }}</td>
+            <td>
+              <button type="button" class="btn btn-info custom-btn" ng-click="c.detail(ive.sys_id)">
+                Detail
+              </button>
+              <button type="button" class="btn btn-warning custom-btn" ng-click="c.fillUpdate(ive.sys_id)">
+                Update
+              </button>
+              <button type="button" class="btn btn-danger custom-btn" ng-click="c.delete(ive.sys_id)">
+                Delete
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination-controls">
+      <button class="btn btn-secondary" ng-disabled="c.pageNumber === 1" ng-click="c.loadPage(c.pageNumber - 1)">
+        Previous
+      </button>
+
+      <span>Page {{ c.pageNumber }} of {{ c.getRoundedPageCount() }}</span>
+
+      <button class="btn btn-secondary" ng-disabled="c.pageNumber >= c.getRoundedPageCount()"
+        ng-click="c.loadPage(c.pageNumber + 1)">
+        Next
+      </button>
+    </div>
+
+    <div class="custom-modal-overlay" style="display: none">
+      <div class="custom-modal">
+        <div class="custom-modal-header">
+          <h5>Add Inventory</h5>
+          <button type="button" class="close-btn">×</button>
+        </div>
+        <div class="custom-modal-body">
+          <div class="input_inner">
+            <label for="itemName">Item name:</label>
+            <input type="text" id="itemName" ng-model="" />
+          </div>
+
+          <div class="input_group">
+            <div class="input_inner input_growd">
+              <label for="quantity">Quantity:</label>
+              <input type="number" id="quantity" ng-model="" />
+            </div>
+            <div class="input_inner">
+              <label for="quantity">:</label>
+              <input type="number" id="quantity" ng-model="" />
+            </div>
+          </div>
+
+          <div class="input_inner">
+            <label for="unitPrice">Unit price:</label>
+            <input type="text" id="unitPrice" ng-model="" />
+          </div>
+
+          <div class="input_inner">
+            <label for="category">Category:</label>
+            <select id="caregory" ng-model="">
+              <option value="" disabled selected>Select Category</option>
+              <option value="Electronics">Electronics</option>
+              <option value="Furniture">Furniture</option>
+              <option value="Clothing">Clothing</option>
+              <option value="Food">Food</option>
+            </select>
+          </div>
+
+          <div class="input_inner">
+            <label for="remarks">Remarks:</label>
+            <textarea id="remarks" ng-model=""></textarea>
+          </div>
+
+          <div class="input_inner">
+            <label for="comment">Comments:</label>
+            <textarea id="comment" ng-model=""></textarea>
+          </div>
+        </div>
+        <div class="custom-modal-footer">
+          <button type="submit" class="btn btn-primary btn-block" ng-if="!c.showAdd">
+            Add Item
+          </button>
+          <button type="button" class="btn btn-primary btn-block" ng-click="c.update()" ng-if="c.showAdd">
+            Update
+          </button>
+          <button type="button" class="btn-secondary">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <div ng-show="c.showModal" class="custom-modal-overlay">
+      <div class="custom-modal">
+        <div class="custom-modal-header">
+          <h5>Detail Inventory</h5>
+          <button type="button" class="close-btn" ng-click="c.closeModal()">
+            ×
+          </button>
+        </div>
+        <div class="custom-modal-body">
+          <div class="row">
+            <div class="label" style="font-weight: 700 !important; font-size: 14px !important">
+              Item Name :
+            </div>
+            <div class="value">{{ data.detailInve.item_name }}</div>
+          </div>
+          <div class="row">
+            <div class="label" style="font-weight: 700 !important; font-size: 14px !important">
+              Item ID :
+            </div>
+            <div class="value">{{ data.detailInve.number }}</div>
+          </div>
+          <div class="row">
+            <div class="label" style="font-weight: 700 !important; font-size: 14px !important">
+              Updated on :
+            </div>
+            <div class="value">{{ data.detailInve.sys_updated_on }}</div>
+          </div>
+          <div class="row">
+            <div class="label" style="font-weight: 700 !important; font-size: 14px !important">
+              Created on :
+            </div>
+            <div class="value">{{ data.detailInve.sys_created_on }}</div>
+          </div>
+          <div class="row">
+            <div class="label" style="font-weight: 700 !important; font-size: 14px !important">
+              Created by :
+            </div>
+            <div class="value">{{ data.detailInve.sys_created_by }}</div>
+          </div>
+          <div class="row">
+            <div class="label" style="font-weight: 700 !important; font-size: 14px !important">
+              Updated by :
+            </div>
+            <div class="value">{{ data.detailInve.sys_updated_by }}</div>
+          </div>
+        </div>
+        <div class="custom-modal-footer">
+          <button type="button" class="btn-secondary" ng-click="c.closeModal()">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>]]></template>
+    </sp_widget>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</application>
+        <file_path/>
+        <instance_id>612674ef1be5b9986a85eb9b2d4bcb35</instance_id>
+        <instance_name>dev181071</instance_name>
+        <name>sp_widget_65408f6583de9a10260a55b6feaad396</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sp_widget"&gt;&lt;sp_widget action="INSERT_OR_UPDATE"&gt;&lt;category&gt;custom&lt;/category&gt;&lt;client_script&gt;&lt;![CDATA[api.controller=function(spModal,spUtil) {
+	/* widget controller */
+	var c = this;
+	var updateId = null;
+	c.showModal = false;
+	c.showAdd = false;
+	c.closeModal = function () {
+		c.showModal = false;
+	};
+	c.openModal = function () {
+		c.showModal = true;
+	};
+
+	//ADD
+	c.newInve = {};
+
+	c.addnewInve = function() {
+			var existingItem = c.data.inventories.find(function(inventoryItem) {
+					return inventoryItem.item_name === c.newInve.item_name;
+			});
+
+			if (existingItem) {
+					spUtil.addErrorMessage("The item name already exists in the inventory.");
+					return;
+			}
+
+			if (!c.newInve.quantity || c.newInve.quantity &lt;= 0 || isNaN(c.newInve.quantity)) {
+					spUtil.addErrorMessage("Quantity must be a positive number greater than 0.");
+					return;
+			}
+
+			if (!c.newInve.price || c.newInve.price &lt;= 0 || isNaN(c.newInve.price)) {
+					spUtil.addErrorMessage("Price must be a positive number greater than 0.");
+					return;
+			}
+
+			c.server.get({
+					action: "addnewInve",
+					newInve: c.newInve,
+					pageNumber: c.pageNumber,
+					pageSize: c.pageSize,
+			}).then(function(r) {
+					c.newInve = {};
+					c.data.inventories = r.data.inventories;
+					spUtil.addTrivialMessage("New inventory has been added successfully.");
+			}).catch(function(error) {
+					console.error('Error while adding new inventory:', error);
+					spUtil.addErrorMessage("An error occurred while adding the inventory.");
+			});
+	};
+
+
+	// Detail
+
+	c.detail = function(inveId){
+		c.showModal = true;
+		c.server.get({
+			action:"detailInve",
+			inveId:inveId
+		}).then(function(r){
+			c.data.detailInve = r.data.detailInve;
+		}).catch(function(e){
+			console.error('Error while Detail Inventory:', e);
+		})
+	}
+
+	//Update
+
+	c.fillUpdate = function(inveId) {
+        updateId = inveId;
+        c.showAdd = true;
+        c.server.get({
+            action: "fillField",
+            id: inveId
+        }).then(function(r) {
+            c.newInve.item_name = r.data.fillField.item_name;
+            c.newInve.quantity = Number(r.data.fillField.quantity);
+            c.newInve.price = Number(r.data.fillField.price);
+            c.newInve.category = r.data.fillField.category;
+            c.newInve.remarks = r.data.fillField.remarks;
+        }).catch(function(e) {
+            console.error('Error while Update Inventory:', e);
+        });
+    };
+
+   c.update = function() {
+    var existingItem = c.data.inventories.find(function(inventoryItem) {
+        return inventoryItem.item_name === c.newInve.item_name &amp;&amp; inventoryItem.sys_id !== updateId;
+    });
+		 
+
+    if (existingItem) {
+        spUtil.addErrorMessage("The item name already exists in the inventory.");
+        return;
+    }
+
+    var quantity = Number(c.newInve.quantity);
+    if (isNaN(quantity) || quantity &lt;= 0) {
+        spUtil.addErrorMessage("Quantity must be a positive number greater than 0.");
+        return;
+    }
+
+
+    var price = Number(c.newInve.price);
+    if (isNaN(price) || price &lt;= 0) {
+        spUtil.addErrorMessage("Price must be a positive number greater than 0.");
+        return;
+    }
+
+    c.server.get({
+        action: "updateInve",
+        newInve: c.newInve,
+        updateId: updateId
+    }).then(function(r) {
+        c.showAdd = false;
+        c.newInve = {};
+        c.data.inventories = r.data.inventories;
+        spUtil.addTrivialMessage("Inventory has been updated successfully.");
+    }).catch(function(e) {
+        console.error('Error while updating inventory:', e);
+        spUtil.addErrorMessage("An error occurred while updating the inventory.");
+    });
+	};
+
+	//Delete
+
+	c.delete = function (inveId) {
+    spModal.confirm("Are you sure you want to delete this Note record?").then(function (confirmed) {
+        if (confirmed) {
+            c.server.get({
+                action: "deleteInve",
+                inveId: inveId
+            }).then(function (r) {
+                spUtil.addTrivialMessage("Inventory has been deleted.");
+                c.data.inventories = r.data.inventories;
+            }).catch(function (e) {
+                console.error('Error while Delete Inventory:', e);
+                spUtil.addErrorMessage("Failed to delete the Inventory. Please try again.");
+            });
+        }
+    });
+	}
+
+	// Phân trang 
+
+	c.pageNumber = 1;
+	c.pageSize = 3; 
+	c.totalCount = 0;
+
+	c.loadPage = function (pageNumber) {
+		c.pageNumber = pageNumber;
+		c.server.get({
+			action: "getInventory",
+			pageNumber: c.pageNumber,
+			pageSize: c.pageSize,
+		}).then(function (r) {
+			c.data.inventories = r.data.inventories;
+			c.totalCount = r.data.totalCount;
+		}).catch(function (error) {
+			console.error('Error while fetching inventory:', error);
+		});
+	};
+	
+	c.getRoundedPageCount = function () {
+  return Math.ceil(c.totalCount / c.pageSize); 
+	};
+
+	c.loadPage(c.pageNumber);
+
+};]]&gt;&lt;/client_script&gt;&lt;controller_as&gt;c&lt;/controller_as&gt;&lt;css&gt;/* Card styling */
+.card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.card-header {
+  background-color: #f9f9f9;
+  padding: 15px;
+  font-size: 18px;
+  font-weight: bold;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+}
+
+.card-body {
+  padding: 20px;
+}
+
+/* Form layout */
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+/* Form groups */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+
+.form-group label {
+  margin-bottom: 5px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.form-group input {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* Align the button to the bottom */
+.form-group.align-self-end {
+  display: flex;
+  align-items: flex-end;
+}
+
+/* Button styling */
+
+
+.btn:hover {
+  background-color: #0056b3;
+}
+
+.btn-block {
+  width: 100%;
+}
+
+.main-table{
+  width : 100%;
+  height : auto;
+  border-radius: 8px;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+  margin-top:20px;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+
+thead{
+  background-color: black;
+  color :white;
+  border-radius: 8px;
+}
+
+.header{
+  text-align: center;
+  margin-bottom:20px;
+}
+
+.custom-btn {
+  height: 30px;
+  line-height: 30px;
+  text-align: center; 
+  display: inline-block; 
+  padding: 0 12px; 
+  font-size: 14px; 
+  vertical-align: middle;
+  margin-right:10px;
+}
+
+.custom-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+ 	display: block;
+  z-index: 1000;
+}
+
+.custom-modal {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+ 	width: 450px;
+  margin: 15% auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+   position: relative;
+}
+
+.custom-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.custom-modal-header h5 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.custom-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; 
+}
+
+.input_group {
+	display: flex;
+	align-items: center;
+  gap: 10px;
+}
+
+.input_growd {
+  flex: 1;
+}
+
+.input_inner label{
+  font-size: 14px;
+  font-weight: 500;
+  color: #3b3b3b;
+  min-width: 170px;
+  white-space: nowrap;
+  width: 100%;
+}
+
+.input_inner input,textarea, select {
+  width: 100%;
+	max-width: 100%;
+  height: 36px;
+  border: 1px solid #4b4b4b;
+  border-radius: 4px;
+  outline: none;
+  display: block;
+  padding:0 6px;
+  font-size: 14px; 
+  font-weight: 400;
+  color: #3b3b3b;
+  cursor: pointer;
+}
+
+
+.input_inner textarea {
+ 	min-width: 100%;
+  font-size: 16px; 
+  line-height: 2;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #ddd;
+  padding: 8px;
+  border-radius: 4px;
+  position: relative;
+}
+
+.label {
+  flex: 1;
+  color: black;
+  font-weight: 700;
+  border-right: 1px solid #ddd; 
+  padding-right: 8px;
+}
+
+.value {
+  flex: 1;
+  text-align: center;
+  padding-left: 8px;
+}
+
+.custom-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 26px;
+}
+
+.btn-secondary {
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+
+.btn-secondary:hover {
+  background-color: #e0e0e0;
+}
+
+&lt;/css&gt;&lt;data_table&gt;sp_instance&lt;/data_table&gt;&lt;demo_data/&gt;&lt;description/&gt;&lt;docs/&gt;&lt;field_list/&gt;&lt;has_preview&gt;true&lt;/has_preview&gt;&lt;id&gt;add_and_list_inventory&lt;/id&gt;&lt;internal&gt;false&lt;/internal&gt;&lt;link&gt;&lt;![CDATA[function link(scope, element, attrs, controller) {  }]]&gt;&lt;/link&gt;&lt;name&gt;Add and List Inventory&lt;/name&gt;&lt;option_schema/&gt;&lt;public&gt;false&lt;/public&gt;&lt;roles/&gt;&lt;script&gt;&lt;![CDATA[(function() {
+	/* Gán dữ liệu cho object 'data' */
+	data.detailInve = {};
+	var pageNumber = 1; 
+	var pageSize = 3;   
+	data.inventories = getInventory(pageNumber, pageSize);
+	//data.totalCount = getInventoryCount();
+
+	if (input) {
+		if (input.action === "getInventory") {
+			pageNumber = input.pageNumber;
+			pageSize = input.pageSize;    
+			data.inventories = getInventory(pageNumber, pageSize);
+			data.totalCount = getInventoryCount();
+		}
+
+		if (input.action === "addnewInve") {
+			var newInve = input.newInve;
+			try {
+				var ive = new GlideRecord('x_1568427_inventor_item');
+				ive.initialize();
+				ive.item_name = newInve.item_name;
+				ive.quantity = newInve.quantity;
+				ive.price = newInve.price;
+				ive.category = newInve.category;
+				ive.remarks = newInve.remarks;
+				ive.insert();
+			} catch (e) {
+				gs.error('Lỗi thêm mới dữ liệu: ' + e.message);
+			}
+		}
+
+		if (input.action === "detailInve") {
+			var inveId = input.inveId;
+			data.detailInve = detailInve(inveId);
+		}
+
+		if (input.action === "fillField") {
+			var id = input.id;
+			data.fillField = detailInve(id);
+		}
+
+		if (input.action === "updateInve") {
+			var gr = new GlideRecord('x_1568427_inventor_item');
+			if (gr.get(input.updateId)) {
+				if (input.newInve.item_name) { gr.item_name = input.newInve.item_name; }
+				if (input.newInve.quantity) { gr.quantity = input.newInve.quantity; }
+				if (input.newInve.price) { gr.price = input.newInve.price; }
+				if (input.newInve.category) { gr.category = input.newInve.category; }
+				if (input.newInve.remarks) { gr.remarks = input.newInve.remarks; }
+				gr.update();
+			}
+		}
+
+		if (input.action === "deleteInve") {
+			var inventor = new GlideRecord('x_1568427_inventor_item');
+			if (inventor.get(input.inveId)) {
+				inventor.deleteRecord();
+			}
+		}
+	}
+	data.inventories = getInventory(pageNumber, pageSize);
+})();
+
+function getInventory(pageNumber, pageSize) {
+	var inventories = [];
+	try {
+		var ive = new GlideRecord('x_1568427_inventor_item');
+		ive.orderBy('number');
+		ive.query();
+		var start = (pageNumber - 1) * pageSize; 
+		var end = start + pageSize;             
+		var index = 0;                          
+
+		while (ive.next()) {
+			if (index &gt;= start &amp;&amp; index &lt; end) {
+				inventories.push({
+					sys_id: ive.getValue('sys_id'),
+					item_name: ive.getValue('item_name'),
+					number: ive.getValue('number'),
+					quantity: ive.getValue('quantity'),
+					price: ive.getValue('price'),
+					category: ive.getValue('category'),
+					remarks: ive.getValue('remarks'),
+				});
+			}
+			index++;
+			if (index &gt;= end) break; 
+		}
+	} catch (e) {
+		gs.error('Lỗi lấy dữ liệu: ' + e.message);
+	}
+	return inventories;
+}
+
+function detailInve(inveId) {
+	var detailInve = {};
+	try {
+		var gr = new GlideRecord('x_1568427_inventor_item');
+		if (gr.get(inveId)) {
+			$sp.getRecordValues(detailInve, gr, 'item_name,number,quantity,price,category,remarks,sys_updated_on,sys_created_on,sys_created_by,sys_updated_by');
+		}
+	} catch (e) {
+		gs.error('Lỗi lấy chi tiết: ' + e.message);
+	}
+	return detailInve;
+}
+
+function getInventoryCount() {
+	var count = 0;
+	try {
+		var gr = new GlideRecord('x_1568427_inventor_item');
+		gr.query();
+		count = gr.getRowCount();
+	} catch (e) {
+		gs.error('Lỗi đếm dữ liệu: ' + e.message);
+	}
+	return count;
+}
+]]&gt;&lt;/script&gt;&lt;servicenow&gt;false&lt;/servicenow&gt;&lt;sys_class_name&gt;sp_widget&lt;/sys_class_name&gt;&lt;sys_created_by&gt;admin&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2024-12-06 02:51:03&lt;/sys_created_on&gt;&lt;sys_id&gt;65408f6583de9a10260a55b6feaad396&lt;/sys_id&gt;&lt;sys_mod_count&gt;167&lt;/sys_mod_count&gt;&lt;sys_name&gt;Add and List Inventory&lt;/sys_name&gt;&lt;sys_package display_value="Inventory Management" source="x_1568427_inventor"&gt;c57032e1839e9a10260a55b6feaad36d&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_scope display_value="Inventory Management"&gt;c57032e1839e9a10260a55b6feaad36d&lt;/sys_scope&gt;&lt;sys_update_name&gt;sp_widget_65408f6583de9a10260a55b6feaad396&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;sonnguyen&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2024-12-11 03:42:49&lt;/sys_updated_on&gt;&lt;template&gt;&lt;![CDATA[&lt;body&gt;
+  &lt;div&gt;
+    &lt;div class="card mb-4 mt-4"&gt;
+      &lt;div class="card-header" ng-if="!c.showAdd"&gt;Add New Item&lt;/div&gt;
+      &lt;div class="card-header" ng-if="c.showAdd"&gt;Update Item&lt;/div&gt;
+      &lt;div class="card-body"&gt;
+        &lt;form id="addItemForm" ng-submit="c.addnewInve()"&gt;
+          &lt;div class="form-row"&gt;
+            &lt;div class="form-group col-md-2"&gt;
+              &lt;label for="itemName"&gt;Item Name&lt;/label&gt;
+              &lt;input type="text" class="form-control" id="itemName" required ng-model="c.newInve.item_name" /&gt;
+            &lt;/div&gt;
+            &lt;div class="form-group col-md-2"&gt;
+              &lt;label for="quantity"&gt;Quantity&lt;/label&gt;
+              &lt;input type="number" class="form-control" id="quantity" ng-model="c.newInve.quantity" required /&gt;
+            &lt;/div&gt;
+            &lt;div class="form-group col-md-2"&gt;
+              &lt;label for="unitPrice"&gt;Unit Price&lt;/label&gt;
+              &lt;input type="number" class="form-control" ng-model="c.newInve.price" required /&gt;
+            &lt;/div&gt;
+            &lt;div class="form-group col-md-2"&gt;
+              &lt;label for="category"&gt;Category&lt;/label&gt;
+              &lt;select class="form-control" id="category" ng-model="c.newInve.category" required&gt;
+                &lt;option value="" disabled selected&gt;Select Category&lt;/option&gt;
+                &lt;option value="Electronics"&gt;Electronics&lt;/option&gt;
+                &lt;option value="Furniture"&gt;Furniture&lt;/option&gt;
+                &lt;option value="Clothing"&gt;Clothing&lt;/option&gt;
+                &lt;option value="Food"&gt;Food&lt;/option&gt;
+              &lt;/select&gt;
+            &lt;/div&gt;
+            &lt;div class="form-group col-md-2"&gt;
+              &lt;label for="remarks"&gt;Remarks&lt;/label&gt;
+              &lt;input type="text" class="form-control" ng-model="c.newInve.remarks" id="remarks" /&gt;
+            &lt;/div&gt;
+            &lt;div class="form-group col-md-12"&gt;
+              &lt;label for="Comment"&gt;Comment&lt;/label&gt;
+              &lt;textarea name="" id="" class="form-control"&gt;&lt;/textarea&gt;
+            &lt;/div&gt;
+            &lt;div class="form-group col-md-2 align-self-end"&gt;
+              &lt;button type="submit" class="btn btn-primary btn-block" ng-if="!c.showAdd"&gt;
+                Add Item
+              &lt;/button&gt;
+              &lt;button type="button" class="btn btn-primary btn-block" ng-click="c.update()" ng-if="c.showAdd"&gt;
+                Update
+              &lt;/button&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/form&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div class="main-table"&gt;
+      &lt;table class="table table-hover"&gt;
+        &lt;thead&gt;
+          &lt;tr&gt;
+            &lt;th scope="col"&gt;Index&lt;/th&gt;
+            &lt;th scope="col"&gt;Item Name&lt;/th&gt;
+            &lt;th scope="col"&gt;Item ID&lt;/th&gt;
+            &lt;th scope="col"&gt;Quantity&lt;/th&gt;
+            &lt;th scope="col"&gt;Unit Price&lt;/th&gt;
+            &lt;th scope="col"&gt;Category&lt;/th&gt;
+            &lt;th scope="col"&gt;Remarks&lt;/th&gt;
+            &lt;th scope="col"&gt;Actions&lt;/th&gt;
+          &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+          &lt;tr ng-repeat="ive in data.inventories"&gt;
+            &lt;td&gt;{{(c.pageNumber - 1) * c.pageSize + $index + 1 }}&lt;/td&gt;
+            &lt;td&gt;{{ ive.item_name }}&lt;/td&gt;
+            &lt;td&gt;{{ ive.number }}&lt;/td&gt;
+            &lt;td&gt;{{ ive.quantity }}&lt;/td&gt;
+            &lt;td&gt;{{ ive.price }}&lt;/td&gt;
+            &lt;td&gt;{{ ive.category }}&lt;/td&gt;
+            &lt;td&gt;{{ ive.remarks }}&lt;/td&gt;
+            &lt;td&gt;
+              &lt;button type="button" class="btn btn-info custom-btn" ng-click="c.detail(ive.sys_id)"&gt;
+                Detail
+              &lt;/button&gt;
+              &lt;button type="button" class="btn btn-warning custom-btn" ng-click="c.fillUpdate(ive.sys_id)"&gt;
+                Update
+              &lt;/button&gt;
+              &lt;button type="button" class="btn btn-danger custom-btn" ng-click="c.delete(ive.sys_id)"&gt;
+                Delete
+              &lt;/button&gt;
+            &lt;/td&gt;
+          &lt;/tr&gt;
+        &lt;/tbody&gt;
+      &lt;/table&gt;
+    &lt;/div&gt;
+
+    &lt;div class="pagination-controls"&gt;
+      &lt;button class="btn btn-secondary" ng-disabled="c.pageNumber === 1" ng-click="c.loadPage(c.pageNumber - 1)"&gt;
+        Previous
+      &lt;/button&gt;
+
+      &lt;span&gt;Page {{ c.pageNumber }} of {{ c.getRoundedPageCount() }}&lt;/span&gt;
+
+      &lt;button class="btn btn-secondary" ng-disabled="c.pageNumber &gt;= c.getRoundedPageCount()"
+        ng-click="c.loadPage(c.pageNumber + 1)"&gt;
+        Next
+      &lt;/button&gt;
+    &lt;/div&gt;
+
+    &lt;div class="custom-modal-overlay" style="display: none"&gt;
+      &lt;div class="custom-modal"&gt;
+        &lt;div class="custom-modal-header"&gt;
+          &lt;h5&gt;Add Inventory&lt;/h5&gt;
+          &lt;button type="button" class="close-btn"&gt;×&lt;/button&gt;
+        &lt;/div&gt;
+        &lt;div class="custom-modal-body"&gt;
+          &lt;div class="input_inner"&gt;
+            &lt;label for="itemName"&gt;Item name:&lt;/label&gt;
+            &lt;input type="text" id="itemName" ng-model="" /&gt;
+          &lt;/div&gt;
+
+          &lt;div class="input_group"&gt;
+            &lt;div class="input_inner input_growd"&gt;
+              &lt;label for="quantity"&gt;Quantity:&lt;/label&gt;
+              &lt;input type="number" id="quantity" ng-model="" /&gt;
+            &lt;/div&gt;
+            &lt;div class="input_inner"&gt;
+              &lt;label for="quantity"&gt;:&lt;/label&gt;
+              &lt;input type="number" id="quantity" ng-model="" /&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+
+          &lt;div class="input_inner"&gt;
+            &lt;label for="unitPrice"&gt;Unit price:&lt;/label&gt;
+            &lt;input type="text" id="unitPrice" ng-model="" /&gt;
+          &lt;/div&gt;
+
+          &lt;div class="input_inner"&gt;
+            &lt;label for="category"&gt;Category:&lt;/label&gt;
+            &lt;select id="caregory" ng-model=""&gt;
+              &lt;option value="" disabled selected&gt;Select Category&lt;/option&gt;
+              &lt;option value="Electronics"&gt;Electronics&lt;/option&gt;
+              &lt;option value="Furniture"&gt;Furniture&lt;/option&gt;
+              &lt;option value="Clothing"&gt;Clothing&lt;/option&gt;
+              &lt;option value="Food"&gt;Food&lt;/option&gt;
+            &lt;/select&gt;
+          &lt;/div&gt;
+
+          &lt;div class="input_inner"&gt;
+            &lt;label for="remarks"&gt;Remarks:&lt;/label&gt;
+            &lt;textarea id="remarks" ng-model=""&gt;&lt;/textarea&gt;
+          &lt;/div&gt;
+
+          &lt;div class="input_inner"&gt;
+            &lt;label for="comment"&gt;Comments:&lt;/label&gt;
+            &lt;textarea id="comment" ng-model=""&gt;&lt;/textarea&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="custom-modal-footer"&gt;
+          &lt;button type="submit" class="btn btn-primary btn-block" ng-if="!c.showAdd"&gt;
+            Add Item
+          &lt;/button&gt;
+          &lt;button type="button" class="btn btn-primary btn-block" ng-click="c.update()" ng-if="c.showAdd"&gt;
+            Update
+          &lt;/button&gt;
+          &lt;button type="button" class="btn-secondary"&gt;Close&lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div ng-show="c.showModal" class="custom-modal-overlay"&gt;
+      &lt;div class="custom-modal"&gt;
+        &lt;div class="custom-modal-header"&gt;
+          &lt;h5&gt;Detail Inventory&lt;/h5&gt;
+          &lt;button type="button" class="close-btn" ng-click="c.closeModal()"&gt;
+            ×
+          &lt;/button&gt;
+        &lt;/div&gt;
+        &lt;div class="custom-modal-body"&gt;
+          &lt;div class="row"&gt;
+            &lt;div class="label" style="font-weight: 700 !important; font-size: 14px !important"&gt;
+              Item Name :
+            &lt;/div&gt;
+            &lt;div class="value"&gt;{{ data.detailInve.item_name }}&lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div class="row"&gt;
+            &lt;div class="label" style="font-weight: 700 !important; font-size: 14px !important"&gt;
+              Item ID :
+            &lt;/div&gt;
+            &lt;div class="value"&gt;{{ data.detailInve.number }}&lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div class="row"&gt;
+            &lt;div class="label" style="font-weight: 700 !important; font-size: 14px !important"&gt;
+              Updated on :
+            &lt;/div&gt;
+            &lt;div class="value"&gt;{{ data.detailInve.sys_updated_on }}&lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div class="row"&gt;
+            &lt;div class="label" style="font-weight: 700 !important; font-size: 14px !important"&gt;
+              Created on :
+            &lt;/div&gt;
+            &lt;div class="value"&gt;{{ data.detailInve.sys_created_on }}&lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div class="row"&gt;
+            &lt;div class="label" style="font-weight: 700 !important; font-size: 14px !important"&gt;
+              Created by :
+            &lt;/div&gt;
+            &lt;div class="value"&gt;{{ data.detailInve.sys_created_by }}&lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div class="row"&gt;
+            &lt;div class="label" style="font-weight: 700 !important; font-size: 14px !important"&gt;
+              Updated by :
+            &lt;/div&gt;
+            &lt;div class="value"&gt;{{ data.detailInve.sys_updated_by }}&lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="custom-modal-footer"&gt;
+          &lt;button type="button" class="btn-secondary" ng-click="c.closeModal()"&gt;
+            Close
+          &lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/body&gt;]]&gt;&lt;/template&gt;&lt;/sp_widget&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>800632560</payload_hash>
+        <record_name>Add and List Inventory</record_name>
+        <reverted_from/>
+        <source>89e1137283d65210260a55b6feaad38b</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>sonnguyen</sys_created_by>
+        <sys_created_on>2024-12-11 03:42:49</sys_created_on>
+        <sys_id>f41c345f83921210260a55b6feaad3cd</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>193b3cff1630000001</sys_recorded_at>
+        <sys_updated_by>sonnguyen</sys_updated_by>
+        <sys_updated_on>2024-12-11 03:42:49</sys_updated_on>
+        <type>Widget</type>
+        <update_guid>7c1c345ffe9212103502084a7ffcc3cc</update_guid>
+        <update_guid_history>7c1c345ffe9212103502084a7ffcc3cc:800632560,0c8afcdbaa92121030b3d9a32aa77a6a:853593928,b87af8db79921210b92e10ba8d49d33e:-1074198073,d44ab4db97921210ee1391a70d6b632f:348507659,503af0dbe69212109286cedf383ce7a2:-1483820989,f6f9f0dbb3921210cf41631666a52ea8:1086325156,bbd9bc9b2e921210f6bfc4531106cfdc:864993452,07b9bc9bb99212100f332063481340c3:-1410802748,2e79b89bd2921210aefcb4f9cf332d5f:-1520019295,95e8b85bae9212105852e3d1d8e318c0:211455130,00c8745b53921210ae8730e88afc74a2:-1153622131,e9b8b05b38921210fd40e677985725ae:291860991,7688b45b64921210f193b3aa5fd3d9ca:-1402254706,ab783c1b2d921210098b581c52c958de:744063242,fa483c1b3792121048ff755cf1adf0d6:-2134967644,94483c1b4f921210478f9dd362cdeeea:221353892,6118781b359212104c95c016041ab4f9:-1703461192,e1f7381b2492121033d56a93eeb7226d:568402368,92e7f41b4c921210ac8f3f486977b708:1196526672,6ad7f41bc392121082191d494aeac801:-1136072417,25d7b89738921210134d98d41a586a51:-147593453,d056789736921210bd19a3a03247719d:591469963,b3363897ae9212104ec0a8af7ccd1858:1564697854,1406f097fb92121033160a5edae85e33:-297207142,54b57c5709921210cfc6b4efaa4db613:-1443517836,cf85b05747921210278d699cd053e3bd:-1385114491,dd55f0574c9212102ad0426d5205d52c:1057549707,50557457cd9212101f1ebcde8ef6657d:-329319252,8535705762921210240fffa9d4212614:-1417886504,6f153057ea921210965cee80ef1da7a1:1533220577,bbf4bc9355921210e40ec5ecd9687777:-516418670,c7e4b8d30e921210be719e0e53f7b829:-2138713349,28d474d3599212101e2a19aa114a68fd:-775384147,3cc334d3a49212102dea93567c510f24:1686021850,58b3fc1383921210f6a2ddaa383bdb22:1344892902,549370d3b49212105bf79fbd976a1e26:941756772,25527853789212109dfe0f141e5dff4b:348327527,e202b053ce9212109be6428992d2ed7e:415202342,4ad1bc13f19212109ab8e077bf5cb346:492078937,7251f05f4752121010ac3ab76ab19d9b:677689630,4bdfacdb6452121051ed9c8c80b0f2dc:-965001865,7feb2c5ba652121055f038602f8a0a10:-1468929276,5f8b37e2565a1210d461a510aaea511c:-835849301,9bb93762bf5a1210b898b9e7c1077a93:-1309434440,e769b3624c5a1210112d51b01bdcc25f:1897161538,ed697362265a1210f5cabac7db0c5a8c:919381748,4ef7b3eeda1a12106ab7a431bee9e68a:2053009115,b2b73baef51a121044a24b6183d34529:-217227983,1097f3ae491a1210a5b7497c727938da:2004681806,835773ae071a1210e3d4a1346b0e7e7b:-1549949384,388ee722aa1a12109ee33103af9f936f:2004681806,9efd67ee9ed61210ea8c8529a924eae4:-910741117,8e8ceb6e63d612109cfdbd807d402bca:27075083,d16be32ee0d612107f76ba16ae4c144e:458829094,f40ba7ead3d6121008430d07836cd24d:963254022,9ee8ab2a3fd612104b21972774c4792e:-1181981666,3411abe2d7d61210879f11904c3984be:341085430,9af0e7a2dcd612106ee4fdfc08fd8c9b:-1530491099,9bc0a7e29ed612103c17ed0643ea417b:-1484410355,1f0f5fee8f961210b675079795d00bf9:-391222874,ca0f13629dd61210219296f7639ff164:-1276493895,a90fdf22cdd612100b2a35752701c9df:-1003220138,946d976e679612107a29a68bed5a50c4:-1799635362,f5fcdf6e5f96121077c09042eef0edbb:2023814569,abbcdf6e799612109e953c7ef0d2e86b:871710510,e3ac9f6e9f961210efe0cd598effb105:637704060,185c176ebc961210091c1aef2c9bc02b:-66823756,4e2cdfeabd96121049dac34b71943a98:-2014824141,791cdb2ea896121026bab2c558f736ef:1883581950,05ebdfea0a961210e2cd3ed8934a3e91:1749093523,71dbdbea28961210eff17bf683f1f3c1:-711934881,29dbdfeac796121089ab721a3b061570:1665033598,bd9b972e5d9612104c06ebd9cb70d18e:-600671925,d18b1baa22961210653e39c8d44f3691:858991351,8b3b5baae6961210f392005bf106fe7a:-1471976626,991bdbeadf96121082a288623ee249ac:-379231321,681bdbea00961210e44e9bdc94e6cc49:-1069405858,1eea1faa4a961210ca023f928f0eb161:-1471976626,85ead7eab396121090bb13754feb1741:-191718281,1cb9172a339612101764f176af411d74:541061230,3e395fa65b96121083c4f72c8dea763e:2055531969,6e789fa6de96121035b3addc4b92984d:487483769,904a3222c31612104507a5e99331c4ae:-653571669,5a3a3262641612105b476b4ca87da706:8406249,9e697662e81612101547ac3f828d75e0:748617592,a649b26208161210893fb30bc075ade7:-1543911693,33197e22eb161210d0591e0f82209334:748617592,4e09b2eea7d2121078ab729223004e84:200330309,6bf8762277161210f5c1d8be03ba122b:525204308,70f8b2ee4cd212103675c68477b2687c:1839256583,8a2872ee9cd21210f79e38563d2e75fd:748617592,e2e77aae28d2121064dfa580023dc663:-638733228,b0b73aeaded21210782e3f01ded1e8e0:1016911462,f4a7f2ae2ed21210388adce8a8e5acc4:-157148873,0f777eae30d21210d596dbaf95e59e8e:1614285020,f627f6ae1cd21210148c60e355e99d55:-614845881,7bf672aeebd21210216fd0d79d91bb54:737094919,90e672aeddd21210518ac59d82b1e54e:538456556,1b95baea8ad2121099d3e03765a8693b:576896710,9965f22e80d2121091e5b807cdb6d0dd:52550844,5715beeaa4d212104e0b67f127641979:457540593,33e4baea0dd2121000e87004b55ee896:924387595,e5e432aa04d21210775aa80ea8ff1245:942950473,c8a4feaa15d212104420d44618fbf655:1613087781,739432aa3ad212103fab241ffb3cfee8:-741666650,1564b66a58d2121000728faefe3cfbde:-616896693,a954b66a79d212107d37f9dbcba724c2:1171576807,40a332aa90d212109fc23eb40bb4b101:-606949906,dd83b26a76d2121089964e84a299bae8:-139200546,fc33b2e6aad21210836bf9c507395b83:-906773987,15827ee6a4d21210db9425f57411ccd5:1693831698,b4723aa698d21210047b615631da4d9a:-70156373,4642f22a0bd212105ecb00c6588369ee:-1817346931,14127aa6fed21210d9ec44314da49549:-1371360794,d8027ee6b3d21210c7a3adc1d4ee4ace:648688583,5ef1fea6a1d2121076c3ad2c9a7d7d34:308792347,8f61b2e64ad21210ea5d74c20a0f023f:-139200546,9fd0be2290d2121063b23107509b15bb:1670347476,d900fa2651d212103e9d9b64a536bd02:618324624,27dfa2661dd2121082de255b1c5446dd:-863028458,59df6266e7d21210481133d6e480b4fd:618324624,9d8faea29cd212101907d810613f8070:1479016675,518aae6e2a9212108d93eac4810b2cc7:1516106980,2f395b627d96121026084965a5f27ff5:-855514188,2f78db62bb961210e1a960e43dd17660:-1485906433,66581fa267961210353fcfd7189a8959:497667350,1c281f62be961210cb6aafc28eb8fcac:239662745,4a87db62f3961210f6c434b0b9aa908c:-1516977223,2277db62f79612107191d6dce12f121b:239662745,e267572280961210c638737f9b9b4b07:1470155133,8de6d322b8961210bea719bbedf6bfb4:239662745,83265322fe96121053e422ddcde59db1:-1474784551,5a055bae8e56121022d0ec99bbbbcb97:405186588,9b141b6e8f5612105e7f3ec7ef1f430f:-1628995572,e114d76e0156121002e4938cf9c71c52:-816798642,a8a39f2a0d561210e33b7aed74b1e9ae:134278592,bd739f2aed561210cbce307b316db3a7:-145358564,3f235b6a3256121013974bba28096384:288222261,71dadcb1e596da10289ef5422d281e33:618324624,be5a5835fb96da10f8fbc54e8bb80e1d:76671893,7569dcb14996da10211adaeeea4fbc6f:105614491,cc39dcb10c96da10cb57aa4ab3ee3505:-985812694,7e09d8b1c596da1013a6bce91c6a6e95:-279779351,259850b1c496da10ef860dcd34d98ddd:-446309692,961698bda356da10df43cea7b223b1d3:-1043435901,dad558bd7956da101f75a0f31cd4c0a9:-223549514,8725903dad56da106d7272bab82ae684:-1232219064,b52550bd0656da103b639e1a62039f3f:-2024233891,b105dcb9d256da100c254573546b7bd1:-1383754752,57f41cb9e556da106d42016e89736bf2:-300132962,7393503d0456da1024bb3681371e42ea:2051492524,07729079e256da10c380e170dcf6ed91:525933390,bd5258b9e056da10ce5ed7115be3d977:1948013240,fb02d0b93d56da100da960e9c38e60b0:-961941978,d871d0795a56da102d81f0f3acae3209:214675277,412194b5c756da108be5eaaefdb61205:-909397605,91ce8c75d656da1014bb28bd3abfae72:-162847781,7c8e00b50d56da103249927837a55c42:553265003,e35e0c750d56da108e5219c31290fbc1:-992592513,d93ec0f17d56da105fe176446065130a:-1648895368,a26c08f14b56da105cd84caf63352e2e:-1243199892,62eb0cb19e56da1013772d6bfb805f64:-1051077019,c7cb4c71ac56da10e3d6814f9ea51831:1439068637,fc0b4c712256da100b19d1ed4dc8b92a:176921452,39ca08711b56da10360d53c441668daf:2125359100,91b948fd8016da10fd9d1e5be80c93d0:-806366834,949908fd5716da101767cb37c061632e:-633916233,ac298cbd4916da10b68353558fca1270:2120466026,45194cbdfe16da10a13a720737d28cb6:865754792,f309c0fdfe16da1066489f746dc2f4a8:-999922000,cfd88cbd6e16da10d6c6e4184e68a326:1796040376,0198487d6716da10629ba84d067ef660:-1505500641,56d7007d5d16da10ccaf48d2bf51c5f2:1707839079,f59744f95816da106fd73fbb48ddcb68:130134327,0e37403d3d16da109702899004533a18:-1201125603,cfd6c8796516da1010b7118a8b5603b7:-273417319,3526c4b94116da10154d92a7b910d44d:1368078159,ce858479dd16da10482b524ab10795e2:-324422258,aa45c0b1e516da1077ab6694a7d24fdd:-200027427,bc1500b5b716da108c2f59580cdc2a2e:-553893537,582008b17016da10c78def26e0dc501c:-388580973,dd6d73218516da1021a0b8c87ae8dcdd:-1674387496,195d7b6dd9d2da1062809be844aca3c4:99031601,788cfbadcad2da1029158920c603ea0f:1872119118,566cf3ada8d2da10c2ccdc0a68eab24b:572490497,053cfbade3d2da10710d01c9dba12009:635051783,95cbb76da6d2da10e520e1ffa9bda812:-851235558,afab776d48d2da108af64c8ed1027416:1376711167,f11bff2d0bd2da1009b0afd53a197ccd:-2105254340,9fcaff2dbed2da108281e862170d2dc6:974013400,50f97be94fd2da102bb4122ff47e9a7e:1638801229,82a97ba963d2da10a5fc8ef83ce7f139:-2105254340,1a19fba9b7d2da108712c1f34a44b694:766887347,fcf83ba9b9d2da1020cc0fc62a94e8e8:-1921983083,9fe83ba956d2da10f4979b0c3f180809:-845827739,8ca8b3e55fd2da10ee7e4e0ecce3e4e4:1192461084,86583b65d4d2da104bdd71488837e648:-1649626259,b0853325d9d2da1016a51cf7ac25ad00:467280466,90b4ffe190d2da101be215e32892bcc1:1530643394,e8637be1dad2da10a32581d582024793:-276917867,2a137be18fd2da102c05b29b2be2da65:55024273,4c0e1fa94352da10f26d0dc2a79fb6a5:1627206037,f6cddba97452da10fccf256270c2495d:-42356542,02bd5ba98752da10a14b63196d6189ab:-1238601957,008dd769b652da10cebacf83480d6d6c:1542865665,4b4d1f694552da10c2cc820c1bf176ea:1915167648,cdac17691a52da10a8a193a54933cc6c:-1238601957,b88c5369f252da1001acc4f3855dd79b:1738807148,b54c53290b52da10f088ede1ee6ac31a:-1899614476,78ab1fe54052da10555e924b9669680c:877294703,417bd765b252da100dc99835b3d2ccc8:-473486302,68fadfa53452da10c198133fd79f0446:1437480028,6579d36d8d12da104da092a0e2d981fa:974436304,7c989f218952da1005007fb6dc09a499:1410521856,fdb5d721a752da1084bf6b2d7cacb015:1692594240,998597217252da10548c3fb5b96479a3:-462140587,e9555fede912da1029505c751a745772:1921807266,e7b74b21fa12da101b2ff95489676371:2027001679,cfa7c3219612da1030b58a28eb90434b:1178880762,d07787ed7ede9a10a1ac5c9dd285f717:-725788536,605703219212da10d762bda4406a0b9a:22667230,7437cbed62de9a10c413c95b87aab2a8:-835335361,95270bed55de9a10a3c08c2f639faafd:-945959944,c017cbedf0de9a10b1ac7f4129249a5a:-1482521566,8ae683edb4de9a10f2a2e73a5942e116:-835335361,0f65032dffde9a10c9570622d265a40d:-683313375,41f4432d4ede9a1077785f71aa57a569:-1108135105,33f34fe934de9a108b6a516e39d20de4:-785808449,3e5343e980de9a10e7fa5455e1c82999:806338757,7af243a9d0de9a10d5562771d8f8109a:-1851183865,d8800be590de9a10fa79b1ae411ef02b:-1450049281,61408f656dde9a1074beb670a4dea499:139638380</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="Add and List Inventory">962c211b83961210260a55b6feaad387</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>sonnguyen</sys_created_by>
+        <sys_created_on>2024-12-11 07:12:55</sys_created_on>
+        <sys_db_object display_value="" name="sp_widget">sp_widget</sys_db_object>
+        <sys_id>2d5ae6530f3b424b854ab893f5061af1</sys_id>
+        <sys_metadata>65408f6583de9a10260a55b6feaad396</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>Add and List Inventory</sys_name>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_scope_delete display_value="">861d2658792a49508d448ee8b3268100</sys_scope_delete>
+        <sys_update_name>sp_widget_65408f6583de9a10260a55b6feaad396</sys_update_name>
+        <sys_update_version display_value="sp_widget_65408f6583de9a10260a55b6feaad396">f41c345f83921210260a55b6feaad3cd</sys_update_version>
+        <sys_updated_by>sonnguyen</sys_updated_by>
+        <sys_updated_on>2024-12-11 07:12:55</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

@@ -1,0 +1,547 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="DELETE">
+        <category>custom</category>
+        <client_script><![CDATA[api.controller=function() {
+  /* widget controller */
+  var c = this;
+	
+		// Phân trang 
+
+	c.pageNumber = 1;
+	c.pageSize = 10; 
+	c.totalCount = 0;
+
+	c.loadPage = function (pageNumber) {
+		c.pageNumber = pageNumber;
+		c.server.get({
+			action: "getHistory",
+			pageNumber: c.pageNumber,
+			pageSize: c.pageSize,
+		}).then(function (r) {
+			c.data.histories = r.data.histories;
+			console.log("11111",r.data.histories)
+			c.totalCount = r.data.totalCount;
+		}).catch(function (error) {
+			console.error('Error while fetching inventory:', error);
+		});
+	};
+
+	c.getRoundedPageCount = function () {
+		return Math.ceil(c.totalCount / c.pageSize); 
+	};
+
+	c.loadPage(c.pageNumber);
+};]]></client_script>
+        <controller_as>c</controller_as>
+        <css>body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.title {
+  border-top: 1px solid #ddd;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  display: inline-block;
+  padding: 0 16px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  background-color:  #f7f7f7;
+  
+}
+
+.title h3 {
+  line-height: 40px;
+  height: 40px;
+  margin : 0;
+}
+
+.layout_wrapper {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  margin: 0 auto;
+}
+
+.layout_wrapper h5 {
+  margin: 0;
+  padding-left: 16px;
+  line-height: 40px;
+  background-color: #f7f7f7;
+  border-bottom: 1px solid #ddd;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table_inner {
+  margin: 16px;
+  overflow: auto;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+th {
+  background-color: #343a40;
+  color: white;
+}
+
+tr:hover {
+  color: #212529;
+  background-color: rgba(0, 0, 0, 0.075);
+}
+.pagination-controls{
+margin : 20px
+}
+</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>true</has_preview>
+        <id>inout_history</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>InOut_History</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+	/* populate the 'data' object */
+	/* e.g., data.table = $sp.getValue('table'); */
+	var pageNumber = 1; 
+	var pageSize = 3;   
+	data.histories = getHistory(pageNumber, pageSize);
+
+	if (input) {
+		if (input.action === "getHistory") {
+			pageNumber = input.pageNumber;
+			pageSize = input.pageSize;    
+			data.histories = getHistory(pageNumber, pageSize);
+			data.totalCount = getHistoryCount();
+		}
+		
+		data.histories = getHistory(pageNumber, pageSize);
+		data.totalCount = getHistoryCount();
+	}
+})();
+
+function getHistory(pageNumber, pageSize) {
+	var histories = [];
+	try {
+		var his = new GlideRecord('x_1568427_inventor_transaction_history');
+		his.orderByDesc('sys_created_on')
+		his.query();
+		var start = (pageNumber - 1) * pageSize; 
+		var end = start + pageSize;             
+		var index = 0;                          
+
+		while (his.next()) {
+			if (index >= start && index < end) {
+				histories.push({
+					sys_id: his.getValue('sys_id'),
+					time: his.getValue('time'),
+					action_by: his.getValue('action_by'),
+					type: his.getDisplayValue('type'),
+					description: his.getValue('description'),
+					remarks: his.getValue('remarks'),
+					item_name: his.getValue('item_name'),
+					quantity_old: his.getValue('quantity_old'),
+					quantity_new: his.getValue('quantity_new'),
+					quantity_changed: his.getValue('quantity_changed'),
+					item_id: his.getDisplayValue('item_id'),
+					borrow_id: his.getValue('borrow_id'),
+					start:start,
+				});
+			}
+			index++;
+			if (index >= end) break; 
+		}
+	} catch (e) {
+		gs.error('Lỗi lấy dữ liệu: ' + e.message);
+	}
+	return histories;
+}
+
+function getHistoryCount() {
+	var count = 0;
+	try {
+		var gr = new GlideRecord('x_1568427_inventor_transaction_history');
+		gr.query();
+		count = gr.getRowCount();
+	} catch (e) {
+		gs.error('Lỗi đếm dữ liệu: ' + e.message);
+	}
+	return count;
+}]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>sonnguyen</sys_created_by>
+        <sys_created_on>2024-12-13 02:42:40</sys_created_on>
+        <sys_id>0f718f37839a5210260a55b6feaad33b</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>InOut_History</sys_name>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_update_name>sp_widget_0f718f37839a5210260a55b6feaad33b</sys_update_name>
+        <sys_updated_by>sonnguyen</sys_updated_by>
+        <sys_updated_on>2024-12-13 02:42:40</sys_updated_on>
+        <template><![CDATA[<body>
+  <div class="heading">
+    <h1>Inventory Control Application</h1>
+  </div>
+  <div class="title">
+    <h3>
+      In / Out History
+    </h3>
+  </div>
+  <div class="layout_wrapper">
+    <h5>Stock Movement History</h5>
+
+    <div class="table_inner">
+      <table>
+        <thead>
+          <tr>
+            <th>Date & Time</th>
+            <th>Item ID</th>
+            <th>Item Name</th>
+            <th>Quantity Total</th>
+            <th>Current Quantity</th>
+            <th>Quantity Changed</th>
+            <th>Action</th>
+            <th>Requester</th>
+            <th>Remarks</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="his in data.histories">
+            <td>{{ his.time }}</td>
+            <td>{{ his.item_id }}</td>
+            <td>{{ his.item_name }}</td>
+            <td>{{ his.quantity_old }}</td>
+            <td>{{ his.quantity_new }}</td>
+            <td>{{ his.quantity_changed }}</td>
+            <td>{{ his.type }}</td>
+            <td>{{ his.action_by }}</td>
+            <td>{{ his.remarks }}</td>
+            <td>{{ his.description }}</td>
+
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination-controls">
+      <button class="btn btn-secondary" ng-disabled="c.pageNumber === 1" ng-click="c.loadPage(c.pageNumber - 1)">
+        Previous
+      </button>
+
+      <span>Page {{ c.pageNumber }} of {{ c.getRoundedPageCount() }}</span>
+
+      <button class="btn btn-secondary" ng-disabled="c.pageNumber >= c.getRoundedPageCount()"
+              ng-click="c.loadPage(c.pageNumber + 1)">
+        Next
+      </button>
+    </div>
+
+  </div>
+</body>]]></template>
+    </sp_widget>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</application>
+        <file_path/>
+        <instance_id>612674ef1be5b9986a85eb9b2d4bcb35</instance_id>
+        <instance_name>dev181071</instance_name>
+        <name>sp_widget_0f718f37839a5210260a55b6feaad33b</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sp_widget"&gt;&lt;sp_widget action="INSERT_OR_UPDATE"&gt;&lt;category&gt;custom&lt;/category&gt;&lt;client_script&gt;&lt;![CDATA[api.controller=function() {
+  /* widget controller */
+  var c = this;
+	
+		// Phân trang 
+
+	c.pageNumber = 1;
+	c.pageSize = 10; 
+	c.totalCount = 0;
+
+	c.loadPage = function (pageNumber) {
+		c.pageNumber = pageNumber;
+		c.server.get({
+			action: "getHistory",
+			pageNumber: c.pageNumber,
+			pageSize: c.pageSize,
+		}).then(function (r) {
+			c.data.histories = r.data.histories;
+			console.log("11111",r.data.histories)
+			c.totalCount = r.data.totalCount;
+		}).catch(function (error) {
+			console.error('Error while fetching inventory:', error);
+		});
+	};
+
+	c.getRoundedPageCount = function () {
+		return Math.ceil(c.totalCount / c.pageSize); 
+	};
+
+	c.loadPage(c.pageNumber);
+};]]&gt;&lt;/client_script&gt;&lt;controller_as&gt;c&lt;/controller_as&gt;&lt;css&gt;body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.title {
+  border-top: 1px solid #ddd;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  display: inline-block;
+  padding: 0 16px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  background-color:  #f7f7f7;
+  
+}
+
+.title h3 {
+  line-height: 40px;
+  height: 40px;
+  margin : 0;
+}
+
+.layout_wrapper {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  margin: 0 auto;
+}
+
+.layout_wrapper h5 {
+  margin: 0;
+  padding-left: 16px;
+  line-height: 40px;
+  background-color: #f7f7f7;
+  border-bottom: 1px solid #ddd;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table_inner {
+  margin: 16px;
+  overflow: auto;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+th {
+  background-color: #343a40;
+  color: white;
+}
+
+tr:hover {
+  color: #212529;
+  background-color: rgba(0, 0, 0, 0.075);
+}
+.pagination-controls{
+margin : 20px
+}
+&lt;/css&gt;&lt;data_table&gt;sp_instance&lt;/data_table&gt;&lt;demo_data/&gt;&lt;description/&gt;&lt;docs/&gt;&lt;field_list/&gt;&lt;has_preview&gt;true&lt;/has_preview&gt;&lt;id&gt;inout_history&lt;/id&gt;&lt;internal&gt;false&lt;/internal&gt;&lt;link&gt;&lt;![CDATA[function link(scope, element, attrs, controller) {  }]]&gt;&lt;/link&gt;&lt;name&gt;InOut_History&lt;/name&gt;&lt;option_schema/&gt;&lt;public&gt;false&lt;/public&gt;&lt;roles/&gt;&lt;script&gt;&lt;![CDATA[(function() {
+	/* populate the 'data' object */
+	/* e.g., data.table = $sp.getValue('table'); */
+	var pageNumber = 1; 
+	var pageSize = 3;   
+	data.histories = getHistory(pageNumber, pageSize);
+
+	if (input) {
+		if (input.action === "getHistory") {
+			pageNumber = input.pageNumber;
+			pageSize = input.pageSize;    
+			data.histories = getHistory(pageNumber, pageSize);
+			data.totalCount = getHistoryCount();
+		}
+		
+		data.histories = getHistory(pageNumber, pageSize);
+		data.totalCount = getHistoryCount();
+	}
+})();
+
+function getHistory(pageNumber, pageSize) {
+	var histories = [];
+	try {
+		var his = new GlideRecord('x_1568427_inventor_transaction_history');
+		his.orderByDesc('sys_created_on')
+		his.query();
+		var start = (pageNumber - 1) * pageSize; 
+		var end = start + pageSize;             
+		var index = 0;                          
+
+		while (his.next()) {
+			if (index &gt;= start &amp;&amp; index &lt; end) {
+				histories.push({
+					sys_id: his.getValue('sys_id'),
+					time: his.getValue('time'),
+					action_by: his.getValue('action_by'),
+					type: his.getDisplayValue('type'),
+					description: his.getValue('description'),
+					remarks: his.getValue('remarks'),
+					item_name: his.getValue('item_name'),
+					quantity_old: his.getValue('quantity_old'),
+					quantity_new: his.getValue('quantity_new'),
+					quantity_changed: his.getValue('quantity_changed'),
+					item_id: his.getDisplayValue('item_id'),
+					borrow_id: his.getValue('borrow_id'),
+					start:start,
+				});
+			}
+			index++;
+			if (index &gt;= end) break; 
+		}
+	} catch (e) {
+		gs.error('Lỗi lấy dữ liệu: ' + e.message);
+	}
+	return histories;
+}
+
+function getHistoryCount() {
+	var count = 0;
+	try {
+		var gr = new GlideRecord('x_1568427_inventor_transaction_history');
+		gr.query();
+		count = gr.getRowCount();
+	} catch (e) {
+		gs.error('Lỗi đếm dữ liệu: ' + e.message);
+	}
+	return count;
+}]]&gt;&lt;/script&gt;&lt;servicenow&gt;false&lt;/servicenow&gt;&lt;sys_class_name&gt;sp_widget&lt;/sys_class_name&gt;&lt;sys_created_by&gt;sonnguyen&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2024-12-13 02:42:40&lt;/sys_created_on&gt;&lt;sys_id&gt;0f718f37839a5210260a55b6feaad33b&lt;/sys_id&gt;&lt;sys_mod_count&gt;0&lt;/sys_mod_count&gt;&lt;sys_name&gt;InOut_History&lt;/sys_name&gt;&lt;sys_package display_value="Inventory Management" source="x_1568427_inventor"&gt;c57032e1839e9a10260a55b6feaad36d&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_scope display_value="Inventory Management"&gt;c57032e1839e9a10260a55b6feaad36d&lt;/sys_scope&gt;&lt;sys_update_name&gt;sp_widget_0f718f37839a5210260a55b6feaad33b&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;sonnguyen&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2024-12-13 02:42:40&lt;/sys_updated_on&gt;&lt;template&gt;&lt;![CDATA[&lt;body&gt;
+  &lt;div class="heading"&gt;
+    &lt;h1&gt;Inventory Control Application&lt;/h1&gt;
+  &lt;/div&gt;
+  &lt;div class="title"&gt;
+    &lt;h3&gt;
+      In / Out History
+    &lt;/h3&gt;
+  &lt;/div&gt;
+  &lt;div class="layout_wrapper"&gt;
+    &lt;h5&gt;Stock Movement History&lt;/h5&gt;
+
+    &lt;div class="table_inner"&gt;
+      &lt;table&gt;
+        &lt;thead&gt;
+          &lt;tr&gt;
+            &lt;th&gt;Date &amp; Time&lt;/th&gt;
+            &lt;th&gt;Item ID&lt;/th&gt;
+            &lt;th&gt;Item Name&lt;/th&gt;
+            &lt;th&gt;Quantity Total&lt;/th&gt;
+            &lt;th&gt;Current Quantity&lt;/th&gt;
+            &lt;th&gt;Quantity Changed&lt;/th&gt;
+            &lt;th&gt;Action&lt;/th&gt;
+            &lt;th&gt;Requester&lt;/th&gt;
+            &lt;th&gt;Remarks&lt;/th&gt;
+            &lt;th&gt;Description&lt;/th&gt;
+          &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+          &lt;tr ng-repeat="his in data.histories"&gt;
+            &lt;td&gt;{{ his.time }}&lt;/td&gt;
+            &lt;td&gt;{{ his.item_id }}&lt;/td&gt;
+            &lt;td&gt;{{ his.item_name }}&lt;/td&gt;
+            &lt;td&gt;{{ his.quantity_old }}&lt;/td&gt;
+            &lt;td&gt;{{ his.quantity_new }}&lt;/td&gt;
+            &lt;td&gt;{{ his.quantity_changed }}&lt;/td&gt;
+            &lt;td&gt;{{ his.type }}&lt;/td&gt;
+            &lt;td&gt;{{ his.action_by }}&lt;/td&gt;
+            &lt;td&gt;{{ his.remarks }}&lt;/td&gt;
+            &lt;td&gt;{{ his.description }}&lt;/td&gt;
+
+          &lt;/tr&gt;
+        &lt;/tbody&gt;
+      &lt;/table&gt;
+    &lt;/div&gt;
+
+    &lt;div class="pagination-controls"&gt;
+      &lt;button class="btn btn-secondary" ng-disabled="c.pageNumber === 1" ng-click="c.loadPage(c.pageNumber - 1)"&gt;
+        Previous
+      &lt;/button&gt;
+
+      &lt;span&gt;Page {{ c.pageNumber }} of {{ c.getRoundedPageCount() }}&lt;/span&gt;
+
+      &lt;button class="btn btn-secondary" ng-disabled="c.pageNumber &gt;= c.getRoundedPageCount()"
+              ng-click="c.loadPage(c.pageNumber + 1)"&gt;
+        Next
+      &lt;/button&gt;
+    &lt;/div&gt;
+
+  &lt;/div&gt;
+&lt;/body&gt;]]&gt;&lt;/template&gt;&lt;/sp_widget&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>693450784</payload_hash>
+        <record_name>InOut_History</record_name>
+        <reverted_from/>
+        <source>89e1137283d65210260a55b6feaad38b</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>sonnguyen</sys_created_by>
+        <sys_created_on>2024-12-13 02:42:40</sys_created_on>
+        <sys_id>83718f37839a5210260a55b6feaad33e</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>193bde598bf0000001</sys_recorded_at>
+        <sys_updated_by>sonnguyen</sys_updated_by>
+        <sys_updated_on>2024-12-13 02:42:40</sys_updated_on>
+        <type>Widget</type>
+        <update_guid>87718f37ff9a5210342a44a56525053d</update_guid>
+        <update_guid_history>87718f37ff9a5210342a44a56525053d:693450784</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="InOut_History">4237c00083229210260a55b6feaad385</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>sonnguyen</sys_created_by>
+        <sys_created_on>2024-12-13 07:47:21</sys_created_on>
+        <sys_db_object display_value="" name="sp_widget">sp_widget</sys_db_object>
+        <sys_id>5930bee8653e4bf4b48d2822b80f4290</sys_id>
+        <sys_metadata>0f718f37839a5210260a55b6feaad33b</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>InOut_History</sys_name>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_scope_delete display_value="">861d2658792a49508d448ee8b3268100</sys_scope_delete>
+        <sys_update_name>sp_widget_0f718f37839a5210260a55b6feaad33b</sys_update_name>
+        <sys_update_version display_value="sp_widget_0f718f37839a5210260a55b6feaad33b">83718f37839a5210260a55b6feaad33e</sys_update_version>
+        <sys_updated_by>sonnguyen</sys_updated_by>
+        <sys_updated_on>2024-12-13 07:47:21</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

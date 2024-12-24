@@ -18,6 +18,7 @@
 		}
 		
 		var borrowQuantity = c.newInve.borrower_quantity[id];
+		console.log("dongf 12", borrowQuantity);
 		var availableQuantity = null;
 
 		if (borrowQuantity === undefined || borrowQuantity === '' || borrowQuantity < 0) {
@@ -80,15 +81,16 @@
 
 		if (searchText) {
 			action = "searchInventory";
-		} else if (c.newInve.category || c.newInve.quantityType) {
+		} else if (c.newInve.category || c.newInve.quantity) {
 			action = "searchInventoryByCategoryAndQuantity";
 		}
+		
 
 		c.server.get({
 			action: action,
 			searchText: searchText || "",
 			category: c.newInve.category || "",
-			quantityType: c.newInve.quantityType || "",
+			quantity: c.newInve.quantity || "",
 			pageNumber: c.pageNumber,
 			pageSize: c.pageSize,
 		})
@@ -260,10 +262,10 @@ td {
         <docs/>
         <field_list/>
         <has_preview>true</has_preview>
-        <id>a_borrow</id>
+        <id>clone_borrow</id>
         <internal>false</internal>
         <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
-        <name>A_Borrow</name>
+        <name>clone_borrow</name>
         <option_schema/>
         <public>false</public>
         <roles/>
@@ -305,9 +307,9 @@ td {
  
         if(input.action === "searchInventoryByCategoryAndQuantity") {
             var category = input.category || "";
-            var quantityType = input.quantityType || "";
-            data.inventories = getSearchCategoryAndQuantity(category, quantityType, input.pageNumber, input.pageSize);
-            data.totalCount = getSearchInventoryCountByCategoryAndQuantity(category, quantityType);
+            var quantity = input.quantity || "";
+            data.inventories = getSearchCategoryAndQuantity(category, quantity, input.pageNumber, input.pageSize);
+            data.totalCount = getSearchInventoryCountByCategoryAndQuantity(category, quantity);
         }
     }
  
@@ -415,44 +417,70 @@ function getSearchInventoryCount(searchText) {
     return count;
 }
  
-function getSearchCategoryAndQuantity(category, quantityType, pageNumber, pageSize) {
+function getSearchCategoryAndQuantity(category, quantity, pageNumber, pageSize) {
     var inventories = [];
     try {
         var ive = new GlideRecord('x_1568427_inventor_item');
- 
+
         if (category) {
             ive.addQuery('category', category);
         }
- 
-        if (quantityType === "LowStock") {
-            ive.addQuery('current_quantity', '<=', 10);
-        } else if (quantityType === "NormalStock") {
-            ive.addQuery('current_quantity', '>', 10);
-        }
- 				ive.addQuery('active','1')
-        ive.orderBy('number');
+
+        ive.addQuery('active', '1');
+
         ive.query();
- 
+
         var start = (pageNumber - 1) * pageSize;
         var end = start + pageSize;
         var index = 0;
- 
-        while (ive.next()) {
-            if (index >= start && index < end) {
-                var quantity2 = parseInt(ive.getValue('quantity'), 10) || 0;
-                var borrowedQuantity = parseInt(ive.getValue('borrowed_quantity'), 10) || 0;
 
-                inventories.push({
-                    sys_id: ive.getValue('sys_id'),
-                    item_name: ive.getValue('item_name'),
-                    number: ive.getValue('number'),
-                    quantity: Number(quantity2 - borrowedQuantity),
-                    price: Number(ive.getValue('price')), 
-                    category: ive.getValue('category'),
-                    remarks: ive.getValue('remarks'),
-                    start: start
-                });
+        while (ive.next()) {
+            var availableQuantity = parseInt(ive.getValue('quantity'), 10) || 0;
+            var borrowedQuantity = parseInt(ive.getValue('borrowed_quantity'), 10) || 0;
+            var availableStock = availableQuantity - borrowedQuantity;
+
+       
+            if (quantity === "LowStock" && availableStock < 10) {
+                if (index >= start && index < end) {
+                    inventories.push({
+                        sys_id: ive.getValue('sys_id'),
+                        item_name: ive.getValue('item_name'),
+                        number: ive.getValue('number'),
+                        quantity: availableStock,  
+                        price: Number(ive.getValue('price')),
+                        category: ive.getValue('category'),
+                        remarks: ive.getValue('remarks'),
+                        start: start
+                    });
+                }
+            } else if (quantity === "NormalStock" && availableStock > 10) {
+                if (index >= start && index < end) {
+                    inventories.push({
+                        sys_id: ive.getValue('sys_id'),
+                        item_name: ive.getValue('item_name'),
+                        number: ive.getValue('number'),
+                        quantity: availableStock,
+                        price: Number(ive.getValue('price')),
+                        category: ive.getValue('category'),
+                        remarks: ive.getValue('remarks'),
+                        start: start
+                    });
+                }
+            } else if (quantity === "" && availableStock >= 0) {
+                if (index >= start && index < end) {
+                    inventories.push({
+                        sys_id: ive.getValue('sys_id'),
+                        item_name: ive.getValue('item_name'),
+                        number: ive.getValue('number'),
+                        quantity: availableStock,
+                        price: Number(ive.getValue('price')),
+                        category: ive.getValue('category'),
+                        remarks: ive.getValue('remarks'),
+                        start: start
+                    });
+                }
             }
+
             index++;
             if (index >= end) break;
         }
@@ -461,42 +489,54 @@ function getSearchCategoryAndQuantity(category, quantityType, pageNumber, pageSi
     }
     return inventories;
 }
- 
-function getSearchInventoryCountByCategoryAndQuantity(category, quantityType) {
+
+
+
+function getSearchInventoryCountByCategoryAndQuantity(category, quantity) {
     var count = 0;
     try {
         var gr = new GlideRecord('x_1568427_inventor_item');
- 
+        
         if (category) {
             gr.addQuery('category', category);
         }
- 
-        if (quantityType === "LowStock") {
-            gr.addQuery('current_quantity', '<=', 10);
-        } else if (quantityType === "NormalStock") {
-            gr.addQuery('current_quantity', '>', 10);
-        }
- 				gr.addQuery('active','1')
+
+        gr.addQuery('active', '1');  
         gr.query();
-        count = gr.getRowCount();
+
+        while (gr.next()) {
+            var availableQuantity = parseInt(gr.getValue('quantity'), 10) || 0;
+            var borrowedQuantity = parseInt(gr.getValue('borrowed_quantity'), 10) || 0;
+            var availableStock = availableQuantity - borrowedQuantity;
+
+            if (quantity === "LowStock" && availableStock < 10) {
+                count++;
+            } else if (quantity === "NormalStock" && availableStock > 10) {
+                count++;
+            } else if (quantity === "" && availableStock >= 0) {
+                count++;
+            }
+        }
     } catch (e) {
         gs.error('Error during search count by category and quantity: ' + e.message);
     }
     return count;
-}]]></script>
+}
+
+]]></script>
         <servicenow>false</servicenow>
         <sys_class_name>sp_widget</sys_class_name>
-        <sys_created_by>admin</sys_created_by>
-        <sys_created_on>2024-12-10 01:43:20</sys_created_on>
-        <sys_id>7c2793f6835a5210260a55b6feaad342</sys_id>
-        <sys_mod_count>22</sys_mod_count>
-        <sys_name>A_Borrow</sys_name>
+        <sys_created_by>sonnguyen</sys_created_by>
+        <sys_created_on>2024-12-13 08:18:19</sys_created_on>
+        <sys_id>ab4ec44883229210260a55b6feaad334</sys_id>
+        <sys_mod_count>156</sys_mod_count>
+        <sys_name>clone_borrow</sys_name>
         <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
         <sys_policy/>
         <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
-        <sys_update_name>sp_widget_7c2793f6835a5210260a55b6feaad342</sys_update_name>
+        <sys_update_name>sp_widget_ab4ec44883229210260a55b6feaad334</sys_update_name>
         <sys_updated_by>sonnguyen</sys_updated_by>
-        <sys_updated_on>2024-12-17 02:24:35</sys_updated_on>
+        <sys_updated_on>2024-12-16 10:15:47</sys_updated_on>
         <template><![CDATA[<div>
     <div class="card mb-4 mt-4">
       <div class="card-header">Browse and Request to Borrow Items</div>
@@ -521,7 +561,7 @@ function getSearchInventoryCountByCategoryAndQuantity(category, quantityType) {
             </button>
           </div>
         </div>
-         <form id="addItemForm" class= "search_item"  ng-click="c.searchCateAndQty()">
+        <form id="addItemForm" class= "search_item"  ng-click="c.searchCateAndQty()">
           <div class="form-row">
             <div class="form-group">
               <select class="form-control" id="category" ng-model="c.newInve.category" required>
