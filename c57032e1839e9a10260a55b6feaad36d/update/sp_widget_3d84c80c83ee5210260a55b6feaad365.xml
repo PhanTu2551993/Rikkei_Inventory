@@ -208,66 +208,16 @@
 	};
 
 	c.result = result;
-	console.log(result);
+	console.log("result",result);
 
 	var totalborrowerQuanWeek1 = totalborrowerQuantity[0];
 	var totalborrowerQuanWeek2 = totalborrowerQuantity[1];
 	var totalborrowerQuanWeek3 = totalborrowerQuantity[2];
 	var totalborrowerQuanWeek4 = totalborrowerQuantity[3];
-
 	c.totalborrowerQuanWeek1 = totalborrowerQuanWeek1;
 	c.totalborrowerQuanWeek2 = totalborrowerQuanWeek2;
 	c.totalborrowerQuanWeek3 = totalborrowerQuanWeek3;
 	c.totalborrowerQuanWeek4 = totalborrowerQuanWeek4;
-
-	if (totalborrowerQuanWeek1 > 0) {
-		c.pixelHeightBooks1 = (c.result.books.week1 / totalborrowerQuanWeek1) * 350;
-		c.pixelHeightElectronics1 = (c.result.electronics.week1 / totalborrowerQuanWeek1) * 350;
-		c.pixelHeightOffice1 = (c.result.office.week1 / totalborrowerQuanWeek1) * 350;
-		c.pixelHeightVehicles1 = (c.result.vehicles.week1 / totalborrowerQuanWeek1) * 350;
-	} else {
-		c.pixelHeightBooks1 = 0;
-		c.pixelHeightElectronics1 = 0;
-		c.pixelHeightOffice1 = 0;
-		c.pixelHeightVehicles1 = 0;
-	}
-
-	if (totalborrowerQuanWeek2 > 0) {
-		c.pixelHeightBooks2 = (c.result.books.week2 / totalborrowerQuanWeek2) * 350;
-		c.pixelHeightElectronics2 = (c.result.electronics.week2 / totalborrowerQuanWeek2) * 350;
-		c.pixelHeightOffice2 = (c.result.office.week2 / totalborrowerQuanWeek2) * 350;
-		c.pixelHeightVehicles2 = (c.result.vehicles.week2 / totalborrowerQuanWeek2) * 350;
-	} else {
-		c.pixelHeightBooks2 = 0;
-		c.pixelHeightElectronics2 = 0;
-		c.pixelHeightOffice2 = 0;
-		c.pixelHeightVehicles2 = 0;
-	}
-
-	if (totalborrowerQuanWeek3 > 0) {
-		c.pixelHeightBooks3 = (c.result.books.week3 / totalborrowerQuanWeek3) * 350;
-		c.pixelHeightElectronics3 = (c.result.electronics.week3 / totalborrowerQuanWeek3) * 350;
-		c.pixelHeightOffice3 = (c.result.office.week3 / totalborrowerQuanWeek3) * 350;
-		c.pixelHeightVehicles3 = (c.result.vehicles.week3 / totalborrowerQuanWeek3) * 350;
-	} else {
-		c.pixelHeightBooks3 = 0;
-		c.pixelHeightElectronics3 = 0;
-		c.pixelHeightOffice3 = 0;
-		c.pixelHeightVehicles3 = 0;
-	}
-
-	if (totalborrowerQuanWeek4 > 0) {
-		c.pixelHeightBooks4 = (c.result.books.week4 / totalborrowerQuanWeek4) * 350;
-		c.pixelHeightElectronics4 = (c.result.electronics.week4 / totalborrowerQuanWeek4) * 350;
-		c.pixelHeightOffice4 = (c.result.office.week4 / totalborrowerQuanWeek4) * 350;
-		c.pixelHeightVehicles4 = (c.result.vehicles.week4 / totalborrowerQuanWeek4) * 350;
-	} else {
-		c.pixelHeightBooks4 = 0;
-		c.pixelHeightElectronics4 = 0;
-		c.pixelHeightOffice4 = 0;
-		c.pixelHeightVehicles4 = 0;
-	}
-
 	var savedTranslations = localStorage.getItem('translations');
   if (savedTranslations) {
     c.translations = JSON.parse(savedTranslations);
@@ -744,14 +694,14 @@ function getBorroweds() {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2024-12-13 07:35:36</sys_created_on>
         <sys_id>3d84c80c83ee5210260a55b6feaad365</sys_id>
-        <sys_mod_count>402</sys_mod_count>
+        <sys_mod_count>410</sys_mod_count>
         <sys_name>A_dashboard</sys_name>
         <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
         <sys_policy/>
         <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
         <sys_update_name>sp_widget_3d84c80c83ee5210260a55b6feaad365</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2024-12-17 07:16:54</sys_updated_on>
+        <sys_updated_on>2024-12-24 07:45:25</sys_updated_on>
         <template><![CDATA[<div ng-if="data.isAdmin">
   <!-- Sidebar -->
   <!--<div class="sidebar">
@@ -1018,16 +968,16 @@ function getBorroweds() {
             <div class="stacked-total">
               <p class="total_value">{{ c.totalborrowerQuanWeek1 }}</p>
             </div>
-            <div class="stacked-segment" style="height: {{ c.pixelHeightBooks1 }}px; background-color: #1abc9c;border-top-left-radius: 5px;border-top-right-radius: 5px;">
+            <div class="stacked-segment" style="height: {{ c.result.books.week1 }}px; background-color: #1abc9c;border-top-left-radius: 5px;border-top-right-radius: 5px;">
               <p class="bar_value">{{ c.result.books.week1 }}</p>
             </div>
-            <div class="stacked-segment" style="height: {{ c.pixelHeightElectronics1 }}px; background-color: #3498db;">
+            <div class="stacked-segment" style="height: {{ c.result.electronics.week1 }}px; background-color: #3498db;">
               <p class="bar_value">{{ c.result.electronics.week1 }}</p>
             </div>
-            <div class="stacked-segment" style="height: {{ c.pixelHeightOffice1 }}px; background-color: #9b59b6;">
+            <div class="stacked-segment" style="height: {{ c.result.office.week1 }}px; background-color: #9b59b6;">
               <p class="bar_value">{{ c.result.office.week1 }}</p>
             </div>
-            <div class="stacked-segment" style="height: {{ c.pixelHeightVehicles1 }}px; background-color: #f39c12;">
+            <div class="stacked-segment" style="height: {{ c.result.vehicles.week1 }}px; background-color: #f39c12;">
               <p class="bar_value">{{ c.result.vehicles.week1 }}</p>
             </div>
             <div class="stacked-note">
@@ -1040,16 +990,16 @@ function getBorroweds() {
             <div class="stacked-total">
               <p class="total_value">{{ c.totalborrowerQuanWeek2 }}</p>
             </div>
-            <div class="stacked-segment" style="height: {{ c.pixelHeightBooks2 }}px; background-color: #1abc9c;border-top-left-radius: 5px;border-top-right-radius: 5px;">
+            <div class="stacked-segment" style="height: {{ c.result.books.week2 }}px; background-color: #1abc9c;border-top-left-radius: 5px;border-top-right-radius: 5px;">
               <p class="bar_value">{{ c.result.books.week2 }}</p>
             </div>
-            <div class="stacked-segment" style="height: {{ c.pixelHeightElectronics2 }}px; background-color: #3498db;">
+            <div class="stacked-segment" style="height: {{ c.result.electronics.week2 }}px; background-color: #3498db;">
               <p class="bar_value">{{ c.result.electronics.week2 }}</p>
             </div>
-            <div class="stacked-segment" style="height: {{ c.pixelHeightOffice2 }}px; background-color: #9b59b6;">
+            <div class="stacked-segment" style="height: {{ c.result.office.week2 }}px; background-color: #9b59b6;">
               <p class="bar_value">{{ c.result.office.week2 }}</p>
             </div>
-            <div class="stacked-segment" style="height: {{ c.pixelHeightVehicles2 }}px; background-color: #f39c12;">
+            <div class="stacked-segment" style="height: {{ c.result.vehicles.week2 }}px; background-color: #f39c12;">
               <p class="bar_value">{{ c.result.vehicles.week2 }}</p>
             </div>
             <div class="stacked-note">
@@ -1062,16 +1012,16 @@ function getBorroweds() {
             <div class="stacked-total">
               <p class="total_value">{{ c.totalborrowerQuanWeek3 }}</p>
             </div>
-            <div class="stacked-segment" style="height: {{ c.pixelHeightBooks3 }}px; background-color: #1abc9c;border-top-left-radius: 5px;border-top-right-radius: 5px;">
+            <div class="stacked-segment" style="height: {{ c.result.books.week3 }}px; background-color: #1abc9c;border-top-left-radius: 5px;border-top-right-radius: 5px;">
               <p class="bar_value">{{ c.result.books.week3 }}</p>
             </div>
-            <div class="stacked-segment" style="height: {{ c.pixelHeightElectronics3 }}px; background-color: #3498db;">
+            <div class="stacked-segment" style="height: {{ c.result.electronics.week3 }}px; background-color: #3498db;">
               <p class="bar_value">{{ c.result.electronics.week3 }}</p>
             </div>
-            <div class="stacked-segment" style="height: {{ c.pixelHeightOffice3 }}px; background-color: #9b59b6;">
+            <div class="stacked-segment" style="height: {{ c.result.office.week3 }}px; background-color: #9b59b6;">
               <p class="bar_value">{{ c.result.office.week3 }}</p>
             </div>
-            <div class="stacked-segment" style="height: {{ c.pixelHeightVehicles3 }}px; background-color: #f39c12;">
+            <div class="stacked-segment" style="height: {{ c.result.vehicles.week3 }}px; background-color: #f39c12;">
               <p class="bar_value">{{ c.result.vehicles.week3 }}</p>
             </div>
             <div class="stacked-note">
@@ -1084,16 +1034,16 @@ function getBorroweds() {
             <div class="stacked-total">
               <p class="total_value">{{ c.totalborrowerQuanWeek4 }}</p>
             </div>
-            <div class="stacked-segment" style="height: {{ c.pixelHeightBooks4 }}px; background-color: #1abc9c;  border-top-left-radius: 5px;border-top-right-radius: 5px;">
+            <div class="stacked-segment" style="height: {{ c.result.books.week4 }}px; background-color: #1abc9c;  border-top-left-radius: 5px;border-top-right-radius: 5px;">
               <p class="bar_value">{{ c.result.books.week4 }}</p>
             </div>
-            <div class="stacked-segment" style="height: {{ c.pixelHeightElectronics4 }}px; background-color: #3498db;">
+            <div class="stacked-segment" style="height: {{ c.result.electronics.week4 }}px; background-color: #3498db;">
               <p class="bar_value">{{ c.result.electronics.week4 }}</p>
             </div>
-            <div class="stacked-segment" style="height: {{ c.pixelHeightOffice4 }}px; background-color: #9b59b6;">
+            <div class="stacked-segment" style="height: {{ c.result.office.week4 }}px; background-color: #9b59b6;">
               <p class="bar_value">{{ c.result.office.week4 }}</p>
             </div>
-            <div class="stacked-segment" style="height: {{ c.pixelHeightVehicles4 }}px; background-color: #f39c12;">
+            <div class="stacked-segment" style="height: {{ c.result.vehicles.week4 }}px; background-color: #f39c12;">
               <p class="bar_value">{{ c.result.vehicles.week4 }}</p>
             </div>
             <div class="stacked-note">
