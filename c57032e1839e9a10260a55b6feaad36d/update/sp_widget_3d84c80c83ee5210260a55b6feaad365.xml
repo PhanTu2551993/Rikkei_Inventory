@@ -8,9 +8,6 @@
 	c.inventories = c.data.inventories;
 	c.borroweds = c.data.borroweds;
 	c.totalItems = c.inventories.length;
-	console.log("Tổng số items:", c.totalItems);
-	console.log("c.data.borroweds", c.data.borroweds);
-	console.log("c.data.inventories", c.data.inventories);
 
 	var totalQuantity = 0;
 	var totalBorrowed = 0;
@@ -271,7 +268,10 @@
 		c.pixelHeightVehicles4 = 0;
 	}
 
-	console.log(c.result.books.week4)
+	var savedTranslations = localStorage.getItem('translations');
+  if (savedTranslations) {
+    c.translations = JSON.parse(savedTranslations);
+  }
 }]]></client_script>
         <controller_as>c</controller_as>
         <css>
@@ -683,6 +683,7 @@ function getInventory() {
 	var inventories = [];
 	try {
 		var ive = new GlideRecord('x_1568427_inventor_item');
+		ive.addQuery('active','1')
 		ive.query(); 
 		while (ive.next()) {
 			inventories.push({
@@ -743,14 +744,14 @@ function getBorroweds() {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2024-12-13 07:35:36</sys_created_on>
         <sys_id>3d84c80c83ee5210260a55b6feaad365</sys_id>
-        <sys_mod_count>399</sys_mod_count>
+        <sys_mod_count>402</sys_mod_count>
         <sys_name>A_dashboard</sys_name>
         <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
         <sys_policy/>
         <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
         <sys_update_name>sp_widget_3d84c80c83ee5210260a55b6feaad365</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2024-12-16 10:23:07</sys_updated_on>
+        <sys_updated_on>2024-12-17 07:16:54</sys_updated_on>
         <template><![CDATA[<div ng-if="data.isAdmin">
   <!-- Sidebar -->
   <!--<div class="sidebar">
@@ -761,25 +762,25 @@ function getBorroweds() {
 
   <!-- Main Content -->
   <div class="content">
-    <h1 >Dashboard Inventory Managerment</h1>
+    <h1 >{{c.translations.Dashboard}} {{c.translations.Inventory_Management}}</h1>
 
     <!-- Dashboard Cards -->
     <div class="dashboard-cards">
       <div class="card">
         <h2>{{c.totalItems}}</h2>
-        <p>Total Item Inventory</p>
+        <p>{{c.translations.totalItemInventory}}</p>
       </div>
       <div class="card">
         <h2>{{ c.totalQuantity}}</h2>
-        <p>Total Quantity</p>
+        <p>{{c.translations.totalQuantity}}</p>
       </div>
       <div class="card">
         <h2>{{ c.totalBorrowed}}</h2>
-        <p>Total Borrowing</p>
+        <p>{{c.translations.totalBorrowing}}</p>
       </div>
       <div class="card">
         <h2>{{ c.totalPrice.toLocaleString('vi-VN') }} $</h2>
-        <p>Total Price</p>
+        <p>{{c.translations.totalPrice}}</p>
       </div>
     </div>
 

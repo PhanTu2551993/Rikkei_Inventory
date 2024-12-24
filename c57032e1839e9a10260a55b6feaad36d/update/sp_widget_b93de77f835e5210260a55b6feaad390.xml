@@ -2,10 +2,10 @@
     <sp_widget action="INSERT_OR_UPDATE">
         <category>custom</category>
         <client_script><![CDATA[api.controller=function() {
-  /* widget controller */
-  var c = this;
-	
-		// Phân trang 
+	/* widget controller */
+	var c = this;
+
+	// Phân trang 
 
 	c.pageNumber = 1;
 	c.pageSize = 10; 
@@ -30,7 +30,19 @@
 		return Math.ceil(c.totalCount / c.pageSize); 
 	};
 
+	c.goToPage = function () {
+		var page = parseInt(c.targetPage, 10);
+		if (!page || page < 1) {
+			page = 1; 
+		} 
+		c.loadPage(page);
+	};
+
 	c.loadPage(c.pageNumber);
+	var savedTranslations = localStorage.getItem('translations');
+	if (savedTranslations) {
+		c.translations = JSON.parse(savedTranslations);
+	}
 };]]></client_script>
         <controller_as>c</controller_as>
         <css>body {
@@ -109,7 +121,17 @@ tr:hover {
 .pagination-controls{
 margin : 20px
 }
-</css>
+.page-input {
+  width: 50px;
+  height: 36px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin: 0 5px;
+  font-size: 14px;
+  outline: none;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}</css>
         <data_table>sp_instance</data_table>
         <demo_data/>
         <description/>
@@ -171,7 +193,9 @@ function getBorroweds(userName, pageNumber, pageSize) {
 				if (itemRecord.get(ive.getValue('item_id'))) {
 					borrowed.item_name = itemRecord.getValue('item_name');
 					borrowed.item_id = itemRecord.getValue('number');
+					borrowed.totalPrice = Number(itemRecord.getValue('price')*ive.getValue('borrower_quantity'));
 				}
+				
 				
 				borroweds.push(borrowed);
 			}
@@ -203,32 +227,33 @@ function getBorrowedCount(userName) {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2024-12-13 05:53:44</sys_created_on>
         <sys_id>b93de77f835e5210260a55b6feaad390</sys_id>
-        <sys_mod_count>12</sys_mod_count>
+        <sys_mod_count>26</sys_mod_count>
         <sys_name>user History</sys_name>
         <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
         <sys_policy/>
         <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
         <sys_update_name>sp_widget_b93de77f835e5210260a55b6feaad390</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2024-12-13 07:32:51</sys_updated_on>
+        <sys_updated_on>2024-12-17 09:41:18</sys_updated_on>
         <template><![CDATA[<body>
   <div class="heading">
-    <h1>Borrowed History</h1>
+    <h1>{{c.translations.borrowedHistory}}</h1>
   </div>
   <div class="layout_wrapper">
-    <h5>Borrowed My History</h5>
+    <h5>{{c.translations.Borrowed_My_History}}</h5>
 
     <div class="table_inner">
       <table>
         <thead>
           <tr>
-            <th>Index</th>
-            <th>Date & Time</th>
-            <th>Item ID</th>
-            <th>Item Name</th>
-            <th>Borrowed Quantity</th>
-            <th>Requester</th>
-            <th>Status</th>
+            <th>{{c.translations.Index}}</th>
+            <th>{{c.translations.Time}}</th>
+            <th>{{c.translations.Item_ID}}</th>
+            <th>{{c.translations.Item_Name}}</th>
+            <th>{{c.translations.Borrowed_Quantity}}</th>
+            <th>{{c.translations.Unit_Price}}</th>
+            <th>{{c.translations.Requester}}</th>
+            <th>{{c.translations.status}}</th>
           </tr>
         </thead>
         <tbody>
@@ -238,6 +263,7 @@ function getBorrowedCount(userName) {
             <td>{{ bor.item_id }}</td>
             <td>{{ bor.item_name }}</td>
             <td>{{ bor.borrower_quantity }}</td>
+            <td>{{ bor.totalPrice.toLocaleString('vi-VN') }} $</td>
             <td>{{ bor.created_by }}</td>
             <td>{{ bor.status }}</td>
           </tr>
@@ -245,17 +271,24 @@ function getBorrowedCount(userName) {
       </table>
     </div>
 
-    <div class="pagination-controls">
+    <div class="pagination-controls" ng-if="c.getRoundedPageCount() > 0">
       <button class="btn btn-secondary" ng-disabled="c.pageNumber === 1" ng-click="c.loadPage(c.pageNumber - 1)">
-        Previous
+        {{c.translations.previous}}
       </button>
 
-      <span>Page {{ c.pageNumber }} of {{ c.getRoundedPageCount() }}</span>
+      <span>{{c.translations.page}} {{ c.pageNumber }} / {{ c.getRoundedPageCount() }}</span>
 
       <button class="btn btn-secondary" ng-disabled="c.pageNumber >= c.getRoundedPageCount()"
               ng-click="c.loadPage(c.pageNumber + 1)">
-        Next
+        {{c.translations.next}}
       </button>
+      <span>{{c.translations.goToPage}}</span>
+      <input type="number"
+             ng-model="c.targetPage"
+             ng-change="c.goToPage()"
+             min="1"
+             max="{{ c.getRoundedPageCount() }}"
+             class="page-input" />
     </div>
 
   </div>

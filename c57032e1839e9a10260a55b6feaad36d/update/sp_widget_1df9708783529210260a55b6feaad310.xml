@@ -2,23 +2,23 @@
     <sp_widget action="INSERT_OR_UPDATE">
         <category>custom</category>
         <client_script><![CDATA[api.controller=function() {
-  /* widget controller */
-  var c = this;
-	
-		c.changeStatus = function(state,id){
-			console.log('id',id);
+	/* widget controller */
+	var c = this;
+
+	c.changeStatus = function(state,id){
+		console.log('id',id);
 		c.server.get({
 			action: "changeState",
 			approvalId: id,
 			state : state,
 		}).then(function (response) {
-				c.data.approvals = response.data.approvals;
-				c.totalCount = response.data.totalCount;
-			}).catch(function (error) {
-				console.error('Error in server:', error);
-			});
+			c.data.approvals = response.data.approvals;
+			c.totalCount = response.data.totalCount;
+		}).catch(function (error) {
+			console.error('Error in server:', error);
+		});
 	}
-	
+
 	c.pageNumber = 1;
 	c.pageSize = 3; 
 	c.totalCount = 0;
@@ -37,14 +37,25 @@
 			console.error('Error while fetching inventory:', error);
 		});
 	};
-	
+
 	c.getRoundedPageCount = function () {
-  return Math.ceil(c.totalCount / c.pageSize); 
+		return Math.ceil(c.totalCount / c.pageSize); 
+	};
+
+	c.goToPage = function () {
+		var page = parseInt(c.targetPage, 10);
+		if (!page || page < 1) {
+			page = 1; 
+		} 
+		c.loadPage(page);
 	};
 
 	c.loadPage(c.pageNumber);
-	
-	
+
+	var savedTranslations = localStorage.getItem('translations');
+	if (savedTranslations) {
+		c.translations = JSON.parse(savedTranslations);
+	}
 };]]></client_script>
         <controller_as>c</controller_as>
         <css>body {
@@ -169,7 +180,17 @@ tr:hover {
 .pagination-controls{
 margin : 20px
 }
-</css>
+.page-input {
+  width: 50px;
+  height: 36px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin: 0 5px;
+  font-size: 14px;
+  outline: none;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}</css>
         <data_table>sp_instance</data_table>
         <demo_data/>
         <description/>
@@ -301,37 +322,32 @@ function getApprovalsCount(userId) {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2024-12-10 08:55:06</sys_created_on>
         <sys_id>1df9708783529210260a55b6feaad310</sys_id>
-        <sys_mod_count>34</sys_mod_count>
+        <sys_mod_count>41</sys_mod_count>
         <sys_name>Confirm_Approval</sys_name>
         <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
         <sys_policy/>
         <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
         <sys_update_name>sp_widget_1df9708783529210260a55b6feaad310</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2024-12-13 06:35:44</sys_updated_on>
+        <sys_updated_on>2024-12-17 09:41:55</sys_updated_on>
         <template><![CDATA[<body>
   <div class="heading">
-    <h1>Inventory Control Application</h1>
-  </div>
-  <div class="title">
-    <h3>
-      Manage Borrow Requests
-    </h3>
+    <h1>{{c.translations.Manage_Borrow_Requestst}}</h1>
   </div>
   <div class="layout_wrapper">
-    <h5>Pending Borrow Requests</h5>
+    <h5>{{c.translations.Pending_Borrow_Requests}}</h5>
 
     <div class="table_inner">
       <table>
         <thead>
           <tr>
-            <th>Date & Time</th>
-            <th>Item Name</th>
-            <th>Item ID</th>
-            <th>Requested Quantity</th>
-            <th>Requester</th>
-            <th>Status</th>
-            <th>Actions</th>
+            <th>{{c.translations.Time}}</th>
+            <th>{{c.translations.Item_Name}}</th>
+            <th>{{c.translations.Item_ID}}</th>
+            <th>{{c.translations.Requested_Quantity}}</th>
+            <th>{{c.translations.Requester}}</th>
+            <th>{{c.translations.status}}</th>
+            <th>{{c.translations.Actions}}</th>
           </tr>
         </thead>
         <tbody>
@@ -351,23 +367,30 @@ function getApprovalsCount(userId) {
         </tbody>
       </table>
     </div>
-    
-      <div class="pagination-controls">
-    <button class="btn btn-secondary"
-            ng-disabled="c.pageNumber === 1"
-            ng-click="c.loadPage(c.pageNumber - 1)">
-      Previous
-    </button>
 
-    <span>Page {{ c.pageNumber }} of {{ c.getRoundedPageCount() }}</span>
+    <div class="pagination-controls" ng-if="c.getRoundedPageCount() > 0">
+      <button class="btn btn-secondary"
+              ng-disabled="c.pageNumber === 1"
+              ng-click="c.loadPage(c.pageNumber - 1)">
+        {{c.translations.previous}}
+      </button>
 
-    <button class="btn btn-secondary"
-            ng-disabled="c.pageNumber >= c.getRoundedPageCount()"
-            ng-click="c.loadPage(c.pageNumber + 1)">
-      Next
-    </button>
-  </div>
-    
+      <span>{{c.translations.page}} {{ c.pageNumber }} / {{ c.getRoundedPageCount() }}</span>
+
+      <button class="btn btn-secondary"
+              ng-disabled="c.pageNumber >= c.getRoundedPageCount()"
+              ng-click="c.loadPage(c.pageNumber + 1)">
+        {{c.translations.next}}
+      </button>
+      <span>{{c.translations.goToPage}}</span>
+      <input type="number"
+             ng-model="c.targetPage"
+             ng-change="c.goToPage()"
+             min="1"
+             max="{{ c.getRoundedPageCount() }}"
+             class="page-input" />
+    </div>
+
   </div>
 
 </body>]]></template>

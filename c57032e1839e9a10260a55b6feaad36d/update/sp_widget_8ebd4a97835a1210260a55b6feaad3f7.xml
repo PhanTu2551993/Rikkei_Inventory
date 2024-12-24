@@ -2,10 +2,10 @@
     <sp_widget action="INSERT_OR_UPDATE">
         <category>custom</category>
         <client_script><![CDATA[api.controller=function() {
-  /* widget controller */
-  var c = this;
-	
-		// Phân trang 
+	/* widget controller */
+	var c = this;
+
+	// Phân trang 
 
 	c.pageNumber = 1;
 	c.pageSize = 10; 
@@ -29,7 +29,21 @@
 		return Math.ceil(c.totalCount / c.pageSize); 
 	};
 
+	c.goToPage = function () {
+		var page = parseInt(c.targetPage, 10);
+		if (!page || page < 1) {
+			page = 1; 
+		} 
+		c.loadPage(page);
+	};
+
+
 	c.loadPage(c.pageNumber);
+
+	var savedTranslations = localStorage.getItem('translations');
+	if (savedTranslations) {
+		c.translations = JSON.parse(savedTranslations);
+	}
 };]]></client_script>
         <controller_as>c</controller_as>
         <css>body {
@@ -107,6 +121,17 @@ tr:hover {
 }
 .pagination-controls{
 margin : 20px
+}
+.page-input {
+  width: 50px;
+  height: 36px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin: 0 5px;
+  font-size: 14px;
+  outline: none;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 </css>
         <data_table>sp_instance</data_table>
@@ -195,39 +220,34 @@ function getHistoryCount() {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2024-12-11 09:39:33</sys_created_on>
         <sys_id>8ebd4a97835a1210260a55b6feaad3f7</sys_id>
-        <sys_mod_count>12</sys_mod_count>
+        <sys_mod_count>27</sys_mod_count>
         <sys_name>Add_History</sys_name>
         <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
         <sys_policy/>
         <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
         <sys_update_name>sp_widget_8ebd4a97835a1210260a55b6feaad3f7</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2024-12-15 07:55:43</sys_updated_on>
+        <sys_updated_on>2024-12-17 09:39:33</sys_updated_on>
         <template><![CDATA[<body>
   <div class="heading">
-    <h1>Inventory Control Application</h1>
-  </div>
-  <div class="title">
-    <h3>
-      In / Out History
-    </h3>
+    <h1>{{c.translations.In_Out_History}}</h1>
   </div>
   <div class="layout_wrapper">
-    <h5>Stock Movement History</h5>
+    <h5>{{c.translations.Stock_Movement_History}}</h5>
 
     <div class="table_inner">
       <table>
         <thead>
           <tr>
-            <th>Date & Time</th>
-            <th>Item ID</th>
-            <th>Item Name</th>
-            <th>Quantity Total</th>
-            <th>Current Quantity</th>
-            <th>Quantity Changed</th>
-            <th>Action</th>
-            <th>Requester</th>
-            <th>Description</th>
+            <th>{{c.translations.Time}}</th>
+            <th>{{c.translations.Item_ID}}</th>
+            <th>{{c.translations.Item_Name}}</th>
+            <th>{{c.translations.Quantity_Total}}</th>
+            <th>{{c.translations.Current_Quantity}}</th>
+            <th>{{c.translations.Quantity_Changed}}</th>
+            <th>{{c.translations.Actions}}</th>
+            <th>{{c.translations.Requester}}</th>
+            <th>{{c.translations.Description}}</th>
           </tr>
         </thead>
         <tbody>
@@ -247,17 +267,24 @@ function getHistoryCount() {
       </table>
     </div>
 
-    <div class="pagination-controls">
+    <div class="pagination-controls" ng-if="c.getRoundedPageCount() > 0">
       <button class="btn btn-secondary" ng-disabled="c.pageNumber === 1" ng-click="c.loadPage(c.pageNumber - 1)">
-        Previous
+        {{c.translations.previous}}
       </button>
 
-      <span>Page {{ c.pageNumber }} of {{ c.getRoundedPageCount() }}</span>
+      <span>{{c.translations.page}} {{ c.pageNumber }} / {{ c.getRoundedPageCount() }}</span>
 
       <button class="btn btn-secondary" ng-disabled="c.pageNumber >= c.getRoundedPageCount()"
               ng-click="c.loadPage(c.pageNumber + 1)">
-        Next
+        {{c.translations.next}}
       </button>
+      <span>{{c.translations.goToPage}}</span>
+      <input type="number"
+             ng-model="c.targetPage"
+             ng-change="c.goToPage()"
+             min="1"
+             max="{{ c.getRoundedPageCount() }}"
+             class="page-input" />
     </div>
 
   </div>

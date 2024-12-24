@@ -253,6 +253,23 @@
 
 	c.loadPage(c.pageNumber);
 
+	c.goToPage = function () {
+		var page = parseInt(c.targetPage, 10);
+		if (!page || page < 1) {
+			page = 1; 
+		} 
+		c.loadPage(page);
+	}
+
+
+	//Translate
+
+	var savedLanguage = localStorage.getItem('preferredLanguage') || 'en';
+	var savedTranslations = localStorage.getItem('translations');
+	if (savedTranslations) {
+		c.translations = JSON.parse(savedTranslations);
+	}
+
 };]]></client_script>
         <controller_as>c</controller_as>
         <css>/* Card styling */
@@ -307,6 +324,25 @@
   display: flex;
   align-items: flex-end;
 }
+
+  .input-group {
+    display: flex;
+    align-items: center;
+  }
+ 
+  .input-group .form-control {
+    border-right: none;
+  }
+ 
+  .borrowQty_input {
+    width: 120px;
+    margin: 0 auto;
+  }
+ 
+  .input-group .btn {
+     border-top-right-radius: 4px;
+     border-bottom-right-radius: 4px;
+  }
 /* Button styling */
 
 .btn:hover {
@@ -489,6 +525,7 @@ thead{
   border-radius: 4px;
   padding: 8px 16px;
   cursor: pointer;
+  width: 100px;
 }
 .btn-secondary:hover {
   background-color: #e0e0e0;
@@ -513,6 +550,18 @@ thead{
 
 .hidden {
     display: none;
+}
+
+.page-input {
+  width: 50px;
+  height: 36px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin: 0 5px;
+  font-size: 14px;
+  outline: none;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
 }</css>
         <data_table>sp_instance</data_table>
         <demo_data/>
@@ -621,7 +670,7 @@ function getInventory(pageNumber, pageSize) {
 					warning_quantity: ive.getValue('warning_quantity'),
 					current_quantity: ive.getValue('current_quantity'),
 					low_stock: parseInt(ive.getValue('current_quantity')) < parseInt(ive.getValue('warning_quantity')),
-					price: ive.getValue('price'),
+					price: Number(ive.getValue('price')),
 					active: ive.getValue('active'),
 					category: ive.getValue('category'),
 					remarks: ive.getValue('remarks'),
@@ -698,33 +747,33 @@ function getInventoryCount() {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2024-12-10 01:35:50</sys_created_on>
         <sys_id>7a659b36835a5210260a55b6feaad3f3</sys_id>
-        <sys_mod_count>176</sys_mod_count>
+        <sys_mod_count>233</sys_mod_count>
         <sys_name>A_Inventory</sys_name>
         <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
         <sys_policy/>
         <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
         <sys_update_name>sp_widget_7a659b36835a5210260a55b6feaad3f3</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2024-12-16 10:08:51</sys_updated_on>
+        <sys_updated_on>2024-12-17 10:36:05</sys_updated_on>
         <template><![CDATA[<body>
-  <h1 style="text-align: center;">Inventory Managerment</h1>
+  <h1 style="text-align: center;">{{c.translations.Inventory_Management}}</h1>
   <div>
     <button type="submit" class="btn btn-primary" ng-click="c.openAddModal()">
-      Add Item
+      {{c.translations.butAdd}}
     </button>
     <div class="main-table">
       <table class="table table-hover">
         <thead>
           <tr>
-            <th scope="col">Index</th>
-            <th scope="col">Item Name</th>
-            <th scope="col">Item ID</th>
-            <th scope="col">Current Quantity</th>
-            <th scope="col">Borrowed Quantity</th>
-            <th scope="col">Unit Price</th>
-            <th scope="col">Category</th>
-            <th scope="col">Remarks</th>
-            <th scope="col">Actions</th>
+            <th scope="col">{{c.translations.Index}}</th>
+            <th scope="col">{{c.translations.Item_Name}}</th>
+            <th scope="col">{{c.translations.Item_ID}}</th>
+            <th scope="col">{{c.translations.Current_Quantity}}</th>
+            <th scope="col">{{c.translations.Borrowed_Quantity}}</th>
+            <th scope="col">{{c.translations.Unit_Price}}</th>
+            <th scope="col">{{c.translations.Category}}</th>
+            <th scope="col">{{c.translations.Remarks}}</th>
+            <th scope="col">{{c.translations.Actions}}</th>
           </tr>
         </thead>
         <tbody>
@@ -736,21 +785,21 @@ function getInventoryCount() {
               <span class="tag" ng-if="ive.low_stock" >Low on Stock</span>
             </td>
             <td style="width:5vw">{{ ive.borrowed_quantity }}</td>
-            <td style="width:8.5vw">{{ ive.price }}</td>
+            <td style="width:8.5vw">{{ ive.price.toLocaleString('vi-VN')}} $</td>
             <td>{{ ive.category }}</td>
             <td>{{ ive.remarks }}</td>
             <td style="width:14vw">
               <button type="button" class="btn btn-info custom-btn" ng-click="c.detail(ive.sys_id)" style="margin-left:8px">
-                Detail
+                {{c.translations.butDetail}}
               </button>
               <button type="button" class="btn btn-warning custom-btn" ng-if="ive.active === '1'" ng-click="c.fillUpdate(ive.sys_id)">
-                Update
+                {{c.translations.butUpdate}}
               </button>
               <button type="button" class="btn btn-danger custom-btn" ng-if="ive.active === '1'" ng-click="c.changeActive(ive.sys_id)">
-                Archive
+                {{c.translations.butArchive}}
               </button>
               <button type="button" class="btn btn-success custom-btn" ng-if="ive.active === '0'" ng-click="c.changeActive(ive.sys_id)">
-                Un Archive
+                {{c.translations.butUnArchive}}
               </button>
             </td>
           </tr>
@@ -758,17 +807,24 @@ function getInventoryCount() {
       </table>
     </div>
 
-    <div class="pagination-controls">
+    <div class="pagination-controls" ng-if="c.getRoundedPageCount() > 0">
       <button class="btn btn-secondary" ng-disabled="c.pageNumber === 1" ng-click="c.loadPage(c.pageNumber - 1)">
-        Previous
+        {{c.translations.previous}}
       </button>
 
-      <span>Page {{ c.pageNumber }} of {{ c.getRoundedPageCount() }}</span>
+      <span>{{c.translations.page}} {{ c.pageNumber }} / {{ c.getRoundedPageCount() }}</span>
 
       <button class="btn btn-secondary" ng-disabled="c.pageNumber >= c.getRoundedPageCount()"
               ng-click="c.loadPage(c.pageNumber + 1)">
-        Next
+        {{c.translations.next}}
       </button>
+      <span>{{c.translations.goToPage}}</span>
+      <input type="number"
+             ng-model="c.targetPage"
+             ng-change="c.goToPage()"
+             min="1"
+             max="{{ c.getRoundedPageCount() }}"
+             class="page-input" />
     </div>
 
     <div class="custom-modal-overlay" ng-if="c.showAddModal">
@@ -779,28 +835,28 @@ function getInventoryCount() {
         </div>
         <div class="custom-modal-body">
           <div class="input_inner">
-            <label for="itemName">Item name :</label>
+            <label for="itemName">{{c.translations.Item_Name}} :</label>
             <input type="text" id="itemName" ng-model="c.newInve.item_name" />
           </div>
 
           <div class="input_group">
             <div class="input_inner input_growd">
-              <label for="quantity">Quantity :</label>
+              <label for="quantity">{{c.translations.Quantity_Total}} :</label>
               <input type="number" id="quantity" ng-model="c.newInve.quantity" />
             </div>
             <div class="input_inner">
-              <label for="quantity">Warning Stock:</label>
+              <label for="quantity">{{c.translations.Warning_Stock}} :</label>
               <input type="number" id="quantity" ng-model="c.newInve.warning_quantity" />
             </div>
           </div>
           <div class="input_group">
             <div class="input_inner input_growd">
-              <label for="unitPrice">Unit price :</label>
+              <label for="unitPrice">{{c.translations.Unit_Price}} :</label>
               <input type="number" id="unitPrice"  ng-model="c.newInve.price" />
             </div>
 
             <div class="input_inner">
-              <label for="category">Category :</label>
+              <label for="category">{{c.translations.Category}} :</label>
               <select id="caregory" ng-model="c.newInve.category">
                 <option value="" disabled selected>Select Category</option>
                 <option value="Office">Office Equipment</option>
@@ -811,20 +867,20 @@ function getInventoryCount() {
             </div>
           </div>
           <div class="input_inner">
-            <label for="remarks">Remarks :</label>
+            <label for="remarks">{{c.translations.Remarks}} :</label>
             <textarea id="remarks" ng-model="c.newInve.remarks"></textarea>
           </div>
 
           <div class="input_inner" >
-            <label for="comment">Description :</label>
+            <label for="comment">{{c.translations.Description}} :</label>
             <textarea id="comment" ng-model="c.newInve.description" style="height: 90px"></textarea>
           </div>
         </div>
         <div class="custom-modal-footer">
           <button type="submit" class="btn btn-primary btn-block" ng-click="c.addnewInve()">
-            Add Item
+            {{c.translations.butAdd}}
           </button>
-          <button type="button" class="btn-secondary" ng-click="c.closeAddModal()">Close</button>
+          <button type="button" class="btn-secondary" ng-click="c.closeAddModal()">{{c.translations.Close}}</button>
         </div>
       </div>
     </div>
@@ -840,27 +896,27 @@ function getInventoryCount() {
         <div class="custom-modal-body">
           <div class="input_group">
             <div class="input_inner input_growd">
-              <label for="itemName">Item name :</label>
+              <label for="itemName">{{c.translations.Item_Name}} :</label>
               <input type="text" id="itemName" ng-model="c.editInve.item_name" readonly />
             </div>
             <div class="input_inner">
-              <label for="itemId">Item ID:</label>
+              <label for="itemId">{{c.translations.Item_ID}} :</label>
               <input type="text" id="itemId" ng-model="c.editInve.item_id" readonly />
             </div>
           </div>
 
-          <label for="update" style="display: block; margin-bottom: 0px;">Action :</label>
+          <label for="update" style="display: block; margin-bottom: 0px;">{{c.translations.Actions}} :</label>
           <div class="input_group">
             <div class="input_inner input_growd" >
               <div class="input_select">
-                <label for="update" class="label_select">Update Quantity :</label>
+                <label for="update" class="label_select">{{c.translations.updateQuantity}} :</label>
                 <input class="checkbox_select" type="checkbox" value="update_quantity" name="action"
                        ng-model="c.editInve.action_type" ng-checked="c.editInve.action_type === 'update_quantity'"
                        ng-click="c.editInve.action_type = 'update_quantity'" />
               </div>
 
               <div class="input_select">
-                <label for="return" class="label_select">Return Borrowed :</label>
+                <label for="return" class="label_select">{{c.translations.returnBorrowed}} :</label>
                 <input class="checkbox_select" type="checkbox" value="return_borrowed" name="action"
                        ng-model="c.editInve.action_type" ng-checked="c.editInve.action_type === 'return_borrowed'"
                        ng-click="c.editInve.action_type = 'return_borrowed'" />
@@ -869,11 +925,11 @@ function getInventoryCount() {
 
             <div style="flex: 2; position: relative; top: -10px;">
               <div class="input_inner input_growd" ng-show="c.editInve.action_type === 'update_quantity'">
-                <label for="quantity">Update Quantity :</label>
+                <label for="quantity">{{c.translations.updateQuantity}} :</label>
                 <input type="number" id="quantity" ng-model="c.editInve.quantity_change" />
               </div>
               <div class="input_inner input_growd" ng-show="c.editInve.action_type === 'return_borrowed'">
-                <label for="returnQuantity">Return Borrowed Quantity:</label>
+                <label for="returnQuantity">{{c.translations.returnBorrowed}}:</label>
                 <input type="number" id="returnQuantity" ng-model="c.editInve.quantity_change" />
               </div>
             </div>
@@ -881,22 +937,22 @@ function getInventoryCount() {
 
           <div class="input_group">
             <div class="input_inner input_growd">
-              <label for="quantity">Total Quantity :</label>
+              <label for="quantity">{{c.translations.Quantity_Total}} :</label>
               <input type="number" id="quantity" ng-model="c.editInve.quantity" readonly />
             </div>
             <div class="input_inner">
-              <label for="quantity">Warning Stock:</label>
+              <label for="quantity">{{c.translations.Warning_Stock}}:</label>
               <input type="number" id="quantity" ng-model="c.editInve.warning_quantity" readonly/>
             </div>
           </div>
           <div class="input_group">
             <div class="input_inner input_growd">
-              <label for="unitPrice">Unit price :</label>
+              <label for="unitPrice">{{c.translations.Unit_Price}} :</label>
               <input type="number" id="unitPrice" ng-model="c.editInve.price" />
             </div>
 
             <div class="input_inner">
-              <label for="category">Category :</label>
+              <label for="category">{{c.translations.Category}} :</label>
               <select id="caregory" ng-model="c.editInve.category" >
                 <option value="" disabled selected>Select Category</option>
                 <option value="Office">Office Equipment</option>
@@ -907,7 +963,7 @@ function getInventoryCount() {
             </div>
           </div>
           <div class="input_inner">
-            <label for="remarks">Remarks :</label>
+            <label for="remarks">{{c.translations.Remarks}} :</label>
             <textarea id="remarks" ng-model="c.editInve.remarks" readonly></textarea>
           </div>
         </div>
@@ -915,7 +971,7 @@ function getInventoryCount() {
           <button type="button" class="btn btn-primary btn-block" ng-click="c.update()">
             Update
           </button>
-          <button type="button" class="btn-secondary" ng-click="c.closeEditModal()">Close</button>
+          <button type="button" class="btn-secondary" ng-click="c.closeEditModal()">{{c.translations.Close}}</button>
         </div>
       </div>
     </div>
@@ -933,31 +989,31 @@ function getInventoryCount() {
         <div class="custom-modal-body">
           <div class="input_group">
             <div class="input_inner input_growd">
-              <label for="itemName">Item name:</label>
+              <label for="itemName">{{c.translations.Item_Name}}:</label>
               <input type="text" id="itemName" ng-model="data.detailInve.item_name" disabled />
             </div>
             <div class="input_inner input_growd">
-              <label for="itemId">Item id:</label>
+              <label for="itemId">{{c.translations.Item_ID}}:</label>
               <input type="text" id="itemId" ng-model="data.detailInve.number" disabled />
             </div>
           </div>
           <div class="input_group">
             <div class="input_inner input_growd">
-              <label for="updateOn"> Updated on:</label>
+              <label for="updateOn"> {{c.translations.Updated_on}}:</label>
               <input type="text" id="updateOn" ng-model="data.detailInve.sys_updated_on" disabled />
             </div>
             <div class="input_inner input_growd">
-              <label for="createdOn">Created on:</label>
+              <label for="createdOn">{{c.translations.Created_on}}:</label>
               <input type="text" id="createdOn" ng-model="data.detailInve.sys_created_on" disabled />
             </div>
           </div>
           <div class="input_group">
             <div class="input_inner input_growd">
-              <label for="createdBy"> Created by:</label>
+              <label for="createdBy"> {{c.translations.Created_by}}:</label>
               <input type="text" id="createdBy" ng-model="data.detailInve.sys_created_by" disabled />
             </div>
             <div class="input_inner input_growd">
-              <label for="updatedBy"> Updated by:</label>
+              <label for="updatedBy"> {{c.translations.Updated_by}}:</label>
               <input type="text" id="updatedBy" ng-model="data.detailInve.sys_updated_by" disabled />
             </div>
           </div>
@@ -967,14 +1023,14 @@ function getInventoryCount() {
             <table style="width:100%">
               <thead>
                 <tr>
-                  <th>Index</th>
-                  <th>Time</th>
-                  <th>Quantity Total</th>
-                  <th>Current Quantity</th>
-                  <th>Quantity Changed</th>
-                  <th>Action</th>
-                  <th>Requester</th>
-                  <th>Description</th>
+                  <th>{{c.translations.Index}}</th>
+                  <th>{{c.translations.Time}}</th>
+                  <th>{{c.translations.Quantity_Total}}</th>
+                  <th>{{c.translations.Current_Quantity}}</th>
+                  <th>{{c.translations.Quantity_Changed}}</th>
+                  <th>{{c.translations.Actions}}</th>
+                  <th>{{c.translations.Requester}}</th>
+                  <th>{{c.translations.Description}}</th>
                 </tr>
               </thead>
               <tbody>
@@ -994,7 +1050,7 @@ function getInventoryCount() {
         </div>
         <div class="custom-modal-footer">
           <button type="button" class="btn-secondary" ng-click="c.closeModal()">
-            Close
+            {{c.translations.Close}}
           </button>
         </div>
       </div>
