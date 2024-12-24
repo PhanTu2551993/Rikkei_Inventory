@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_column">
+    <sp_column action="DELETE">
+        <class_name/>
+        <order>1</order>
+        <semantic_tag/>
+        <size>12</size>
+        <size_lg/>
+        <size_sm/>
+        <size_xs/>
+        <sp_row display_value="1">07d0851783d21210260a55b6feaad33b</sp_row>
+        <sys_class_name>sp_column</sys_class_name>
+        <sys_created_by>sonnguyen</sys_created_by>
+        <sys_created_on>2024-12-11 04:03:44</sys_created_on>
+        <sys_id>4fd0851783d21210260a55b6feaad33d</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>1</sys_name>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_update_name>sp_column_4fd0851783d21210260a55b6feaad33d</sys_update_name>
+        <sys_updated_by>sonnguyen</sys_updated_by>
+        <sys_updated_on>2024-12-11 04:03:44</sys_updated_on>
+    </sp_column>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</application>
+        <file_path/>
+        <instance_id>612674ef1be5b9986a85eb9b2d4bcb35</instance_id>
+        <instance_name>dev181071</instance_name>
+        <name>sp_column_4fd0851783d21210260a55b6feaad33d</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_column"><sp_column action="INSERT_OR_UPDATE"><class_name/><order>1</order><semantic_tag/><size>12</size><size_lg/><size_sm/><size_xs/><sp_row display_value="1">07d0851783d21210260a55b6feaad33b</sp_row><sys_class_name>sp_column</sys_class_name><sys_created_by>sonnguyen</sys_created_by><sys_created_on>2024-12-11 04:03:44</sys_created_on><sys_id>4fd0851783d21210260a55b6feaad33d</sys_id><sys_mod_count>0</sys_mod_count><sys_name>1</sys_name><sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package><sys_policy/><sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope><sys_update_name>sp_column_4fd0851783d21210260a55b6feaad33d</sys_update_name><sys_updated_by>sonnguyen</sys_updated_by><sys_updated_on>2024-12-11 04:03:44</sys_updated_on></sp_column></record_update>]]></payload>
+        <payload_hash>2124940328</payload_hash>
+        <record_name>1</record_name>
+        <reverted_from/>
+        <source>89e1137283d65210260a55b6feaad38b</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>sonnguyen</sys_created_by>
+        <sys_created_on>2024-12-11 04:03:44</sys_created_on>
+        <sys_id>8fd0851783d21210260a55b6feaad33f</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>193b3e3184d0000001</sys_recorded_at>
+        <sys_updated_by>sonnguyen</sys_updated_by>
+        <sys_updated_on>2024-12-11 04:03:44</sys_updated_on>
+        <type>Column</type>
+        <update_guid>83d08517f9d21210ed3c60c1cfac943f</update_guid>
+        <update_guid_history>83d08517f9d21210ed3c60c1cfac943f:2124940328</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="1">0e18829f831a1210260a55b6feaad38f</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>sonnguyen</sys_created_by>
+        <sys_created_on>2024-12-11 09:14:58</sys_created_on>
+        <sys_db_object display_value="" name="sp_column">sp_column</sys_db_object>
+        <sys_id>1270e594171a43488ce1f1a5cb9c2d90</sys_id>
+        <sys_metadata>4fd0851783d21210260a55b6feaad33d</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>1</sys_name>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_scope_delete display_value="">861d2658792a49508d448ee8b3268100</sys_scope_delete>
+        <sys_update_name>sp_column_4fd0851783d21210260a55b6feaad33d</sys_update_name>
+        <sys_update_version display_value="sp_column_4fd0851783d21210260a55b6feaad33d">8fd0851783d21210260a55b6feaad33f</sys_update_version>
+        <sys_updated_by>sonnguyen</sys_updated_by>
+        <sys_updated_on>2024-12-11 09:14:58</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

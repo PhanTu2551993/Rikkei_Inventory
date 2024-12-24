@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_page">
+    <sp_page action="DELETE">
+        <category>custom</category>
+        <css/>
+        <draft>false</draft>
+        <dynamic_title_structure/>
+        <human_readable_url_structure/>
+        <id>add_approval</id>
+        <internal>false</internal>
+        <omit_watcher>false</omit_watcher>
+        <public>false</public>
+        <roles/>
+        <seo_script/>
+        <short_description/>
+        <sys_class_name>sp_page</sys_class_name>
+        <sys_created_by>sonnguyen</sys_created_by>
+        <sys_created_on>2024-12-13 02:42:15</sys_created_on>
+        <sys_id>b0610f37839a5210260a55b6feaad3a1</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>add_approval</sys_name>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_update_name>sp_page_b0610f37839a5210260a55b6feaad3a1</sys_update_name>
+        <sys_updated_by>sonnguyen</sys_updated_by>
+        <sys_updated_on>2024-12-13 02:42:15</sys_updated_on>
+        <title>add_Approval - Test Page</title>
+        <use_seo_script>false</use_seo_script>
+    </sp_page>
+    <sys_translated_text action="DELETE" query="documentkey=b0610f37839a5210260a55b6feaad3a1"/>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</application>
+        <file_path/>
+        <instance_id>612674ef1be5b9986a85eb9b2d4bcb35</instance_id>
+        <instance_name>dev181071</instance_name>
+        <name>sp_page_b0610f37839a5210260a55b6feaad3a1</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_page"><sp_page action="INSERT_OR_UPDATE"><category>custom</category><css/><draft>false</draft><dynamic_title_structure/><human_readable_url_structure/><id>add_approval</id><internal>false</internal><omit_watcher>false</omit_watcher><public>false</public><roles/><seo_script/><short_description/><sys_class_name>sp_page</sys_class_name><sys_created_by>sonnguyen</sys_created_by><sys_created_on>2024-12-13 02:42:15</sys_created_on><sys_id>b0610f37839a5210260a55b6feaad3a1</sys_id><sys_mod_count>0</sys_mod_count><sys_name>add_approval</sys_name><sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package><sys_policy/><sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope><sys_update_name>sp_page_b0610f37839a5210260a55b6feaad3a1</sys_update_name><sys_updated_by>sonnguyen</sys_updated_by><sys_updated_on>2024-12-13 02:42:15</sys_updated_on><title>add_Approval - Test Page</title><use_seo_script>false</use_seo_script></sp_page><sys_translated_text action="delete_multiple" query="documentkey=b0610f37839a5210260a55b6feaad3a1"/></record_update>]]></payload>
+        <payload_hash>193034930</payload_hash>
+        <record_name>add_approval</record_name>
+        <reverted_from/>
+        <source>89e1137283d65210260a55b6feaad38b</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>sonnguyen</sys_created_by>
+        <sys_created_on>2024-12-13 02:42:15</sys_created_on>
+        <sys_id>78610f37839a5210260a55b6feaad3a3</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>193bde536e30000001</sys_recorded_at>
+        <sys_updated_by>sonnguyen</sys_updated_by>
+        <sys_updated_on>2024-12-13 02:42:15</sys_updated_on>
+        <type>Page</type>
+        <update_guid>7c610f37679a5210e8a83da7ff964da2</update_guid>
+        <update_guid_history>7c610f37679a5210e8a83da7ff964da2:193034930</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="add_approval">4bf61773831e5210260a55b6feaad37e</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>sonnguyen</sys_created_by>
+        <sys_created_on>2024-12-13 04:16:37</sys_created_on>
+        <sys_db_object display_value="" name="sp_page">sp_page</sys_db_object>
+        <sys_id>14fa9c2a92864214b036cafa462c8410</sys_id>
+        <sys_metadata>b0610f37839a5210260a55b6feaad3a1</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>add_approval</sys_name>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_scope_delete display_value="">861d2658792a49508d448ee8b3268100</sys_scope_delete>
+        <sys_update_name>sp_page_b0610f37839a5210260a55b6feaad3a1</sys_update_name>
+        <sys_update_version display_value="sp_page_b0610f37839a5210260a55b6feaad3a1">78610f37839a5210260a55b6feaad3a3</sys_update_version>
+        <sys_updated_by>sonnguyen</sys_updated_by>
+        <sys_updated_on>2024-12-13 04:16:37</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

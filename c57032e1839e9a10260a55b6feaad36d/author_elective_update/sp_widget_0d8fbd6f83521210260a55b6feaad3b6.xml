@@ -1,0 +1,1961 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="DELETE">
+        <category>custom</category>
+        <client_script><![CDATA[api.controller=function(spModal,spUtil) {
+	/* widget controller */
+	var c = this;
+	var updateId = null;
+	c.showButtonAdd = false;
+	c.showModal = false;
+	c.showAddModal = false;
+	c.showEditModal = false;
+
+	// Detail Modal
+
+	c.closeModal = function () {
+		c.showModal = false;
+	};
+	c.openModal = function () {
+		c.showModal = true;
+	};
+
+	//Edit Modal
+
+	c.closeEditModal = function () {
+		c.showEditModal = false;
+	};
+
+
+	//Add Modal
+
+	c.closeAddModal = function () {
+		c.showAddModal = false;
+		c.newInve = {
+			item_name: '',
+			quantity: '',
+			warning_quantity: '',
+			price: '',
+			category: '',
+			remarks: '',
+			description:'',
+		};
+		c.showButtonAdd = false;
+	};
+	c.openAddModal = function () {
+		c.showAddModal = true;
+	};
+
+	c.newInve = {
+		item_name: '',
+		quantity: '',
+		warning_quantity: '',
+		price: '',
+		category: '',
+		remarks: '',
+		description:'',
+	};
+
+	//ADD
+
+	c.addnewInve = function() {
+		if (!c.newInve.item_name || c.newInve.item_name.trim() === '' || !c.newInve.category || c.newInve.category.trim() === '' || !c.newInve.remarks || c.newInve.remarks.trim() === '' || !c.newInve.description || c.newInve.description.trim() === '') {
+			spUtil.addErrorMessage("cannot be empty.");
+			return;
+		}
+		var existingItem = c.data.inventories.find(function(inventoryItem) {
+			return inventoryItem.item_name === c.newInve.item_name;
+		});
+
+		if (existingItem) {
+			spUtil.addErrorMessage("The item name already exists in the inventory.");
+			return;
+		}
+		if (!c.newInve.quantity || c.newInve.quantity <= 0 || isNaN(c.newInve.quantity)) {
+			spUtil.addErrorMessage(" Quantity must be a positive number greater than 0.");
+			return;
+		}
+		if (!c.newInve.warning_quantity || c.newInve.warning_quantity <= 0 || isNaN(c.newInve.warning_quantity)) {
+			spUtil.addErrorMessage("Warning quantity must be a positive number greater than 0.");
+			return;
+		}
+
+		if (c.newInve.warning_quantity && c.newInve.warning_quantity > c.newInve.quantity) {
+			spUtil.addErrorMessage("Warning quantity cannot exceed the total quantity.");
+			return;
+		}
+
+
+		if (!c.newInve.price || c.newInve.price <= 0 || isNaN(c.newInve.price)) {
+			spUtil.addErrorMessage(" Price must be a positive number greater than 0.");
+			return;
+		}
+		c.server.get({
+			action: "addnewInve",
+			newInve: c.newInve,
+			pageNumber: c.pageNumber,
+			pageSize: c.pageSize,
+		}).then(function(r) {
+			c.newInve = {
+				item_name: '',
+				quantity: '',
+				warning_quantity: '',
+				price: '',
+				category: '',
+				remarks: '',
+				description:'',
+			};
+			c.data.inventories = r.data.inventories;
+			c.totalCount = r.data.totalCount;
+			c.showAddModal = false;
+			spUtil.addTrivialMessage("New inventory has been added successfully.");
+		}).catch(function(error) {
+			console.error('Error while adding new inventory:', error);
+			spUtil.addErrorMessage("An error occurred while adding the inventory.");
+		});
+	};
+
+
+	// Detail
+
+	c.detail = function(inveId){
+		c.showModal = true;
+		c.server.get({
+			action:"detailInve",
+			inveId:inveId
+		}).then(function(r){
+			c.data.detailInve = r.data.detailInve;
+		}).catch(function(e){
+			console.error('Error while Detail Inventory:', e);
+		})
+	}
+
+	//Update
+
+	c.fillUpdate = function(inveId) {
+		updateId = inveId;
+		c.showEditModal = true;
+		c.server.get({
+			action: "fillField",
+			id: inveId
+		}).then(function(r) {
+			console.log('r',r)
+			c.editInve.item_name = r.data.fillField.item_name;
+			c.editInve.item_id = r.data.fillField.number;
+			c.editInve.quantity = Number(r.data.fillField.quantity);
+			c.editInve.warning_quantity = Number(r.data.fillField.warning_quantity);
+			c.editInve.price = Number(r.data.fillField.price);
+			c.editInve.category = r.data.fillField.category;
+			c.editInve.remarks = r.data.fillField.remarks;
+		}).catch(function(e) {
+			console.error('Error while Update Inventory:', e);
+		});
+	};
+
+	c.update = function() {
+		console.log('newInve',c.newInve)
+		if (!c.newInve.item_name.trim() || !c.newInve.description.trim() ) {
+			spUtil.addErrorMessage("Cannot be empty.");
+			return;
+		}
+
+		var quantity = Number(c.newInve.quantity);
+		if (isNaN(quantity) || quantity < 0) {
+			spUtil.addErrorMessage("Quantity must be a positive number greater than 0.");
+			return;
+		}
+
+		var warningQuantity = Number(c.newInve.warning_quantity);
+		if (isNaN(warningQuantity) || warningQuantity < 0) {
+			spUtil.addErrorMessage("Warning quantity must be a positive number greater than 0.");
+			return;
+		}
+
+		if (warningQuantity > quantity) {
+			spUtil.addErrorMessage("Warning quantity cannot exceed quantity.");
+			return;
+		}
+
+		var price = Number(c.newInve.price);
+		if (isNaN(price) || price < 0) {
+			spUtil.addErrorMessage("Price must be a positive number greater than 0.");
+			return;
+		}
+
+		c.server.get({
+			action: "updateInve",
+			newInve: c.newInve,
+			updateId: updateId
+		}).then(function(r) {
+			updateId = null;
+			c.newInve = {
+				item_name: '',
+				quantity: '',
+				warning_quantity: '',
+				price: '',
+				category: '',
+				remarks: '',
+				description:'',
+			};
+			c.showEditModal = false;
+			c.data.inventories = r.data.inventories;
+			c.totalCount = r.data.totalCount;
+			c.loadPage(c.pageNumber);
+			spUtil.addTrivialMessage("Inventory has been updated successfully.");
+		}).catch(function(e) {
+			console.error('Error while updating inventory:', e);
+			spUtil.addErrorMessage("An error occurred while updating the inventory.");
+		});
+	};
+
+	//Change Active
+
+	c.changeActive = function (inveId) {
+		spModal.confirm("Are you sure you want to change Active this record?").then(function (confirmed) {
+			if (confirmed) {
+				c.server.get({
+					action: "changeActive",
+					inveId: inveId
+				}).then(function (r) {
+					spUtil.addTrivialMessage("Inventory has been change Active.");
+					c.data.inventories = r.data.inventories;
+					c.pageNumber = 1;
+				}).catch(function (e) {
+					console.error('Error while Delete Inventory:', e);
+					spUtil.addErrorMessage("Failed to change Active the Inventory. Please try again.");
+				});
+			}
+		});
+	}
+
+	// Phân trang 
+
+	c.pageNumber = 1;
+	c.pageSize = 3; 
+	c.totalCount = 0;
+
+	c.loadPage = function (pageNumber) {
+		c.pageNumber = pageNumber;
+		c.server.get({
+			action: "getInventory",
+			pageNumber: c.pageNumber,
+			pageSize: c.pageSize,
+		}).then(function (r) {
+			c.data.inventories = r.data.inventories;
+			console.log("11111",r.data.inventories)
+			c.totalCount = r.data.totalCount;
+		}).catch(function (error) {
+			console.error('Error while fetching inventory:', error);
+		});
+	};
+
+	c.getRoundedPageCount = function () {
+		return Math.ceil(c.totalCount / c.pageSize); 
+	};
+
+	c.loadPage(c.pageNumber);
+
+};]]></client_script>
+        <controller_as>c</controller_as>
+        <css>/* Card styling */
+.card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.card-header {
+  background-color: #f9f9f9;
+  padding: 15px;
+  font-size: 18px;
+  font-weight: bold;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+}
+.card-body {
+  padding: 20px;
+}
+/* Form layout */
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+/* Form groups */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+.form-group label {
+  margin-bottom: 5px;
+  font-weight: bold;
+  font-size: 14px;
+}
+.form-group input {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+/* Align the button to the bottom */
+.form-group.align-self-end {
+  display: flex;
+  align-items: flex-end;
+}
+/* Button styling */
+
+.btn:hover {
+  background-color: #0056b3;
+}
+.btn-block {
+  width: 100%;
+}
+.main-table{
+  width : 100%;
+  height : auto;
+  border-radius: 8px;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+  margin-top:20px;
+}
+
+.custom-table {
+	width: 100%;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+thead{
+  background-color: black;
+  color :white;
+  border-radius: 8px;
+}
+.header{
+  text-align: center;
+  margin-bottom:20px;
+}
+.custom-btn {
+  height: 30px;
+  line-height: 30px;
+  text-align: center; 
+  display: inline-block; 
+  padding: 0 12px; 
+  font-size: 14px; 
+  vertical-align: middle;
+  margin-right:10px;
+}
+.custom-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+	display: block;
+  z-index: 1000;
+}
+.custom-modal {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+	width: 450px;
+  margin: 15% auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+   position: relative;
+}
+ 
+.custom-detail {
+  width: 800px;
+}
+.custom-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.custom-modal-header h5 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+.custom-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; 
+}
+ 
+
+.input_group {
+	display: flex;
+	align-items: center;
+  gap: 10px;
+}
+.input_growd {
+  flex: 1;
+}
+
+.input_select {
+  display: flex;
+  align-items: center;
+}
+
+
+.input_select input{
+    position: relative;
+    top: -12px;
+}
+
+.input_select .checkbox_select {
+  width: 18px;
+  height: 18px;
+}
+
+.input_inner .label_select {
+  min-width: 120px;
+  width: 0%;
+  margin-bottom: 20px;
+}
+
+.input_inner label{
+  font-size: 14px;
+  font-weight: 500;
+  color: #3b3b3b;
+  min-width: 170px;
+  white-space: nowrap;
+  width: 100%;
+}
+.input_inner input,textarea, select {
+  width: 100%;
+	max-width: 100%;
+  height: 36px;
+  border: 1px solid #4b4b4b;
+  border-radius: 4px;
+  outline: none;
+  display: block;
+  padding:0 6px;
+  font-size: 14px; 
+  font-weight: 400;
+  color: #3b3b3b;
+  cursor: pointer;
+}
+
+.input_inner textarea {
+	min-width: 100%;
+  font-size: 16px; 
+  line-height: 2;
+}
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #ddd;
+  padding: 8px;
+  border-radius: 4px;
+  position: relative;
+}
+.label {
+  flex: 1;
+  color: black;
+  font-weight: 700;
+  border-right: 1px solid #ddd; 
+  padding-right: 8px;
+}
+.value {
+  flex: 1;
+  text-align: center;
+  padding-left: 8px;
+}
+.custom-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 26px;
+}
+.btn-secondary {
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+.btn-secondary:hover {
+  background-color: #e0e0e0;
+}
+ 
+.low-stock {
+	background-color: #f8d7da;
+}
+.low-stock:hover {
+	background-color: #e9b9bd;
+}
+
+ 
+.custom-modal-table {
+  max-width: 100%;
+  margin-top: 30px;
+  overflow: auto;
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>true</has_preview>
+        <id>add_inventories</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>add_inventories</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+	/* Gán dữ liệu cho object 'data' */
+	data.detailInve = {};
+	var pageNumber = 1; 
+	var pageSize = 3;   
+	data.inventories = getInventory(pageNumber, pageSize);
+	//data.totalCount = getInventoryCount();
+
+	if (input) {
+		if (input.action === "getInventory") {
+			pageNumber = input.pageNumber;
+			pageSize = input.pageSize;    
+			data.inventories = getInventory(pageNumber, pageSize);
+			data.totalCount = getInventoryCount();
+		}
+
+		if (input.action === "addnewInve") {
+			var newInve = input.newInve;
+			try {
+				var ive = new GlideRecord('x_1568427_inventor_item');
+				ive.initialize();
+				ive.item_name = newInve.item_name;
+				ive.quantity = newInve.quantity;
+				ive.price = newInve.price;
+				ive.category = newInve.category;
+				ive.remarks = newInve.remarks;
+				ive.description = newInve.description;
+				ive.warning_quantity = newInve.warning_quantity;
+				ive.insert();
+			} catch (e) {
+				gs.error('Lỗi thêm mới dữ liệu: ' + e.message);
+			}
+		}
+
+		if (input.action === "detailInve") {
+			var inveId = input.inveId;
+			data.detailInve = detailInve(inveId);
+		}
+
+		if (input.action === "fillField") {
+			var id = input.id;
+			data.fillField = detailInve(id);
+		}
+
+		if (input.action === "updateInve") {
+			var gr = new GlideRecord('x_1568427_inventor_item');
+			if (gr.get(input.updateId)) {
+				if (input.newInve.item_name) { gr.item_name = input.newInve.item_name; }
+				if (input.newInve.quantity) { gr.quantity = input.newInve.quantity; }
+				if (input.newInve.warning_quantity) { gr.warning_quantity = input.newInve.warning_quantity; }
+				if (input.newInve.price) { gr.price = input.newInve.price; }
+				if (input.newInve.category) { gr.category = input.newInve.category; }
+				if (input.newInve.remarks) { gr.remarks = input.newInve.remarks; }
+				if (input.newInve.description) { gr.description = input.newInve.description; }
+				gr.update();
+			}
+		}
+
+		if (input.action === "changeActive") {
+			var inventor = new GlideRecord('x_1568427_inventor_item');
+			if (inventor.get(input.inveId)) {
+				inventor.active = !inventor.active;
+				inventor.update();
+			}
+		}
+	}
+	data.inventories = getInventory(pageNumber, pageSize);
+	data.totalCount = getInventoryCount();
+})();
+
+function getInventory(pageNumber, pageSize) {
+	var inventories = [];
+	try {
+		var ive = new GlideRecord('x_1568427_inventor_item');
+		ive.orderByDesc('active');
+		ive.orderBy('number');
+		ive.query();
+		var start = (pageNumber - 1) * pageSize; 
+		var end = start + pageSize;             
+		var index = 0;                          
+
+		while (ive.next()) {
+			if (index >= start && index < end) {
+				inventories.push({
+					sys_id: ive.getValue('sys_id'),
+					item_name: ive.getValue('item_name'),
+					number: ive.getValue('number'),
+					quantity: ive.getValue('quantity'),
+					borrowed_quantity: ive.getValue('borrowed_quantity'),
+					warning_quantity: ive.getValue('warning_quantity'),
+					price: ive.getValue('price'),
+					active: ive.getValue('active'),
+					category: ive.getValue('category'),
+					remarks: ive.getValue('remarks'),
+					start:start,
+				});
+			}
+			index++;
+			if (index >= end) break; 
+		}
+	} catch (e) {
+		gs.error('Lỗi lấy dữ liệu: ' + e.message);
+	}
+	return inventories;
+}
+
+function detailInve(inveId) {
+	var detailInve = {};
+	try {
+		var gr = new GlideRecord('x_1568427_inventor_item');
+		if (gr.get(inveId)) {
+			$sp.getRecordValues(detailInve, gr, 'item_name,number,quantity,price,category,remarks,sys_updated_on,sys_created_on,sys_created_by,sys_updated_by,warning_quantity');
+		}
+	} catch (e) {
+		gs.error('Lỗi lấy chi tiết: ' + e.message);
+	}
+	return detailInve;
+}
+
+function getInventoryCount() {
+	var count = 0;
+	try {
+		var gr = new GlideRecord('x_1568427_inventor_item');
+		gr.query();
+		count = gr.getRowCount();
+	} catch (e) {
+		gs.error('Lỗi đếm dữ liệu: ' + e.message);
+	}
+	return count;
+}
+]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>sonnguyen</sys_created_by>
+        <sys_created_on>2024-12-12 03:15:59</sys_created_on>
+        <sys_id>0d8fbd6f83521210260a55b6feaad3b6</sys_id>
+        <sys_mod_count>10</sys_mod_count>
+        <sys_name>add_inventories</sys_name>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_update_name>sp_widget_0d8fbd6f83521210260a55b6feaad3b6</sys_update_name>
+        <sys_updated_by>sonnguyen</sys_updated_by>
+        <sys_updated_on>2024-12-12 07:42:04</sys_updated_on>
+        <template><![CDATA[<body>
+  <h1 style="text-align: center;">Inventory Managerment</h1>
+  <div>
+    <button type="submit" class="btn btn-primary" ng-click="c.openAddModal()">
+      Add Item
+    </button>
+    <div class="main-table">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Index</th>
+            <th scope="col">Item Name</th>
+            <th scope="col">Item ID</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Borrowed Quantity</th>
+            <th scope="col">Unit Price</th>
+            <th scope="col">Category</th>
+            <th scope="col">Remarks</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="ive in data.inventories" ng-class="{'low-stock': (ive.quantity - ive.borrowed_quantity) < ive.warning_quantity}">
+            <td>{{ ive.start + $index + 1 }}</td>
+            <td>{{ ive.item_name }}</td>
+            <td>{{ ive.number }}</td>
+            <td>{{ ive.quantity }}</td>
+            <td style="width:5vw">{{ ive.borrowed_quantity }}</td>
+            <td style="width:8.5vw">{{ ive.price }}</td>
+            <td>{{ ive.category }}</td>
+            <td>{{ ive.remarks }}</td>
+            <td style="width:14vw">
+              <button type="button" class="btn btn-info custom-btn" ng-click="c.detail(ive.sys_id)" style="margin-left:8px">
+                Detail
+              </button>
+              <button type="button" class="btn btn-warning custom-btn" ng-if="ive.active === '1'" ng-click="c.fillUpdate(ive.sys_id)">
+                Update
+              </button>
+              <button type="button" class="btn btn-danger custom-btn" ng-if="ive.active === '1'" ng-click="c.changeActive(ive.sys_id)">
+                Archive
+              </button>
+              <button type="button" class="btn btn-success custom-btn" ng-if="ive.active === '0'" ng-click="c.changeActive(ive.sys_id)">
+                Un Archive
+              </button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination-controls">
+      <button class="btn btn-secondary" ng-disabled="c.pageNumber === 1" ng-click="c.loadPage(c.pageNumber - 1)">
+        Previous
+      </button>
+
+      <span>Page {{ c.pageNumber }} of {{ c.getRoundedPageCount() }}</span>
+
+      <button class="btn btn-secondary" ng-disabled="c.pageNumber >= c.getRoundedPageCount()"
+              ng-click="c.loadPage(c.pageNumber + 1)">
+        Next
+      </button>
+    </div>
+
+    <div class="custom-modal-overlay" ng-if="c.showAddModal">
+      <div class="custom-modal">
+        <div class="custom-modal-header">
+          <h5>Add Inventory</h5>
+          <button type="button" class="close-btn" ng-click="c.closeAddModal()">×</button>
+        </div>
+        <div class="custom-modal-body">
+          <div class="input_inner">
+            <label for="itemName">Item name :</label>
+            <input type="text" id="itemName" ng-model="c.newInve.item_name" />
+          </div>
+
+          <div class="input_group">
+            <div class="input_inner input_growd">
+              <label for="quantity">Quantity :</label>
+              <input type="number" id="quantity" ng-model="c.newInve.quantity" />
+            </div>
+            <div class="input_inner">
+              <label for="quantity">Warning Stock:</label>
+              <input type="number" id="quantity" ng-model="c.newInve.warning_quantity" />
+            </div>
+          </div>
+          <div class="input_group">
+            <div class="input_inner input_growd">
+              <label for="unitPrice">Unit price :</label>
+              <input type="number" id="unitPrice"  ng-model="c.newInve.price" />
+            </div>
+
+            <div class="input_inner">
+              <label for="category">Category :</label>
+              <select id="caregory" ng-model="c.newInve.category">
+                <option value="" disabled selected>Select Category</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Furniture">Furniture</option>
+                <option value="Clothing">Clothing</option>
+                <option value="Food">Food</option>
+              </select>
+            </div>
+          </div>
+          <div class="input_inner">
+            <label for="remarks">Remarks :</label>
+            <textarea id="remarks" ng-model="c.newInve.remarks"></textarea>
+          </div>
+
+          <div class="input_inner" >
+            <label for="comment">Description :</label>
+            <textarea id="comment" ng-model="c.newInve.description"></textarea>
+          </div>
+        </div>
+        <div class="custom-modal-footer">
+          <button type="submit" class="btn btn-primary btn-block" ng-click="c.addnewInve()">
+            Add Item
+          </button>
+          <button type="button" class="btn-secondary" ng-click="c.closeAddModal()">Close</button>
+        </div>
+      </div>
+    </div>
+
+
+
+    <div class="custom-modal-overlay" ng-if="c.showEditModal">
+      <div class="custom-modal">
+        <div class="custom-modal-header">
+          <h5>Update Inventory</h5>
+          <button type="button" class="close-btn" ng-click="c.closeEditModal()">×</button>
+        </div>
+        <div class="custom-modal-body">
+          <div class="input_group">
+            <div class="input_inner input_growd">
+              <label for="itemName">Item name :</label>
+              <input type="text" id="itemName" ng-model="c.editInve.item_name" readonly />
+            </div>
+            <div class="input_inner">
+              <label for="itemId">Item ID:</label>
+              <input type="text" id="itemId" ng-model="c.editInve.item_id" readonly />
+            </div>
+          </div>
+
+          <label for="update" style="display: block; margin-bottom: 0px;">Action :</label>
+          <div class="input_group">
+            <div class="input_inner input_growd" >
+              <div class="input_select">
+                <label for="update" class="label_select">Update Quantity :</label>
+                <input class="checkbox_select" type="checkbox" value="update_quantity" name="action"
+                  ng-model="c.editInve.action_type" ng-checked="c.editInve.action_type === 'update_quantity'"
+                  ng-click="c.editInve.action_type = 'update_quantity'" />
+              </div>
+
+              <div class="input_select">
+                <label for="return" class="label_select">Return Borrowed :</label>
+                <input class="checkbox_select" type="checkbox" value="return_borrowed" name="action"
+                  ng-model="c.editInve.action_type" ng-checked="c.editInve.action_type === 'return_borrowed'"
+                  ng-click="c.editInve.action_type = 'return_borrowed'" />
+              </div>
+            </div>
+
+            <div style="flex: 2; position: relative; top: -10px;">
+              <div class="input_inner input_growd" ng-show="c.editInve.action_type === 'update_quantity'">
+                <label for="quantity">Update Quantity :</label>
+                <input type="number" id="quantity" ng-model="c.editInve.quantity_change" />
+              </div>
+              <div class="input_inner input_growd" ng-show="c.editInve.action_type === 'return_borrowed'">
+                <label for="returnQuantity">Return Borrowed Quantity:</label>
+                <input type="number" id="returnQuantity" ng-model="c.editInve.return_quantity" />
+              </div>
+            </div>
+          </div>
+
+          <div class="input_group">
+            <div class="input_inner input_growd">
+              <label for="quantity">Total Quantity :</label>
+              <input type="number" id="quantity" ng-model="c.editInve.quantity" readonly />
+            </div>
+            <div class="input_inner">
+              <label for="quantity">Warning Stock:</label>
+              <input type="number" id="quantity" ng-model="c.editInve.warning_quantity" />
+            </div>
+          </div>
+          <div class="input_group">
+            <div class="input_inner input_growd">
+              <label for="unitPrice">Unit price :</label>
+              <input type="number" id="unitPrice" ng-model="c.editInve.price" />
+            </div>
+
+            <div class="input_inner">
+              <label for="category">Category :</label>
+              <select id="caregory" ng-model="c.editInve.category" readonly>
+                <option value="" disabled selected>Select Category</option>
+                <option value="Electronics">Electronics</option>
+                <option value="Furniture">Furniture</option>
+                <option value="Clothing">Clothing</option>
+                <option value="Food">Food</option>
+              </select>
+            </div>
+          </div>
+          <div class="input_inner">
+            <label for="remarks">Remarks :</label>
+            <textarea id="remarks" ng-model="c.editInve.remarks"></textarea>
+          </div>
+          <div class="input_inner">
+            <label for="comment">Description :</label>
+            <textarea id="comment" ng-model="c.editInve.description"></textarea>
+          </div>
+        </div>
+        <div class="custom-modal-footer">
+          <button type="button" class="btn btn-primary btn-block" ng-click="c.update()">
+            Update
+          </button>
+          <button type="button" class="btn-secondary" ng-click="c.closeEditModal()">Close</button>
+        </div>
+      </div>
+    </div>
+
+
+
+    <div ng-show="c.showModal" class="custom-modal-overlay">
+      <div class="custom-modal custom-detail">
+        <div class="custom-modal-header">
+          <h5>Detail Inventory</h5>
+          <button type="button" class="close-btn" ng-click="c.closeModal()">
+            ×
+          </button>
+        </div>
+        <div class="custom-modal-body">
+          <div class="input_group">
+            <div class="input_inner input_growd">
+              <label for="itemName">Item name:</label>
+              <input type="text" id="itemName" ng-model="data.detailInve.item_name" disabled />
+            </div>
+            <div class="input_inner input_growd">
+              <label for="itemId">Item id:</label>
+              <input type="text" id="itemId" ng-model="data.detailInve.number" disabled />
+            </div>
+          </div>
+          <div class="input_group">
+            <div class="input_inner input_growd">
+              <label for="updateOn"> Updated on:</label>
+              <input type="text" id="updateOn" ng-model="data.detailInve.sys_updated_on" disabled />
+            </div>
+            <div class="input_inner input_growd">
+              <label for="createdOn">Created on:</label>
+              <input type="text" id="createdOn" ng-model="data.detailInve.sys_created_on" disabled />
+            </div>
+          </div>
+          <div class="input_group">
+            <div class="input_inner input_growd">
+              <label for="createdBy"> Created by:</label>
+              <input type="text" id="createdBy" ng-model="data.detailInve.sys_created_by" disabled />
+            </div>
+            <div class="input_inner input_growd">
+              <label for="updatedBy"> Updated by:</label>
+              <input type="text" id="updatedBy" ng-model="data.detailInve.sys_updated_by" disabled />
+            </div>
+          </div>
+        </div>
+        <div class="custom-modal-table">
+          <div>
+            <table class= "custom-table">
+              <thead>
+                <tr>
+                  <th>Index</th>
+                  <th>Item Name</th>
+                  <th>Item ID</th>
+                  <th>Quantity</th>
+                  <th>Borrowed Quantity</th>
+                  <th>Unit Price</th>
+                  <th>Category</th>
+                  <th>Remarks</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1</td>
+                  <td>23w2re</td>
+                  <td>sdfsdfsdf</td>
+                  <td>sdfdsfds</td>
+                  <td>sadfsdfa</td>
+                  <td>sdfdsfsd</td>
+                  <td>sdfsdfsd</td>
+                  <td>fsdfsdf</td>
+                  <td>
+                    fsdfsdfsdf
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="custom-modal-footer">
+          <button type="button" class="btn-secondary" ng-click="c.closeModal()">
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>]]></template>
+    </sp_widget>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</application>
+        <file_path/>
+        <instance_id>612674ef1be5b9986a85eb9b2d4bcb35</instance_id>
+        <instance_name>dev181071</instance_name>
+        <name>sp_widget_0d8fbd6f83521210260a55b6feaad3b6</name>
+        <payload>&lt;?xml version="1.0" encoding="UTF-8"?&gt;&lt;record_update table="sp_widget"&gt;&lt;sp_widget action="INSERT_OR_UPDATE"&gt;&lt;category&gt;custom&lt;/category&gt;&lt;client_script&gt;&lt;![CDATA[api.controller=function(spModal,spUtil) {
+	/* widget controller */
+	var c = this;
+	var updateId = null;
+	c.showButtonAdd = false;
+	c.showModal = false;
+	c.showAddModal = false;
+	c.showEditModal = false;
+
+	// Detail Modal
+
+	c.closeModal = function () {
+		c.showModal = false;
+	};
+	c.openModal = function () {
+		c.showModal = true;
+	};
+
+	//Edit Modal
+
+	c.closeEditModal = function () {
+		c.showEditModal = false;
+	};
+
+
+	//Add Modal
+
+	c.closeAddModal = function () {
+		c.showAddModal = false;
+		c.newInve = {
+			item_name: '',
+			quantity: '',
+			warning_quantity: '',
+			price: '',
+			category: '',
+			remarks: '',
+			description:'',
+		};
+		c.showButtonAdd = false;
+	};
+	c.openAddModal = function () {
+		c.showAddModal = true;
+	};
+
+	c.newInve = {
+		item_name: '',
+		quantity: '',
+		warning_quantity: '',
+		price: '',
+		category: '',
+		remarks: '',
+		description:'',
+	};
+
+	//ADD
+
+	c.addnewInve = function() {
+		if (!c.newInve.item_name || c.newInve.item_name.trim() === '' || !c.newInve.category || c.newInve.category.trim() === '' || !c.newInve.remarks || c.newInve.remarks.trim() === '' || !c.newInve.description || c.newInve.description.trim() === '') {
+			spUtil.addErrorMessage("cannot be empty.");
+			return;
+		}
+		var existingItem = c.data.inventories.find(function(inventoryItem) {
+			return inventoryItem.item_name === c.newInve.item_name;
+		});
+
+		if (existingItem) {
+			spUtil.addErrorMessage("The item name already exists in the inventory.");
+			return;
+		}
+		if (!c.newInve.quantity || c.newInve.quantity &lt;= 0 || isNaN(c.newInve.quantity)) {
+			spUtil.addErrorMessage(" Quantity must be a positive number greater than 0.");
+			return;
+		}
+		if (!c.newInve.warning_quantity || c.newInve.warning_quantity &lt;= 0 || isNaN(c.newInve.warning_quantity)) {
+			spUtil.addErrorMessage("Warning quantity must be a positive number greater than 0.");
+			return;
+		}
+
+		if (c.newInve.warning_quantity &amp;&amp; c.newInve.warning_quantity &gt; c.newInve.quantity) {
+			spUtil.addErrorMessage("Warning quantity cannot exceed the total quantity.");
+			return;
+		}
+
+
+		if (!c.newInve.price || c.newInve.price &lt;= 0 || isNaN(c.newInve.price)) {
+			spUtil.addErrorMessage(" Price must be a positive number greater than 0.");
+			return;
+		}
+		c.server.get({
+			action: "addnewInve",
+			newInve: c.newInve,
+			pageNumber: c.pageNumber,
+			pageSize: c.pageSize,
+		}).then(function(r) {
+			c.newInve = {
+				item_name: '',
+				quantity: '',
+				warning_quantity: '',
+				price: '',
+				category: '',
+				remarks: '',
+				description:'',
+			};
+			c.data.inventories = r.data.inventories;
+			c.totalCount = r.data.totalCount;
+			c.showAddModal = false;
+			spUtil.addTrivialMessage("New inventory has been added successfully.");
+		}).catch(function(error) {
+			console.error('Error while adding new inventory:', error);
+			spUtil.addErrorMessage("An error occurred while adding the inventory.");
+		});
+	};
+
+
+	// Detail
+
+	c.detail = function(inveId){
+		c.showModal = true;
+		c.server.get({
+			action:"detailInve",
+			inveId:inveId
+		}).then(function(r){
+			c.data.detailInve = r.data.detailInve;
+		}).catch(function(e){
+			console.error('Error while Detail Inventory:', e);
+		})
+	}
+
+	//Update
+
+	c.fillUpdate = function(inveId) {
+		updateId = inveId;
+		c.showEditModal = true;
+		c.server.get({
+			action: "fillField",
+			id: inveId
+		}).then(function(r) {
+			console.log('r',r)
+			c.editInve.item_name = r.data.fillField.item_name;
+			c.editInve.item_id = r.data.fillField.number;
+			c.editInve.quantity = Number(r.data.fillField.quantity);
+			c.editInve.warning_quantity = Number(r.data.fillField.warning_quantity);
+			c.editInve.price = Number(r.data.fillField.price);
+			c.editInve.category = r.data.fillField.category;
+			c.editInve.remarks = r.data.fillField.remarks;
+		}).catch(function(e) {
+			console.error('Error while Update Inventory:', e);
+		});
+	};
+
+	c.update = function() {
+		console.log('newInve',c.newInve)
+		if (!c.newInve.item_name.trim() || !c.newInve.description.trim() ) {
+			spUtil.addErrorMessage("Cannot be empty.");
+			return;
+		}
+
+		var quantity = Number(c.newInve.quantity);
+		if (isNaN(quantity) || quantity &lt; 0) {
+			spUtil.addErrorMessage("Quantity must be a positive number greater than 0.");
+			return;
+		}
+
+		var warningQuantity = Number(c.newInve.warning_quantity);
+		if (isNaN(warningQuantity) || warningQuantity &lt; 0) {
+			spUtil.addErrorMessage("Warning quantity must be a positive number greater than 0.");
+			return;
+		}
+
+		if (warningQuantity &gt; quantity) {
+			spUtil.addErrorMessage("Warning quantity cannot exceed quantity.");
+			return;
+		}
+
+		var price = Number(c.newInve.price);
+		if (isNaN(price) || price &lt; 0) {
+			spUtil.addErrorMessage("Price must be a positive number greater than 0.");
+			return;
+		}
+
+		c.server.get({
+			action: "updateInve",
+			newInve: c.newInve,
+			updateId: updateId
+		}).then(function(r) {
+			updateId = null;
+			c.newInve = {
+				item_name: '',
+				quantity: '',
+				warning_quantity: '',
+				price: '',
+				category: '',
+				remarks: '',
+				description:'',
+			};
+			c.showEditModal = false;
+			c.data.inventories = r.data.inventories;
+			c.totalCount = r.data.totalCount;
+			c.loadPage(c.pageNumber);
+			spUtil.addTrivialMessage("Inventory has been updated successfully.");
+		}).catch(function(e) {
+			console.error('Error while updating inventory:', e);
+			spUtil.addErrorMessage("An error occurred while updating the inventory.");
+		});
+	};
+
+	//Change Active
+
+	c.changeActive = function (inveId) {
+		spModal.confirm("Are you sure you want to change Active this record?").then(function (confirmed) {
+			if (confirmed) {
+				c.server.get({
+					action: "changeActive",
+					inveId: inveId
+				}).then(function (r) {
+					spUtil.addTrivialMessage("Inventory has been change Active.");
+					c.data.inventories = r.data.inventories;
+					c.pageNumber = 1;
+				}).catch(function (e) {
+					console.error('Error while Delete Inventory:', e);
+					spUtil.addErrorMessage("Failed to change Active the Inventory. Please try again.");
+				});
+			}
+		});
+	}
+
+	// Phân trang 
+
+	c.pageNumber = 1;
+	c.pageSize = 3; 
+	c.totalCount = 0;
+
+	c.loadPage = function (pageNumber) {
+		c.pageNumber = pageNumber;
+		c.server.get({
+			action: "getInventory",
+			pageNumber: c.pageNumber,
+			pageSize: c.pageSize,
+		}).then(function (r) {
+			c.data.inventories = r.data.inventories;
+			console.log("11111",r.data.inventories)
+			c.totalCount = r.data.totalCount;
+		}).catch(function (error) {
+			console.error('Error while fetching inventory:', error);
+		});
+	};
+
+	c.getRoundedPageCount = function () {
+		return Math.ceil(c.totalCount / c.pageSize); 
+	};
+
+	c.loadPage(c.pageNumber);
+
+};]]&gt;&lt;/client_script&gt;&lt;controller_as&gt;c&lt;/controller_as&gt;&lt;css&gt;/* Card styling */
+.card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+.card-header {
+  background-color: #f9f9f9;
+  padding: 15px;
+  font-size: 18px;
+  font-weight: bold;
+  border-bottom: 1px solid #ddd;
+  text-align: center;
+}
+.card-body {
+  padding: 20px;
+}
+/* Form layout */
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+/* Form groups */
+.form-group {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  margin-bottom: 10px;
+}
+.form-group label {
+  margin-bottom: 5px;
+  font-weight: bold;
+  font-size: 14px;
+}
+.form-group input {
+  padding: 8px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+/* Align the button to the bottom */
+.form-group.align-self-end {
+  display: flex;
+  align-items: flex-end;
+}
+/* Button styling */
+
+.btn:hover {
+  background-color: #0056b3;
+}
+.btn-block {
+  width: 100%;
+}
+.main-table{
+  width : 100%;
+  height : auto;
+  border-radius: 8px;
+  box-shadow: rgba(0, 0, 0, 0.05) 0px 6px 24px 0px, rgba(0, 0, 0, 0.08) 0px 0px 0px 1px;
+  margin-top:20px;
+}
+
+.custom-table {
+	width: 100%;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+thead{
+  background-color: black;
+  color :white;
+  border-radius: 8px;
+}
+.header{
+  text-align: center;
+  margin-bottom:20px;
+}
+.custom-btn {
+  height: 30px;
+  line-height: 30px;
+  text-align: center; 
+  display: inline-block; 
+  padding: 0 12px; 
+  font-size: 14px; 
+  vertical-align: middle;
+  margin-right:10px;
+}
+.custom-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+  background-color: rgba(0, 0, 0, 0.5);
+	display: block;
+  z-index: 1000;
+}
+.custom-modal {
+  background-color: #fff;
+  border-radius: 8px;
+  padding: 20px;
+	width: 450px;
+  margin: 15% auto;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+   position: relative;
+}
+ 
+.custom-detail {
+  width: 800px;
+}
+.custom-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.custom-modal-header h5 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+.custom-modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px; 
+}
+ 
+
+.input_group {
+	display: flex;
+	align-items: center;
+  gap: 10px;
+}
+.input_growd {
+  flex: 1;
+}
+
+.input_select {
+  display: flex;
+  align-items: center;
+}
+
+
+.input_select input{
+    position: relative;
+    top: -12px;
+}
+
+.input_select .checkbox_select {
+  width: 18px;
+  height: 18px;
+}
+
+.input_inner .label_select {
+  min-width: 120px;
+  width: 0%;
+  margin-bottom: 20px;
+}
+
+.input_inner label{
+  font-size: 14px;
+  font-weight: 500;
+  color: #3b3b3b;
+  min-width: 170px;
+  white-space: nowrap;
+  width: 100%;
+}
+.input_inner input,textarea, select {
+  width: 100%;
+	max-width: 100%;
+  height: 36px;
+  border: 1px solid #4b4b4b;
+  border-radius: 4px;
+  outline: none;
+  display: block;
+  padding:0 6px;
+  font-size: 14px; 
+  font-weight: 400;
+  color: #3b3b3b;
+  cursor: pointer;
+}
+
+.input_inner textarea {
+	min-width: 100%;
+  font-size: 16px; 
+  line-height: 2;
+}
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #ddd;
+  padding: 8px;
+  border-radius: 4px;
+  position: relative;
+}
+.label {
+  flex: 1;
+  color: black;
+  font-weight: 700;
+  border-right: 1px solid #ddd; 
+  padding-right: 8px;
+}
+.value {
+  flex: 1;
+  text-align: center;
+  padding-left: 8px;
+}
+.custom-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 16px;
+  margin-top: 26px;
+}
+.btn-secondary {
+  background-color: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 8px 16px;
+  cursor: pointer;
+}
+.btn-secondary:hover {
+  background-color: #e0e0e0;
+}
+ 
+.low-stock {
+	background-color: #f8d7da;
+}
+.low-stock:hover {
+	background-color: #e9b9bd;
+}
+
+ 
+.custom-modal-table {
+  max-width: 100%;
+  margin-top: 30px;
+  overflow: auto;
+}&lt;/css&gt;&lt;data_table&gt;sp_instance&lt;/data_table&gt;&lt;demo_data/&gt;&lt;description/&gt;&lt;docs/&gt;&lt;field_list/&gt;&lt;has_preview&gt;true&lt;/has_preview&gt;&lt;id&gt;add_inventories&lt;/id&gt;&lt;internal&gt;false&lt;/internal&gt;&lt;link&gt;&lt;![CDATA[function link(scope, element, attrs, controller) {  }]]&gt;&lt;/link&gt;&lt;name&gt;add_inventories&lt;/name&gt;&lt;option_schema/&gt;&lt;public&gt;false&lt;/public&gt;&lt;roles/&gt;&lt;script&gt;&lt;![CDATA[(function() {
+	/* Gán dữ liệu cho object 'data' */
+	data.detailInve = {};
+	var pageNumber = 1; 
+	var pageSize = 3;   
+	data.inventories = getInventory(pageNumber, pageSize);
+	//data.totalCount = getInventoryCount();
+
+	if (input) {
+		if (input.action === "getInventory") {
+			pageNumber = input.pageNumber;
+			pageSize = input.pageSize;    
+			data.inventories = getInventory(pageNumber, pageSize);
+			data.totalCount = getInventoryCount();
+		}
+
+		if (input.action === "addnewInve") {
+			var newInve = input.newInve;
+			try {
+				var ive = new GlideRecord('x_1568427_inventor_item');
+				ive.initialize();
+				ive.item_name = newInve.item_name;
+				ive.quantity = newInve.quantity;
+				ive.price = newInve.price;
+				ive.category = newInve.category;
+				ive.remarks = newInve.remarks;
+				ive.description = newInve.description;
+				ive.warning_quantity = newInve.warning_quantity;
+				ive.insert();
+			} catch (e) {
+				gs.error('Lỗi thêm mới dữ liệu: ' + e.message);
+			}
+		}
+
+		if (input.action === "detailInve") {
+			var inveId = input.inveId;
+			data.detailInve = detailInve(inveId);
+		}
+
+		if (input.action === "fillField") {
+			var id = input.id;
+			data.fillField = detailInve(id);
+		}
+
+		if (input.action === "updateInve") {
+			var gr = new GlideRecord('x_1568427_inventor_item');
+			if (gr.get(input.updateId)) {
+				if (input.newInve.item_name) { gr.item_name = input.newInve.item_name; }
+				if (input.newInve.quantity) { gr.quantity = input.newInve.quantity; }
+				if (input.newInve.warning_quantity) { gr.warning_quantity = input.newInve.warning_quantity; }
+				if (input.newInve.price) { gr.price = input.newInve.price; }
+				if (input.newInve.category) { gr.category = input.newInve.category; }
+				if (input.newInve.remarks) { gr.remarks = input.newInve.remarks; }
+				if (input.newInve.description) { gr.description = input.newInve.description; }
+				gr.update();
+			}
+		}
+
+		if (input.action === "changeActive") {
+			var inventor = new GlideRecord('x_1568427_inventor_item');
+			if (inventor.get(input.inveId)) {
+				inventor.active = !inventor.active;
+				inventor.update();
+			}
+		}
+	}
+	data.inventories = getInventory(pageNumber, pageSize);
+	data.totalCount = getInventoryCount();
+})();
+
+function getInventory(pageNumber, pageSize) {
+	var inventories = [];
+	try {
+		var ive = new GlideRecord('x_1568427_inventor_item');
+		ive.orderByDesc('active');
+		ive.orderBy('number');
+		ive.query();
+		var start = (pageNumber - 1) * pageSize; 
+		var end = start + pageSize;             
+		var index = 0;                          
+
+		while (ive.next()) {
+			if (index &gt;= start &amp;&amp; index &lt; end) {
+				inventories.push({
+					sys_id: ive.getValue('sys_id'),
+					item_name: ive.getValue('item_name'),
+					number: ive.getValue('number'),
+					quantity: ive.getValue('quantity'),
+					borrowed_quantity: ive.getValue('borrowed_quantity'),
+					warning_quantity: ive.getValue('warning_quantity'),
+					price: ive.getValue('price'),
+					active: ive.getValue('active'),
+					category: ive.getValue('category'),
+					remarks: ive.getValue('remarks'),
+					start:start,
+				});
+			}
+			index++;
+			if (index &gt;= end) break; 
+		}
+	} catch (e) {
+		gs.error('Lỗi lấy dữ liệu: ' + e.message);
+	}
+	return inventories;
+}
+
+function detailInve(inveId) {
+	var detailInve = {};
+	try {
+		var gr = new GlideRecord('x_1568427_inventor_item');
+		if (gr.get(inveId)) {
+			$sp.getRecordValues(detailInve, gr, 'item_name,number,quantity,price,category,remarks,sys_updated_on,sys_created_on,sys_created_by,sys_updated_by,warning_quantity');
+		}
+	} catch (e) {
+		gs.error('Lỗi lấy chi tiết: ' + e.message);
+	}
+	return detailInve;
+}
+
+function getInventoryCount() {
+	var count = 0;
+	try {
+		var gr = new GlideRecord('x_1568427_inventor_item');
+		gr.query();
+		count = gr.getRowCount();
+	} catch (e) {
+		gs.error('Lỗi đếm dữ liệu: ' + e.message);
+	}
+	return count;
+}
+]]&gt;&lt;/script&gt;&lt;servicenow&gt;false&lt;/servicenow&gt;&lt;sys_class_name&gt;sp_widget&lt;/sys_class_name&gt;&lt;sys_created_by&gt;sonnguyen&lt;/sys_created_by&gt;&lt;sys_created_on&gt;2024-12-12 03:15:59&lt;/sys_created_on&gt;&lt;sys_id&gt;0d8fbd6f83521210260a55b6feaad3b6&lt;/sys_id&gt;&lt;sys_mod_count&gt;10&lt;/sys_mod_count&gt;&lt;sys_name&gt;add_inventories&lt;/sys_name&gt;&lt;sys_package display_value="Inventory Management" source="x_1568427_inventor"&gt;c57032e1839e9a10260a55b6feaad36d&lt;/sys_package&gt;&lt;sys_policy/&gt;&lt;sys_scope display_value="Inventory Management"&gt;c57032e1839e9a10260a55b6feaad36d&lt;/sys_scope&gt;&lt;sys_update_name&gt;sp_widget_0d8fbd6f83521210260a55b6feaad3b6&lt;/sys_update_name&gt;&lt;sys_updated_by&gt;sonnguyen&lt;/sys_updated_by&gt;&lt;sys_updated_on&gt;2024-12-12 07:42:04&lt;/sys_updated_on&gt;&lt;template&gt;&lt;![CDATA[&lt;body&gt;
+  &lt;h1 style="text-align: center;"&gt;Inventory Managerment&lt;/h1&gt;
+  &lt;div&gt;
+    &lt;button type="submit" class="btn btn-primary" ng-click="c.openAddModal()"&gt;
+      Add Item
+    &lt;/button&gt;
+    &lt;div class="main-table"&gt;
+      &lt;table class="table table-hover"&gt;
+        &lt;thead&gt;
+          &lt;tr&gt;
+            &lt;th scope="col"&gt;Index&lt;/th&gt;
+            &lt;th scope="col"&gt;Item Name&lt;/th&gt;
+            &lt;th scope="col"&gt;Item ID&lt;/th&gt;
+            &lt;th scope="col"&gt;Quantity&lt;/th&gt;
+            &lt;th scope="col"&gt;Borrowed Quantity&lt;/th&gt;
+            &lt;th scope="col"&gt;Unit Price&lt;/th&gt;
+            &lt;th scope="col"&gt;Category&lt;/th&gt;
+            &lt;th scope="col"&gt;Remarks&lt;/th&gt;
+            &lt;th scope="col"&gt;Actions&lt;/th&gt;
+          &lt;/tr&gt;
+        &lt;/thead&gt;
+        &lt;tbody&gt;
+          &lt;tr ng-repeat="ive in data.inventories" ng-class="{'low-stock': (ive.quantity - ive.borrowed_quantity) &lt; ive.warning_quantity}"&gt;
+            &lt;td&gt;{{ ive.start + $index + 1 }}&lt;/td&gt;
+            &lt;td&gt;{{ ive.item_name }}&lt;/td&gt;
+            &lt;td&gt;{{ ive.number }}&lt;/td&gt;
+            &lt;td&gt;{{ ive.quantity }}&lt;/td&gt;
+            &lt;td style="width:5vw"&gt;{{ ive.borrowed_quantity }}&lt;/td&gt;
+            &lt;td style="width:8.5vw"&gt;{{ ive.price }}&lt;/td&gt;
+            &lt;td&gt;{{ ive.category }}&lt;/td&gt;
+            &lt;td&gt;{{ ive.remarks }}&lt;/td&gt;
+            &lt;td style="width:14vw"&gt;
+              &lt;button type="button" class="btn btn-info custom-btn" ng-click="c.detail(ive.sys_id)" style="margin-left:8px"&gt;
+                Detail
+              &lt;/button&gt;
+              &lt;button type="button" class="btn btn-warning custom-btn" ng-if="ive.active === '1'" ng-click="c.fillUpdate(ive.sys_id)"&gt;
+                Update
+              &lt;/button&gt;
+              &lt;button type="button" class="btn btn-danger custom-btn" ng-if="ive.active === '1'" ng-click="c.changeActive(ive.sys_id)"&gt;
+                Archive
+              &lt;/button&gt;
+              &lt;button type="button" class="btn btn-success custom-btn" ng-if="ive.active === '0'" ng-click="c.changeActive(ive.sys_id)"&gt;
+                Un Archive
+              &lt;/button&gt;
+            &lt;/td&gt;
+          &lt;/tr&gt;
+        &lt;/tbody&gt;
+      &lt;/table&gt;
+    &lt;/div&gt;
+
+    &lt;div class="pagination-controls"&gt;
+      &lt;button class="btn btn-secondary" ng-disabled="c.pageNumber === 1" ng-click="c.loadPage(c.pageNumber - 1)"&gt;
+        Previous
+      &lt;/button&gt;
+
+      &lt;span&gt;Page {{ c.pageNumber }} of {{ c.getRoundedPageCount() }}&lt;/span&gt;
+
+      &lt;button class="btn btn-secondary" ng-disabled="c.pageNumber &gt;= c.getRoundedPageCount()"
+              ng-click="c.loadPage(c.pageNumber + 1)"&gt;
+        Next
+      &lt;/button&gt;
+    &lt;/div&gt;
+
+    &lt;div class="custom-modal-overlay" ng-if="c.showAddModal"&gt;
+      &lt;div class="custom-modal"&gt;
+        &lt;div class="custom-modal-header"&gt;
+          &lt;h5&gt;Add Inventory&lt;/h5&gt;
+          &lt;button type="button" class="close-btn" ng-click="c.closeAddModal()"&gt;×&lt;/button&gt;
+        &lt;/div&gt;
+        &lt;div class="custom-modal-body"&gt;
+          &lt;div class="input_inner"&gt;
+            &lt;label for="itemName"&gt;Item name :&lt;/label&gt;
+            &lt;input type="text" id="itemName" ng-model="c.newInve.item_name" /&gt;
+          &lt;/div&gt;
+
+          &lt;div class="input_group"&gt;
+            &lt;div class="input_inner input_growd"&gt;
+              &lt;label for="quantity"&gt;Quantity :&lt;/label&gt;
+              &lt;input type="number" id="quantity" ng-model="c.newInve.quantity" /&gt;
+            &lt;/div&gt;
+            &lt;div class="input_inner"&gt;
+              &lt;label for="quantity"&gt;Warning Stock:&lt;/label&gt;
+              &lt;input type="number" id="quantity" ng-model="c.newInve.warning_quantity" /&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div class="input_group"&gt;
+            &lt;div class="input_inner input_growd"&gt;
+              &lt;label for="unitPrice"&gt;Unit price :&lt;/label&gt;
+              &lt;input type="number" id="unitPrice"  ng-model="c.newInve.price" /&gt;
+            &lt;/div&gt;
+
+            &lt;div class="input_inner"&gt;
+              &lt;label for="category"&gt;Category :&lt;/label&gt;
+              &lt;select id="caregory" ng-model="c.newInve.category"&gt;
+                &lt;option value="" disabled selected&gt;Select Category&lt;/option&gt;
+                &lt;option value="Electronics"&gt;Electronics&lt;/option&gt;
+                &lt;option value="Furniture"&gt;Furniture&lt;/option&gt;
+                &lt;option value="Clothing"&gt;Clothing&lt;/option&gt;
+                &lt;option value="Food"&gt;Food&lt;/option&gt;
+              &lt;/select&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div class="input_inner"&gt;
+            &lt;label for="remarks"&gt;Remarks :&lt;/label&gt;
+            &lt;textarea id="remarks" ng-model="c.newInve.remarks"&gt;&lt;/textarea&gt;
+          &lt;/div&gt;
+
+          &lt;div class="input_inner" &gt;
+            &lt;label for="comment"&gt;Description :&lt;/label&gt;
+            &lt;textarea id="comment" ng-model="c.newInve.description"&gt;&lt;/textarea&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="custom-modal-footer"&gt;
+          &lt;button type="submit" class="btn btn-primary btn-block" ng-click="c.addnewInve()"&gt;
+            Add Item
+          &lt;/button&gt;
+          &lt;button type="button" class="btn-secondary" ng-click="c.closeAddModal()"&gt;Close&lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+
+
+    &lt;div class="custom-modal-overlay" ng-if="c.showEditModal"&gt;
+      &lt;div class="custom-modal"&gt;
+        &lt;div class="custom-modal-header"&gt;
+          &lt;h5&gt;Update Inventory&lt;/h5&gt;
+          &lt;button type="button" class="close-btn" ng-click="c.closeEditModal()"&gt;×&lt;/button&gt;
+        &lt;/div&gt;
+        &lt;div class="custom-modal-body"&gt;
+          &lt;div class="input_group"&gt;
+            &lt;div class="input_inner input_growd"&gt;
+              &lt;label for="itemName"&gt;Item name :&lt;/label&gt;
+              &lt;input type="text" id="itemName" ng-model="c.editInve.item_name" readonly /&gt;
+            &lt;/div&gt;
+            &lt;div class="input_inner"&gt;
+              &lt;label for="itemId"&gt;Item ID:&lt;/label&gt;
+              &lt;input type="text" id="itemId" ng-model="c.editInve.item_id" readonly /&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+
+          &lt;label for="update" style="display: block; margin-bottom: 0px;"&gt;Action :&lt;/label&gt;
+          &lt;div class="input_group"&gt;
+            &lt;div class="input_inner input_growd" &gt;
+              &lt;div class="input_select"&gt;
+                &lt;label for="update" class="label_select"&gt;Update Quantity :&lt;/label&gt;
+                &lt;input class="checkbox_select" type="checkbox" value="update_quantity" name="action"
+                  ng-model="c.editInve.action_type" ng-checked="c.editInve.action_type === 'update_quantity'"
+                  ng-click="c.editInve.action_type = 'update_quantity'" /&gt;
+              &lt;/div&gt;
+
+              &lt;div class="input_select"&gt;
+                &lt;label for="return" class="label_select"&gt;Return Borrowed :&lt;/label&gt;
+                &lt;input class="checkbox_select" type="checkbox" value="return_borrowed" name="action"
+                  ng-model="c.editInve.action_type" ng-checked="c.editInve.action_type === 'return_borrowed'"
+                  ng-click="c.editInve.action_type = 'return_borrowed'" /&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+
+            &lt;div style="flex: 2; position: relative; top: -10px;"&gt;
+              &lt;div class="input_inner input_growd" ng-show="c.editInve.action_type === 'update_quantity'"&gt;
+                &lt;label for="quantity"&gt;Update Quantity :&lt;/label&gt;
+                &lt;input type="number" id="quantity" ng-model="c.editInve.quantity_change" /&gt;
+              &lt;/div&gt;
+              &lt;div class="input_inner input_growd" ng-show="c.editInve.action_type === 'return_borrowed'"&gt;
+                &lt;label for="returnQuantity"&gt;Return Borrowed Quantity:&lt;/label&gt;
+                &lt;input type="number" id="returnQuantity" ng-model="c.editInve.return_quantity" /&gt;
+              &lt;/div&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+
+          &lt;div class="input_group"&gt;
+            &lt;div class="input_inner input_growd"&gt;
+              &lt;label for="quantity"&gt;Total Quantity :&lt;/label&gt;
+              &lt;input type="number" id="quantity" ng-model="c.editInve.quantity" readonly /&gt;
+            &lt;/div&gt;
+            &lt;div class="input_inner"&gt;
+              &lt;label for="quantity"&gt;Warning Stock:&lt;/label&gt;
+              &lt;input type="number" id="quantity" ng-model="c.editInve.warning_quantity" /&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div class="input_group"&gt;
+            &lt;div class="input_inner input_growd"&gt;
+              &lt;label for="unitPrice"&gt;Unit price :&lt;/label&gt;
+              &lt;input type="number" id="unitPrice" ng-model="c.editInve.price" /&gt;
+            &lt;/div&gt;
+
+            &lt;div class="input_inner"&gt;
+              &lt;label for="category"&gt;Category :&lt;/label&gt;
+              &lt;select id="caregory" ng-model="c.editInve.category" readonly&gt;
+                &lt;option value="" disabled selected&gt;Select Category&lt;/option&gt;
+                &lt;option value="Electronics"&gt;Electronics&lt;/option&gt;
+                &lt;option value="Furniture"&gt;Furniture&lt;/option&gt;
+                &lt;option value="Clothing"&gt;Clothing&lt;/option&gt;
+                &lt;option value="Food"&gt;Food&lt;/option&gt;
+              &lt;/select&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div class="input_inner"&gt;
+            &lt;label for="remarks"&gt;Remarks :&lt;/label&gt;
+            &lt;textarea id="remarks" ng-model="c.editInve.remarks"&gt;&lt;/textarea&gt;
+          &lt;/div&gt;
+          &lt;div class="input_inner"&gt;
+            &lt;label for="comment"&gt;Description :&lt;/label&gt;
+            &lt;textarea id="comment" ng-model="c.editInve.description"&gt;&lt;/textarea&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="custom-modal-footer"&gt;
+          &lt;button type="button" class="btn btn-primary btn-block" ng-click="c.update()"&gt;
+            Update
+          &lt;/button&gt;
+          &lt;button type="button" class="btn-secondary" ng-click="c.closeEditModal()"&gt;Close&lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+
+
+    &lt;div ng-show="c.showModal" class="custom-modal-overlay"&gt;
+      &lt;div class="custom-modal custom-detail"&gt;
+        &lt;div class="custom-modal-header"&gt;
+          &lt;h5&gt;Detail Inventory&lt;/h5&gt;
+          &lt;button type="button" class="close-btn" ng-click="c.closeModal()"&gt;
+            ×
+          &lt;/button&gt;
+        &lt;/div&gt;
+        &lt;div class="custom-modal-body"&gt;
+          &lt;div class="input_group"&gt;
+            &lt;div class="input_inner input_growd"&gt;
+              &lt;label for="itemName"&gt;Item name:&lt;/label&gt;
+              &lt;input type="text" id="itemName" ng-model="data.detailInve.item_name" disabled /&gt;
+            &lt;/div&gt;
+            &lt;div class="input_inner input_growd"&gt;
+              &lt;label for="itemId"&gt;Item id:&lt;/label&gt;
+              &lt;input type="text" id="itemId" ng-model="data.detailInve.number" disabled /&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div class="input_group"&gt;
+            &lt;div class="input_inner input_growd"&gt;
+              &lt;label for="updateOn"&gt; Updated on:&lt;/label&gt;
+              &lt;input type="text" id="updateOn" ng-model="data.detailInve.sys_updated_on" disabled /&gt;
+            &lt;/div&gt;
+            &lt;div class="input_inner input_growd"&gt;
+              &lt;label for="createdOn"&gt;Created on:&lt;/label&gt;
+              &lt;input type="text" id="createdOn" ng-model="data.detailInve.sys_created_on" disabled /&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+          &lt;div class="input_group"&gt;
+            &lt;div class="input_inner input_growd"&gt;
+              &lt;label for="createdBy"&gt; Created by:&lt;/label&gt;
+              &lt;input type="text" id="createdBy" ng-model="data.detailInve.sys_created_by" disabled /&gt;
+            &lt;/div&gt;
+            &lt;div class="input_inner input_growd"&gt;
+              &lt;label for="updatedBy"&gt; Updated by:&lt;/label&gt;
+              &lt;input type="text" id="updatedBy" ng-model="data.detailInve.sys_updated_by" disabled /&gt;
+            &lt;/div&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="custom-modal-table"&gt;
+          &lt;div&gt;
+            &lt;table class= "custom-table"&gt;
+              &lt;thead&gt;
+                &lt;tr&gt;
+                  &lt;th&gt;Index&lt;/th&gt;
+                  &lt;th&gt;Item Name&lt;/th&gt;
+                  &lt;th&gt;Item ID&lt;/th&gt;
+                  &lt;th&gt;Quantity&lt;/th&gt;
+                  &lt;th&gt;Borrowed Quantity&lt;/th&gt;
+                  &lt;th&gt;Unit Price&lt;/th&gt;
+                  &lt;th&gt;Category&lt;/th&gt;
+                  &lt;th&gt;Remarks&lt;/th&gt;
+                  &lt;th&gt;Actions&lt;/th&gt;
+                &lt;/tr&gt;
+              &lt;/thead&gt;
+              &lt;tbody&gt;
+                &lt;tr&gt;
+                  &lt;td&gt;1&lt;/td&gt;
+                  &lt;td&gt;23w2re&lt;/td&gt;
+                  &lt;td&gt;sdfsdfsdf&lt;/td&gt;
+                  &lt;td&gt;sdfdsfds&lt;/td&gt;
+                  &lt;td&gt;sadfsdfa&lt;/td&gt;
+                  &lt;td&gt;sdfdsfsd&lt;/td&gt;
+                  &lt;td&gt;sdfsdfsd&lt;/td&gt;
+                  &lt;td&gt;fsdfsdf&lt;/td&gt;
+                  &lt;td&gt;
+                    fsdfsdfsdf
+                  &lt;/td&gt;
+                &lt;/tr&gt;
+              &lt;/tbody&gt;
+            &lt;/table&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class="custom-modal-footer"&gt;
+          &lt;button type="button" class="btn-secondary" ng-click="c.closeModal()"&gt;
+            Close
+          &lt;/button&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/body&gt;]]&gt;&lt;/template&gt;&lt;/sp_widget&gt;&lt;/record_update&gt;</payload>
+        <payload_hash>-1649892670</payload_hash>
+        <record_name>add_inventories</record_name>
+        <reverted_from/>
+        <source>89e1137283d65210260a55b6feaad38b</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>sonnguyen</sys_created_by>
+        <sys_created_on>2024-12-12 07:42:05</sys_created_on>
+        <sys_id>436cfa6b83961210260a55b6feaad3b2</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>193b9d158c30000001</sys_recorded_at>
+        <sys_updated_by>sonnguyen</sys_updated_by>
+        <sys_updated_on>2024-12-12 07:42:05</sys_updated_on>
+        <type>Widget</type>
+        <update_guid>8f6cfe2b1b961210ce4e65ccba1a7d4d</update_guid>
+        <update_guid_history>8f6cfe2b1b961210ce4e65ccba1a7d4d:-1649892670,ab441e6761d21210265d202263cca4da:1481795511,1b02da67c1d21210ef5f9d30f9d1a35e:-486694347,d7b1566733d21210e5396eeb49e4f9a2:-2054618911,e2a1926716d212102a453256aa48bbfe:866453894,8781da2771d21210221909c6c09c9395:948508127,8b419ee3d5d2121078174ff5edfeb8c7:143115775,5bb0122754d21210b6e3eb973199ce72:141004223,b96096e32ad212100a29bc47a847a5e4:-749302134,6a924aa39f921210e7a3adab1d44554b:1566365773,018fbd6f23521210c2b72975ec8273b9:-1991063282</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="add_inventories">73861f6f831a1210260a55b6feaad31f</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>sonnguyen</sys_created_by>
+        <sys_created_on>2024-12-12 09:36:17</sys_created_on>
+        <sys_db_object display_value="" name="sp_widget">sp_widget</sys_db_object>
+        <sys_id>4dce9d8ce797436ca12b335fef6d8971</sys_id>
+        <sys_metadata>0d8fbd6f83521210260a55b6feaad3b6</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>add_inventories</sys_name>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_scope_delete display_value="">861d2658792a49508d448ee8b3268100</sys_scope_delete>
+        <sys_update_name>sp_widget_0d8fbd6f83521210260a55b6feaad3b6</sys_update_name>
+        <sys_update_version display_value="sp_widget_0d8fbd6f83521210260a55b6feaad3b6">436cfa6b83961210260a55b6feaad3b2</sys_update_version>
+        <sys_updated_by>sonnguyen</sys_updated_by>
+        <sys_updated_on>2024-12-12 09:36:17</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

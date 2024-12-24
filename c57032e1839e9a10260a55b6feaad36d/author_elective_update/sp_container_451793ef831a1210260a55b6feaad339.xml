@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_container">
+    <sp_container action="DELETE">
+        <background_color/>
+        <background_image/>
+        <background_style>default</background_style>
+        <bootstrap_alt>false</bootstrap_alt>
+        <class_name/>
+        <container_class_name/>
+        <name>add_inventory - Test Page - Container 1</name>
+        <order>1</order>
+        <semantic_tag/>
+        <sp_page display_value="add_inventory">c51793ef831a1210260a55b6feaad336</sp_page>
+        <subheader>false</subheader>
+        <sys_class_name>sp_container</sys_class_name>
+        <sys_created_by>sonnguyen</sys_created_by>
+        <sys_created_on>2024-12-12 09:38:32</sys_created_on>
+        <sys_id>451793ef831a1210260a55b6feaad339</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>add_inventory - Test Page - Container 1</sys_name>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_update_name>sp_container_451793ef831a1210260a55b6feaad339</sys_update_name>
+        <sys_updated_by>sonnguyen</sys_updated_by>
+        <sys_updated_on>2024-12-12 09:38:32</sys_updated_on>
+        <title/>
+        <width>container</width>
+    </sp_container>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</application>
+        <file_path/>
+        <instance_id>612674ef1be5b9986a85eb9b2d4bcb35</instance_id>
+        <instance_name>dev181071</instance_name>
+        <name>sp_container_451793ef831a1210260a55b6feaad339</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_container"><sp_container action="INSERT_OR_UPDATE"><background_color/><background_image/><background_style>default</background_style><bootstrap_alt>false</bootstrap_alt><class_name/><container_class_name/><name>add_inventory - Test Page - Container 1</name><order>1</order><semantic_tag/><sp_page display_value="add_inventory">c51793ef831a1210260a55b6feaad336</sp_page><subheader>false</subheader><sys_class_name>sp_container</sys_class_name><sys_created_by>sonnguyen</sys_created_by><sys_created_on>2024-12-12 09:38:32</sys_created_on><sys_id>451793ef831a1210260a55b6feaad339</sys_id><sys_mod_count>0</sys_mod_count><sys_name>add_inventory - Test Page - Container 1</sys_name><sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package><sys_policy/><sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope><sys_update_name>sp_container_451793ef831a1210260a55b6feaad339</sys_update_name><sys_updated_by>sonnguyen</sys_updated_by><sys_updated_on>2024-12-12 09:38:32</sys_updated_on><title/><width>container</width></sp_container></record_update>]]></payload>
+        <payload_hash>-2035379489</payload_hash>
+        <record_name>add_inventory - Test Page - Container 1</record_name>
+        <reverted_from/>
+        <source>89e1137283d65210260a55b6feaad38b</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>sonnguyen</sys_created_by>
+        <sys_created_on>2024-12-12 09:38:32</sys_created_on>
+        <sys_id>891793ef831a1210260a55b6feaad33b</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>193ba3bf83f0000001</sys_recorded_at>
+        <sys_updated_by>sonnguyen</sys_updated_by>
+        <sys_updated_on>2024-12-12 09:38:32</sys_updated_on>
+        <type>Container</type>
+        <update_guid>8d1793efd61a12105366ea39ec77a43a</update_guid>
+        <update_guid_history>8d1793efd61a12105366ea39ec77a43a:-2035379489</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="add_inventory - Test Page - Container 1">53f61773831e5210260a55b6feaad3f4</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>sonnguyen</sys_created_by>
+        <sys_created_on>2024-12-13 04:16:38</sys_created_on>
+        <sys_db_object display_value="" name="sp_container">sp_container</sys_db_object>
+        <sys_id>96fa31e023c24214a972e0acd9bfa3e4</sys_id>
+        <sys_metadata>451793ef831a1210260a55b6feaad339</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>add_inventory - Test Page - Container 1</sys_name>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_scope_delete display_value="">861d2658792a49508d448ee8b3268100</sys_scope_delete>
+        <sys_update_name>sp_container_451793ef831a1210260a55b6feaad339</sys_update_name>
+        <sys_update_version display_value="sp_container_451793ef831a1210260a55b6feaad339">891793ef831a1210260a55b6feaad33b</sys_update_version>
+        <sys_updated_by>sonnguyen</sys_updated_by>
+        <sys_updated_on>2024-12-13 04:16:38</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>
