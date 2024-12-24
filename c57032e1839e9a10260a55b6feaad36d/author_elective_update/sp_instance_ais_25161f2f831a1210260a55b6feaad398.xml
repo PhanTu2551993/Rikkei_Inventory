@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_instance_ais">
+    <sp_instance_ais action="DELETE">
+        <active>true</active>
+        <ai_search_source_filter/>
+        <class_name/>
+        <color>default</color>
+        <css/>
+        <disable_all_suggestions>false</disable_all_suggestions>
+        <glyph/>
+        <id/>
+        <order>1</order>
+        <placeholder/>
+        <roles/>
+        <search_application/>
+        <search_results_configuration/>
+        <short_description/>
+        <size>md</size>
+        <sp_column display_value="1">4fc59f2f831a1210260a55b6feaad3a7</sp_column>
+        <sp_widget display_value="Faceted Search">12fbe2d287330300a785940307cb0b1b</sp_widget>
+        <spell_check_font_size>xl</spell_check_font_size>
+        <sys_class_name>sp_instance_ais</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-12 09:34:13</sys_created_on>
+        <sys_id>25161f2f831a1210260a55b6feaad398</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name/>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_update_name>sp_instance_ais_25161f2f831a1210260a55b6feaad398</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-12 09:34:13</sys_updated_on>
+        <title/>
+        <url/>
+        <widget_parameters/>
+    </sp_instance_ais>
+    <sys_translated_text action="DELETE" query="documentkey=25161f2f831a1210260a55b6feaad398"/>
+    <sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</application>
+        <file_path/>
+        <instance_id>612674ef1be5b9986a85eb9b2d4bcb35</instance_id>
+        <instance_name>dev181071</instance_name>
+        <name>sp_instance_ais_25161f2f831a1210260a55b6feaad398</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_instance_ais"><sp_instance_ais action="INSERT_OR_UPDATE"><active>true</active><ai_search_source_filter/><class_name/><color>default</color><css/><disable_all_suggestions>false</disable_all_suggestions><glyph/><id/><order>1</order><placeholder/><roles/><search_application/><search_results_configuration/><short_description/><size>md</size><sp_column display_value="1">4fc59f2f831a1210260a55b6feaad3a7</sp_column><sp_widget display_value="Faceted Search">12fbe2d287330300a785940307cb0b1b</sp_widget><spell_check_font_size>xl</spell_check_font_size><sys_class_name>sp_instance_ais</sys_class_name><sys_created_by>admin</sys_created_by><sys_created_on>2024-12-12 09:34:13</sys_created_on><sys_id>25161f2f831a1210260a55b6feaad398</sys_id><sys_mod_count>0</sys_mod_count><sys_name/><sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package><sys_policy/><sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope><sys_update_name>sp_instance_ais_25161f2f831a1210260a55b6feaad398</sys_update_name><sys_updated_by>admin</sys_updated_by><sys_updated_on>2024-12-12 09:34:13</sys_updated_on><title/><url/><widget_parameters/></sp_instance_ais><sys_translated_text action="delete_multiple" query="documentkey=25161f2f831a1210260a55b6feaad398"/></record_update>]]></payload>
+        <payload_hash>2040833871</payload_hash>
+        <record_name/>
+        <reverted_from/>
+        <source>562c80fa839a1210260a55b6feaad3d8</source>
+        <source_table>sys_update_set</source_table>
+        <state>previous</state>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-12 09:34:13</sys_created_on>
+        <sys_id>7916576f831a1210260a55b6feaad397</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>193ba3803350000001</sys_recorded_at>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-12 09:34:13</sys_updated_on>
+        <type>Instance with Search</type>
+        <update_guid>6d16576fbb1a1210c1da95b019922c96</update_guid>
+        <update_guid_history>6d16576fbb1a1210c1da95b019922c96:2040833871</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="">2216576f831a1210260a55b6feaad367</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-12 09:34:17</sys_created_on>
+        <sys_db_object display_value="" name="sp_instance_ais">sp_instance_ais</sys_db_object>
+        <sys_id>419babaff33e42e0bc16c2366a57b240</sys_id>
+        <sys_metadata>25161f2f831a1210260a55b6feaad398</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name/>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_scope_delete display_value="">861d2658792a49508d448ee8b3268100</sys_scope_delete>
+        <sys_update_name>sp_instance_ais_25161f2f831a1210260a55b6feaad398</sys_update_name>
+        <sys_update_version display_value="sp_instance_ais_25161f2f831a1210260a55b6feaad398">7916576f831a1210260a55b6feaad397</sys_update_version>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-12 09:34:17</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

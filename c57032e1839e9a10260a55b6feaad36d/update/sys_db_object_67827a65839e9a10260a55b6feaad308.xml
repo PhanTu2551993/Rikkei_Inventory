@@ -22,16 +22,16 @@
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2024-12-06 01:55:58</sys_created_on>
         <sys_id>67827a65839e9a10260a55b6feaad308</sys_id>
-        <sys_mod_count>0</sys_mod_count>
+        <sys_mod_count>2</sys_mod_count>
         <sys_name>BorrowRequests</sys_name>
         <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
         <sys_policy/>
         <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
         <sys_update_name>sys_db_object_67827a65839e9a10260a55b6feaad308</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2024-12-06 01:55:58</sys_updated_on>
+        <sys_updated_on>2024-12-13 06:56:00</sys_updated_on>
         <update_access>true</update_access>
-        <user_role display_value="x_1568427_inventor.borrowrequests_user" name="x_1568427_inventor.borrowrequests_user">6ea37225839e9a10260a55b6feaad38e</user_role>
+        <user_role display_value="x_1568427_inventor.user" name="x_1568427_inventor.user">61781363835a1210260a55b6feaad367</user_role>
         <ws_access>true</ws_access>
     </sys_db_object>
 </record_update>

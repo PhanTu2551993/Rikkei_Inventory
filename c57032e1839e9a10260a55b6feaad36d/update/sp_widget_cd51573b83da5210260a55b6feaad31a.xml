@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[api.controller = function ($scope, $rootScope) {
+	var c = this;
+	var translations = {
+		en: {
+			Dashboard:'Dashboard ',
+			Inventory_Management: 'Inventory Management',
+			Borrow_Inventory: 'Borrow Inventory',
+			Manage_Borrow_Requestst: 'Manage Borrow Requests',
+			In_Out_History: 'In / Out History',
+			admin: 'Admin',
+			user: 'User',
+			language: 'Language',
+			butAdd: 'Add Item',
+			butDetail: 'Detail',
+			butUpdate: 'Update',
+			butArchive: 'Archive',
+			butUnArchive: 'Un Archive',
+			Index: 'Index',
+			Item_Name: 'Item Name',
+			Item_ID: 'Item ID',
+			Current_Quantity: 'Current Quantity',
+			Borrowed_Quantity: 'Borrowed Quantity',
+			Unit_Price: 'Unit Price',
+			Category: 'Category',
+			Remarks: 'Remarks',
+			Actions: 'Actions',
+			Time: 'Date & Time',
+			Quantity_Total: 'Quantity Total',
+			Quantity_Changed: 'Quantity Changed',
+			Requester: 'Requester',
+			Requested_Quantity: 'Requested Quantity',
+			Updated_on: 'Updated on',
+			Created_on: 'Created on',
+			Created_by: 'Created by',
+			Updated_by: 'Updated by',
+			Warning_Stock: 'Warning Stock',
+			Description: 'Description',
+			Close: 'Close',
+			updateQuantity: 'Update Quantity',
+			returnBorrowed: 'Return Borrowed',
+			status: 'Status',
+			totalQuantity: 'Total Quantity',
+			totalBorrowing: 'Total Borrowing',
+			totalPrice: 'Total Price',
+			borrowedHistory: 'Borrowed History',
+			borrowQuantity: 'Borrow Quantity',
+			requestBorrow: 'Request Borrow',
+			next: 'Next',
+			previous: 'Previous',
+			page: 'Page',
+			goToPage: 'Go to page',
+			home:'Home Page',
+			Pending_Borrow_Requests:'Pending Borrow Requests',
+			Stock_Movement_History:'Stock Movement History',
+			Borrowed_My_History:'Borrowed My History',
+		},
+		ja: {
+			Dashboard:'ダッシュボード ',
+			Inventory_Management: '在庫管理',
+			Borrow_Inventory: '借用在庫',
+			Manage_Borrow_Requestst: '借用リクエストの管理',
+			In_Out_History: '入出履歴',
+			admin: '管理者',
+			user: 'ユーザー',
+			language: '言語',
+			butAdd: '新規追加',
+			butDetail: '詳細',
+			butUpdate: '更新',
+			butArchive: 'アーカイブ',
+			butUnArchive: 'アーカイブ解除',
+			Index: 'インデックス',
+			Item_Name: 'アイテム名',
+			Item_ID: 'アイテムID',
+			Current_Quantity: '現在の数量',
+			Borrowed_Quantity: '借用数量',
+			Unit_Price: '単価',
+			Category: 'カテゴリ',
+			Remarks: '備考',
+			Actions: 'アクション',
+			Time: '時間',
+			Quantity_Total: '合計数量',
+			Quantity_Changed: '変更された数量',
+			Requester: 'リクエスター',
+			Requested_Quantity: '要求された数量',
+			Updated_on: '更新日',
+			Created_on: '作成日',
+			Created_by: '作成者',
+			Updated_by: '更新者',
+			Warning_Stock: '警告在庫',
+			Description: '説明',
+			Close: '閉じる',
+			updateQuantity: '数量を更新',
+			returnBorrowed: '借りたものを返す',
+			status: 'ステータス',
+			totalItemInventory: '総アイテム在庫',
+			totalQuantity: '総数量',
+			totalBorrowing: '総借用量',
+			totalPrice: '総価格',
+			borrowedHistory: '借用履歴',
+			borrowQuantity: '借用数量',
+			requestBorrow: '借用のリクエスト',
+			next: '次へ',
+			previous: '前へ',
+			page: 'ページ',
+			goToPage: 'ページに移動',
+			home:'ホームページ',
+			Pending_Borrow_Requests:'保留中の借用リクエスト',
+			Stock_Movement_History:'株価変動履歴',
+			Borrowed_My_History:'私の履歴をお借りしました',
+		},
+	};
+	localStorage.setItem('translations', JSON.stringify(translations.en));
+	c.changeLanguage = function (languageCode) {
+		if (translations[languageCode]) {
+			c.Inventory_Management = translations[languageCode].Inventory_Management;
+			c.admin = translations[languageCode].admin;
+			c.user = translations[languageCode].user;
+			c.language = translations[languageCode].language;
+			$rootScope.$emit('languageChanged', languageCode);
+			try {
+				localStorage.setItem('preferredLanguage', languageCode);
+				localStorage.setItem('translations', JSON.stringify(translations[languageCode]));				
+			} catch (error) {
+				console.error('Error saving language to localStorage:', error);
+			}
+		} else {
+			console.warn('Language not supported:', languageCode);
+		}
+	};
+
+	var savedLanguage = localStorage.getItem('preferredLanguage');
+	if (savedLanguage && translations[savedLanguage]) {
+		c.changeLanguage(savedLanguage);
+	} else {
+		c.changeLanguage('en');
+	}
+};
+]]></client_script>
+        <controller_as>c</controller_as>
+        <css>
+.main {
+    text-align: center;
+    display: flex;
+    justify-content: center; 
+    align-items: center; 
+    background-color: #f9f9f9; 
+  	height:200px;
+}
+
+
+.banner {
+    max-width: 600px; 
+    width: 100%;
+}
+
+.banner h1 {
+    font-size: 40px; 
+    font-weight: bold; 
+    margin-bottom: 20px; 
+    color: #333333;
+}
+
+.info {
+    display: flex;
+    justify-content: center;
+    gap: 10px; 
+    margin-top: 10px; 
+}
+
+.tag {
+    display: inline-block;
+    background-color: #eaf5ff; 
+    color: #007bff; 
+    font-size: 14px; 
+    font-weight: 600; 
+    padding: 5px 10px; 
+    border: 1px solid #007bff; 
+    border-radius: 20px; 
+    text-transform: capitalize; 
+}
+.language-selector select {
+  padding: 8px;
+  font-size: 16px;
+}
+
+.us-flag {
+  width: 25px;
+  height: 20px;
+  background: linear-gradient(to bottom, red 14.3%, white 14.3%, white 28.6%, red 28.6%, red 42.9%, white 42.9%, white 57.2%, red 57.2%, red 71.5%, white 71.5%, white 85.8%, red 85.8%);
+  position: relative;
+  display: inline-block;
+  margin-right: 5px;
+  border: 1px solid #ccc;
+}
+
+.us-flag::before {
+  content: '';
+  width: 40%;
+  height: 50%;
+  background-color: blue;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.japan-flag {
+  width: 25px;
+  height: 20px;
+  background-color: white;
+  position: relative;
+  display: inline-block;
+  margin-right: 5px;
+  border: 1px solid #ccc;
+}
+
+.japan-flag::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  background-color: red;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.flags{
+    position: absolute;
+    top: 10px;
+    right: 1vw;
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>true</has_preview>
+        <id>banner</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Banner</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+  /* populate the 'data' object */
+  /* e.g., data.table = $sp.getValue('table'); */
+	var user = gs.getUser();
+	data.username = user.getName();
+	data.isAdmin = gs.hasRole('x_1568427_inventor.admin'); 
+  data.isUser = gs.hasRole('x_1568427_inventor.user');
+})();]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-13 03:51:54</sys_created_on>
+        <sys_id>cd51573b83da5210260a55b6feaad31a</sys_id>
+        <sys_mod_count>88</sys_mod_count>
+        <sys_name>Banner</sys_name>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_update_name>sp_widget_cd51573b83da5210260a55b6feaad31a</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-17 09:48:33</sys_updated_on>
+        <template><![CDATA[<div class="main">
+  <div class="banner">
+    <h1>
+      {{c.Inventory_Management}}
+    </h1>
+    <div class="info" ng-if="data.isAdmin">
+      <div class="tag">{{c.admin}}</div>
+      <div class="tag">{{data.username}}</div>
+    </div>
+    <div class="info" ng-if="data.isUser">
+      <div class="tag">{{c.user}}</div>
+      <div class="tag">{{data.username}}</div>
+    </div>
+  </div>
+  <div class="flags">
+    <p>
+      {{c.language}}
+    </p>
+    <div class="us-flag" ng-click="c.changeLanguage('en')"></div>
+    <div class="japan-flag" ng-click="c.changeLanguage('ja')"></div>
+  </div>
+</div>]]></template>
+    </sp_widget>
+</record_update>

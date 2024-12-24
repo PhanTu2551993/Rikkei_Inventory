@@ -1,0 +1,398 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sp_widget">
+    <sp_widget action="INSERT_OR_UPDATE">
+        <category>custom</category>
+        <client_script><![CDATA[api.controller=function() {
+	/* widget controller */
+	var c = this;
+
+	c.changeStatus = function(state,id){
+		console.log('id',id);
+		c.server.get({
+			action: "changeState",
+			approvalId: id,
+			state : state,
+		}).then(function (response) {
+			c.data.approvals = response.data.approvals;
+			c.totalCount = response.data.totalCount;
+		}).catch(function (error) {
+			console.error('Error in server:', error);
+		});
+	}
+
+	c.pageNumber = 1;
+	c.pageSize = 3; 
+	c.totalCount = 0;
+
+	c.loadPage = function (pageNumber) {
+		c.pageNumber = pageNumber;
+		c.server.get({
+			action: "getApprovals",
+			pageNumber: c.pageNumber,
+			pageSize: c.pageSize,
+		}).then(function (r) {
+			c.data.approvals = r.data.approvals;
+			console.log("11111",r.data.inventories)
+			c.totalCount = r.data.totalCount;
+		}).catch(function (error) {
+			console.error('Error while fetching inventory:', error);
+		});
+	};
+
+	c.getRoundedPageCount = function () {
+		return Math.ceil(c.totalCount / c.pageSize); 
+	};
+
+	c.goToPage = function () {
+		var page = parseInt(c.targetPage, 10);
+		if (!page || page < 1) {
+			page = 1; 
+		} 
+		c.loadPage(page);
+	};
+
+	c.loadPage(c.pageNumber);
+
+	var savedTranslations = localStorage.getItem('translations');
+	if (savedTranslations) {
+		c.translations = JSON.parse(savedTranslations);
+	}
+};]]></client_script>
+        <controller_as>c</controller_as>
+        <css>body {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 30px;
+}
+
+.title {
+  border-top: 1px solid #ddd;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  display: inline-block;
+  padding: 0 16px;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  background-color:  #f7f7f7;
+  
+}
+
+.title h3 {
+  line-height: 40px;
+  height: 40px;
+  margin : 0;
+}
+
+.layout_wrapper {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  margin: 0 auto;
+}
+
+.layout_wrapper h5 {
+  margin: 0;
+  padding-left: 16px;
+  line-height: 40px;
+  background-color: #f7f7f7;
+  border-bottom: 1px solid #ddd;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table_inner {
+  margin: 16px;
+  overflow: auto;
+}
+
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 10px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+th {
+  background-color: #343a40;
+  color: white;
+}
+
+tr:hover {
+  color: #212529;
+  background-color: rgba(0, 0, 0, 0.075);
+}
+
+.action_btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.approve {
+  color: #fff;
+  background-color: #28a745;
+  border-color: #28a745;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.reject {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.confirmed {
+  background-color: #E8E8E8;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.approve:hover {
+  color: #fff;
+  background-color: #21b644;
+}
+
+.reject:hover {
+  background-color: #e23344;
+  color: white;
+}
+
+.pagination-controls{
+margin : 20px
+}
+.page-input {
+  width: 50px;
+  height: 36px;
+  text-align: center;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin: 0 5px;
+  font-size: 14px;
+  outline: none;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+}</css>
+        <data_table>sp_instance</data_table>
+        <demo_data/>
+        <description/>
+        <docs/>
+        <field_list/>
+        <has_preview>true</has_preview>
+        <id>confirm_approval</id>
+        <internal>false</internal>
+        <link><![CDATA[function link(scope, element, attrs, controller) {  }]]></link>
+        <name>Confirm_Approval</name>
+        <option_schema/>
+        <public>false</public>
+        <roles/>
+        <script><![CDATA[(function() {
+	/* populate the 'data' object */
+	/* e.g., data.table = $sp.getValue('table'); */
+	var pageNumber = 1; 
+	var pageSize = 3;   
+	var user = gs.getUser();
+	//var userId = 'baed35c383ca5210260a55b6feaad318'; 
+	var userId = user.getID(); 
+	var userName = user.getName();
+	data.userName = userName;
+	data.approvals = getApprovals(userId,pageNumber, pageSize);
+
+	if (input) {
+		gs.info("Input received: " + JSON.stringify(input));
+		if (input.action === "getApprovals") {
+			pageNumber = input.pageNumber;
+			pageSize = input.pageSize;    
+			data.approvals = getApprovals(userId,pageNumber, pageSize);
+			data.totalCount = getApprovalsCount(userId);
+		}
+
+		if(input.action === "changeState" && input.approvalId){
+			updateApprovalAndRequest(input.approvalId,input.state);
+		}
+		data.approvals = getApprovals(userId,pageNumber, pageSize);
+		data.totalCount = getApprovalsCount(userId);
+	} else {
+		gs.error("No input received from client.");
+	}
+})();
+
+function getApprovals(userId, pageNumber, pageSize) {
+	var approvals = [];
+	try {
+		var gr = new GlideRecord('sysapproval_approver');
+		gr.addQuery('approver', userId);
+		gr.orderByDesc('state');
+		gr.orderByDesc('sys_created_on');
+		gr.query();
+
+		var start = (pageNumber - 1) * pageSize;
+		var end = start + pageSize;
+		var index = 0;
+
+		while (gr.next()) {
+			if (index >= start && index < end) {
+				var approval = {
+					sys_id: gr.getValue('sys_id'),
+					state: gr.getDisplayValue('state'),
+					created: gr.getDisplayValue('sys_created_on'),
+					BorrowRequestId: gr.getValue('document_id'),
+				};
+
+				var borrowRequest = new GlideRecord('x_1568427_inventor_borrowrequests');
+				if (borrowRequest.get(approval.BorrowRequestId)) {
+					approval.borrower_quantity = borrowRequest.getValue('borrower_quantity');
+					approval.sys_created_by = borrowRequest.getValue('sys_created_by');
+					var itemId = borrowRequest.getValue('item_id');
+
+					var itemRecord = new GlideRecord('x_1568427_inventor_item');
+					if (itemRecord.get(itemId)) {
+						approval.item_name = itemRecord.getValue('item_name');
+						approval.item_id = itemRecord.getValue('number');
+					}
+				}
+
+				approvals.push(approval);
+			}
+
+			index++;
+			if (index >= end) break;
+		}
+	} catch (e) {
+		gs.error('Lỗi lấy dữ liệu: ' + e.message);
+	}
+
+	return approvals;
+}
+
+
+function updateApprovalAndRequest(approvalId, state) {
+	try {
+		var approval = new GlideRecord('sysapproval_approver');
+		if (approval.get(approvalId)) {
+			approval.setValue('state', state);
+			approval.update();
+			gs.info('Approval updated successfully for ID: ' + approvalId);
+		} else {
+			gs.error('Approval record not found for ID: ' + approvalId);
+		}
+
+		var borrowRequest = new GlideRecord('x_1568427_inventor_borrowrequests'); 
+		if (borrowRequest.get(approval.BorrowRequestId)) {
+			borrowRequest.setValue('status',state); 
+			borrowRequest.update();
+		}
+	} catch (e) {
+		gs.error('Error updating approval or request: ' + e.message);
+	}
+}
+
+function getApprovalsCount(userId) {
+	var count = 0;
+	try {
+		var gr = new GlideRecord('sysapproval_approver');
+		gr.addQuery('approver', userId);
+		gr.query();
+		count = gr.getRowCount();
+	} catch (e) {
+		gs.error('Lỗi đếm dữ liệu: ' + e.message);
+	}
+	return count;
+}]]></script>
+        <servicenow>false</servicenow>
+        <sys_class_name>sp_widget</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-10 08:55:06</sys_created_on>
+        <sys_id>1df9708783529210260a55b6feaad310</sys_id>
+        <sys_mod_count>41</sys_mod_count>
+        <sys_name>Confirm_Approval</sys_name>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_update_name>sp_widget_1df9708783529210260a55b6feaad310</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-17 09:41:55</sys_updated_on>
+        <template><![CDATA[<body>
+  <div class="heading">
+    <h1>{{c.translations.Manage_Borrow_Requestst}}</h1>
+  </div>
+  <div class="layout_wrapper">
+    <h5>{{c.translations.Pending_Borrow_Requests}}</h5>
+
+    <div class="table_inner">
+      <table>
+        <thead>
+          <tr>
+            <th>{{c.translations.Time}}</th>
+            <th>{{c.translations.Item_Name}}</th>
+            <th>{{c.translations.Item_ID}}</th>
+            <th>{{c.translations.Requested_Quantity}}</th>
+            <th>{{c.translations.Requester}}</th>
+            <th>{{c.translations.status}}</th>
+            <th>{{c.translations.Actions}}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="app in data.approvals">
+            <td>{{app.created}}</td>
+            <td>{{app.item_name}}</td>
+            <td>{{app.item_id}}</td>
+            <td>{{app.borrower_quantity}}</td>
+            <td>{{app.sys_created_by}}</td>
+            <td>{{app.state}}</td>
+            <td class= "action_btn">
+              <button class="approve" ng-click="c.changeStatus('approved',app.sys_id)" ng-if="app.state !== 'Approved' && app.state !== 'Rejected'">Approve</button>
+              <button class="reject" ng-click="c.changeStatus('rejected',app.sys_id)" ng-if="app.state !== 'Approved' && app.state !== 'Rejected'">Reject</button>
+              <button class="confirmed" ng-if="app.state == 'Approved' || app.state == 'Rejected'">Confirmed</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pagination-controls" ng-if="c.getRoundedPageCount() > 0">
+      <button class="btn btn-secondary"
+              ng-disabled="c.pageNumber === 1"
+              ng-click="c.loadPage(c.pageNumber - 1)">
+        {{c.translations.previous}}
+      </button>
+
+      <span>{{c.translations.page}} {{ c.pageNumber }} / {{ c.getRoundedPageCount() }}</span>
+
+      <button class="btn btn-secondary"
+              ng-disabled="c.pageNumber >= c.getRoundedPageCount()"
+              ng-click="c.loadPage(c.pageNumber + 1)">
+        {{c.translations.next}}
+      </button>
+      <span>{{c.translations.goToPage}}</span>
+      <input type="number"
+             ng-model="c.targetPage"
+             ng-change="c.goToPage()"
+             min="1"
+             max="{{ c.getRoundedPageCount() }}"
+             class="page-input" />
+    </div>
+
+  </div>
+
+</body>]]></template>
+    </sp_widget>
+</record_update>
