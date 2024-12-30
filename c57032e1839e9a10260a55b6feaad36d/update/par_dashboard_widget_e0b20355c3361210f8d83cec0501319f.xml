@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update sys_domain="global" table="par_dashboard_widget">
+    <par_dashboard_widget action="INSERT_OR_UPDATE">
+        <canvas display_value="">9b892ed1c3b21210f8d83cec05013106</canvas>
+        <component display_value="Pie">96abe7e38d8790718022c5630a92176c</component>
+        <component_props>{"drilldownLabel":false,"selectedElements":[],"configVersion":"23.0.0-ci-SNAPSHOT","showDataLabels":true,"dataLabelsType":"percent","truncationType":"end","showRegister":true,"registerPosition":"right","registerOrientation":"horizontal","showRegisterOnSameLine":false,"showRegisterValue":true,"legendHorizontalAlignment":"center","legendExpandToFit":false,"showRegisterPercentage":false,"colorConfig":{"type":"default"},"newReporting":false,"additionalGroupByConfig":[{"id":"category","label":"Category"},{"id":"price","label":"Price"}],"dataSources":[{"isDatabaseView":false,"allowRealTime":true,"label":"Item","sourceType":"table","tableOrViewName":"x_1568427_inventor_item","filterQuery":"","preferredVisualizations":["d24d53f60350de7a652caf3188a46ed2"],"id":"dGFibGV4XzE1Njg0MjdfaW52ZW50b3JfaXRlbTE3MzU1MjcxNzk4ODA=","dataCategories":["trend","group","simple"]}],"showHeader":true,"showTotalAggregate":false,"showSubAggregate":false,"showFirstGroupAggregate":false,"showSecondGroupAggregate":false,"hideMatrixAggregate":false,"wrapTitle":false,"showHeaderSeparator":false,"contextMenuActions":[],"headerTitle":"Total Price Borrowed By Category","headingLevel":2,"showBorder":true,"bareBorder":false,"telemetry":null,"showDataPassthrough":false,"showAdditionalGroupBySelector":false,"dataPassthrough":null,"metrics":[{"dataSource":"dGFibGV4XzE1Njg0MjdfaW52ZW50b3JfaXRlbTE3MzU1MjcxNzk4ODA=","id":"ZEdGaWJHVjRYekUxTmpnME1qZGZhVzUyWlc1MGIzSmZhWFJsYlRFM016VTFNamN4TnprNE9EQT0xNzM1NTI3MTgxNjYz","aggregateFunction":"SUM","numberFormat":{"customFormat":true,"rounding":"HALF_UP","decimalPrecision":0,"abbreviationEnabled":false,"numberInTooltipsEnabled":false,"thousandSeparatorEnabled":true},"axisId":"primary","label":"","aggregateField":"total_price_borrowed"}],"groupBy":[{"groupBy":[{"dataSource":"dGFibGV4XzE1Njg0MjdfaW52ZW50b3JfaXRlbTE3MzU1MjcxNzk4ODA=","groupByField":"category","isRange":false,"isChoice":false,"isPaBucket":false}],"maxNumberOfGroups":10,"numberOfGroupsBasedOn":"NO_OF_GROUP_BASED_ON_PER_METRIC","showOthers":false,"hideZeroValues":null,"disableRanges":false}],"sortBy":"value","sortByOrder":"desc","trendBy":null,"showChange":false,"showChangePercentage":false,"showTarget":false,"showForecast":false,"showForecastRange":false,"showTrend":false,"showConfidenceBand":false,"showGapPercentage":false,"showSparkline":false,"showMetricLabel":false,"showThreshold":false,"showComment":false,"followFilters":true,"showFilterIcon":false,"enableRealTimeUpdate":false,"enableDrilldown":false,"enableClickAndStay":false,"showDataTable":false,"enableCustomEmptyState":true,"componentId":"lugswn2t","emptyStateIllustration":"no-data","emptyStateHeading":"No data available.","emptyStateContent":"There are no scores available for the selected criteria. Contact your admin for more info.","emptyStateAlignment":"vertical-centered","refreshFrequency":null,"hideDevSettings":false,"configPropModifiers":{},"filterConfigurations":"@state.parFilters","showMaximumRange":false,"allowChangeDateRange":false,"showDateRangeByDefault":false,"applyDateRange":false,"numberOfPeriods":3,"showAbsolutePeriod":false,"scoreType":null,"showChangeFrom":"previous","period":"M","useDataCache":false,"cacheExpirationTime":0,"showCacheTime":true,"dateFormat":"default","showRefresh":true,"id":"metrics","value":[{"dataSource":"dGFibGV4XzE1Njg0MjdfaW52ZW50b3JfaXRlbTE3MzU1MjcxNzk4ODA=","id":"ZEdGaWJHVjRYekUxTmpnME1qZGZhVzUyWlc1MGIzSmZhWFJsYlRFM016VTFNamN4TnprNE9EQT0xNzM1NTI3MTgxNjYz","aggregateFunction":"SUM","numberFormat":{"customFormat":true,"rounding":"HALF_UP","decimalPrecision":0,"abbreviationEnabled":false,"numberInTooltipsEnabled":false,"thousandSeparatorEnabled":true},"axisId":"primary","label":"","aggregateField":"total_price_borrowed"}],"noDebounce":true,"propLabel":"Metric label","chartInteractionAction":"goToUrl","chartInteractionEnabled":false,"maxLabelSize":""}</component_props>
+        <h>26</h>
+        <name/>
+        <stored_component/>
+        <sys_class_name>par_dashboard_widget</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-30 04:54:33</sys_created_on>
+        <sys_domain>global</sys_domain>
+        <sys_domain_path>/</sys_domain_path>
+        <sys_id>e0b20355c3361210f8d83cec0501319f</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name/>
+        <sys_overrides/>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_update_name>par_dashboard_widget_e0b20355c3361210f8d83cec0501319f</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-30 04:54:33</sys_updated_on>
+        <visualization/>
+        <w>24</w>
+        <widget_props/>
+        <x>24</x>
+        <y>0</y>
+    </par_dashboard_widget>
+</record_update>

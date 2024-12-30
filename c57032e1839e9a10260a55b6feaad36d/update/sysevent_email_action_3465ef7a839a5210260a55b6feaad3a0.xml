@@ -36,7 +36,7 @@
         <item_table/>
         <mandatory>false</mandatory>
         <message/>
-        <message_html><![CDATA[<p>Created by: ${sys_created_by} gửi y&ecirc;u cầu cần x&aacute;c nhận</p>]]></message_html>
+        <message_html><![CDATA[<p>Created by: ${sys_created_by} A borrowing request has been sent, please go to confirm.&nbsp;</p>]]></message_html>
         <message_list/>
         <message_text/>
         <name>managerConfirm</name>
@@ -58,7 +58,7 @@
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>3465ef7a839a5210260a55b6feaad3a0</sys_id>
-        <sys_mod_count>3</sys_mod_count>
+        <sys_mod_count>4</sys_mod_count>
         <sys_name>managerConfirm</sys_name>
         <sys_overrides/>
         <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
@@ -66,7 +66,7 @@
         <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
         <sys_update_name>sysevent_email_action_3465ef7a839a5210260a55b6feaad3a0</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2024-12-27 02:45:11</sys_updated_on>
+        <sys_updated_on>2024-12-30 07:10:12</sys_updated_on>
         <sys_version>2</sys_version>
         <template display_value="Unsubscribe and Preferences">7ed0481f3b0b2200c869c2c703efc487</template>
         <type>email</type>

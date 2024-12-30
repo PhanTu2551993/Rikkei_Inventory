@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?><record_update table="sys_report">
     <sys_report action="INSERT_OR_UPDATE">
         <active>false</active>
-        <additional_groupby>borrowed_quantity,current_quantity</additional_groupby>
+        <additional_groupby>quantity,borrowed_quantity</additional_groupby>
         <aggregate>SUM</aggregate>
         <aggregation_source>no_override</aggregation_source>
         <allow_data_label_overlap>false</allow_data_label_overlap>
@@ -15,7 +15,7 @@
         <chart_border_radius>0</chart_border_radius>
         <chart_border_width>1</chart_border_width>
         <chart_height>450</chart_height>
-        <chart_size>large</chart_size>
+        <chart_size>medium</chart_size>
         <chart_subtitle/>
         <chart_subtitle_color/>
         <chart_subtitle_size>14</chart_subtitle_size>
@@ -30,8 +30,8 @@
         <color display_value="Default Color">de699435d7033100b4964ebfae610331</color>
         <color_palette display_value="Default UI14">aa558ab3d7732100fa6c0c12ce610377</color_palette>
         <colors/>
-        <column>action_type</column>
-        <compute_percent>aggregate</compute_percent>
+        <column/>
+        <compute_percent>count</compute_percent>
         <content/>
         <created_by_user display_value="System Administrator">6816f79cc0a8016401c5a33be04be441</created_by_user>
         <custom_chart_size>false</custom_chart_size>
@@ -47,7 +47,7 @@
         <end_time/>
         <exp_report_attrs>true</exp_report_attrs>
         <field>category</field>
-        <field_list>item_name,number,quantity,borrowed_quantity,current_quantity,warning_quantity,price,category,remarks,active,quantity_change</field_list>
+        <field_list>item_name,number,quantity,borrowed_quantity,current_quantity,warning_quantity,price,category,remarks,active,quantity_change,total_price,total_price_borrowed</field_list>
         <filter/>
         <formatting_configuration>{"table":"incident","stringFormattingProperties":{},"durationFormattingProperties":{},"dateFormattingProperties":{},"numberFormattingProperties":{}}</formatting_configuration>
         <from/>
@@ -81,14 +81,14 @@
         <report_drilldown/>
         <report_source/>
         <roles/>
-        <row>action_type</row>
+        <row/>
         <sc_groupby_item_id/>
         <sc_groupby_variable_id/>
         <sc_stackby_item_id/>
         <sc_stackby_variable_id/>
         <score_color display_value="Black">65b30218a9fe3dba0120df8611520d97</score_color>
         <series_name_text/>
-        <set_color>color_palette</set_color>
+        <set_color>one_color</set_color>
         <show_chart_border>false</show_chart_border>
         <show_chart_data_label>true</show_chart_data_label>
         <show_chart_title>report</show_chart_title>
@@ -103,26 +103,26 @@
         <source_type>table</source_type>
         <start_time/>
         <style_config/>
-        <sumfield>borrowed_quantity</sumfield>
+        <sumfield>quantity</sumfield>
         <sys_class_name>sys_report</sys_class_name>
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2024-12-25 08:57:23</sys_created_on>
         <sys_id>015a8e3bc36e1210f8d83cec0501311e</sys_id>
-        <sys_mod_count>7</sys_mod_count>
+        <sys_mod_count>10</sys_mod_count>
         <sys_name>Inventory_Bart_Chart</sys_name>
         <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
         <sys_policy/>
         <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
         <sys_update_name>sys_report_015a8e3bc36e1210f8d83cec0501311e</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2024-12-25 10:08:37</sys_updated_on>
+        <sys_updated_on>2024-12-30 08:03:17</sys_updated_on>
         <table>x_1568427_inventor_item</table>
         <title>Inventory_Bart_Chart</title>
         <title_horizontal_alignment>center</title_horizontal_alignment>
         <title_vertical_alignment>top</title_vertical_alignment>
         <to/>
-        <trend_field>sys_created_on</trend_field>
-        <type>line_bar</type>
+        <trend_field/>
+        <type>bar</type>
         <upper_limit/>
         <use_color_heatmap>false</use_color_heatmap>
         <use_null_in_trend>false</use_null_in_trend>
