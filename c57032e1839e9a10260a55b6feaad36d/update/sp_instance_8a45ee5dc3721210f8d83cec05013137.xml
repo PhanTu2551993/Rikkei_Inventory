@@ -11,22 +11,22 @@
         <short_description/>
         <size>md</size>
         <sp_column display_value="1">0b350c4c83ee5210260a55b6feaad3a5</sp_column>
-        <sp_widget display_value="A_dashboard">3d84c80c83ee5210260a55b6feaad365</sp_widget>
+        <sp_widget display_value="New_Dashboard">bd20aad5c3721210f8d83cec050131e7</sp_widget>
         <sys_class_name>sp_instance</sys_class_name>
         <sys_created_by>admin</sys_created_by>
-        <sys_created_on>2024-12-13 07:38:55</sys_created_on>
-        <sys_id>aa450c0c83ee5210260a55b6feaad394</sys_id>
+        <sys_created_on>2024-12-30 02:46:02</sys_created_on>
+        <sys_id>8a45ee5dc3721210f8d83cec05013137</sys_id>
         <sys_mod_count>0</sys_mod_count>
         <sys_name/>
         <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
         <sys_policy/>
         <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
-        <sys_update_name>sp_instance_aa450c0c83ee5210260a55b6feaad394</sys_update_name>
+        <sys_update_name>sp_instance_8a45ee5dc3721210f8d83cec05013137</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2024-12-13 07:38:55</sys_updated_on>
+        <sys_updated_on>2024-12-30 02:46:02</sys_updated_on>
         <title/>
         <url/>
         <widget_parameters/>
     </sp_instance>
-    <sys_translated_text action="delete_multiple" query="documentkey=aa450c0c83ee5210260a55b6feaad394"/>
+    <sys_translated_text action="delete_multiple" query="documentkey=8a45ee5dc3721210f8d83cec05013137"/>
 </record_update>

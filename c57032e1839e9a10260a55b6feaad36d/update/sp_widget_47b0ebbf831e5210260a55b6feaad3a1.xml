@@ -239,44 +239,45 @@ a.color_box .fa {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2024-12-13 04:59:12</sys_created_on>
         <sys_id>47b0ebbf831e5210260a55b6feaad3a1</sys_id>
-        <sys_mod_count>13</sys_mod_count>
+        <sys_mod_count>15</sys_mod_count>
         <sys_name>linkDashboard</sys_name>
         <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
         <sys_policy/>
         <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
         <sys_update_name>sp_widget_47b0ebbf831e5210260a55b6feaad3a1</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2024-12-17 02:50:23</sys_updated_on>
+        <sys_updated_on>2024-12-25 06:37:19</sys_updated_on>
         <template><![CDATA[<div style="margin-top: 80px">
   <div class="iconlink" ng-class="{'high-contrast': accessibilityModeEnabled}" ng-if="data.isAdmin">
-  <!--// Top Icon -->
-  <div class="item_inner">
-    <a class="item_link" ng-if="::(options.link_template == 'Top Icon' || !options.link_template)" ng-href="{{::data.href}}" class="top_icon {{::options.class_name}}" target="{{::data.target}}">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-2-square-fill" viewBox="0 0 16 16">
-        <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm4.646 6.24v.07H5.375v-.064c0-1.213.879-2.402 2.637-2.402 1.582 0 2.613.949 2.613 2.215 0 1.002-.6 1.667-1.287 2.43l-.096.107-1.974 2.22v.077h3.498V12H5.422v-.832l2.97-3.293c.434-.475.903-1.008.903-1.705 0-.744-.557-1.236-1.313-1.236-.843 0-1.336.615-1.336 1.306"/>
-      </svg>
+    <!--// Top Icon -->
+    <div class="item_inner">
+      <a class="item_link" ng-if="::(options.link_template == 'Top Icon' || !options.link_template)" ng-href="{{::data.href}}" class="top_icon {{::options.class_name}}" target="{{::data.target}}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-building-fill-dash" viewBox="0 0 16 16">
+          <path d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7M11 12h3a.5.5 0 0 1 0 1h-3a.5.5 0 0 1 0-1"/>
+          <path d="M2 1a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v7.256A4.5 4.5 0 0 0 12.5 8a4.5 4.5 0 0 0-3.59 1.787A.5.5 0 0 0 9 9.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .39-.187A4.5 4.5 0 0 0 8.027 12H6.5a.5.5 0 0 0-.5.5V16H3a1 1 0 0 1-1-1zm2 1.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5m3 0v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5m3.5-.5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zM4 5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5M7.5 5a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5zm2.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5h-1a.5.5 0 0 0-.5.5M4.5 8a.5.5 0 0 0-.5.5v1a.5.5 0 0 0 .5.5h1a.5.5 0 0 0 .5-.5v-1a.5.5 0 0 0-.5-.5z"/>
+        </svg>
         <h2 class="item_title">{{ c.title}}</h2>
+        <span class="text-muted">{{::options.short_description}}</span>
+      </a>
+    </div>
+
+    <!--// Circle Icon -->
+    <a ng-if="::(options.link_template == 'Circle Icon')" ng-href="{{::data.href}}" class="circle_icon {{::options.class_name}} text-{{::options.color}}" target="{{::data.target}}">
+      <span class="fa fa-stack fa-2x" aria-hidden="true">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-{{::options.glyph}} fa-stack-1x fa-inverse"></i>
+      </span>
+      <h2>{{::options.title}}</h2>
       <span class="text-muted">{{::options.short_description}}</span>
     </a>
+
+    <!--// Color Box -->
+    <a ng-if="::(options.link_template == 'Color Box')" ng-href="{{::data.href}}" class="color_box {{::options.class_name}} icon-link-background-{{::options.color}} text-white" target="{{::data.target}}">
+      <div class="fa fa-{{::options.glyph}} fa-3x {{::options.class_name}}"></div>
+      <h2>{{::options.title}}</h2>
+      <span>{{::options.short_description}}</span>
+    </a>
   </div>
-
-  <!--// Circle Icon -->
-  <a ng-if="::(options.link_template == 'Circle Icon')" ng-href="{{::data.href}}" class="circle_icon {{::options.class_name}} text-{{::options.color}}" target="{{::data.target}}">
-    <span class="fa fa-stack fa-2x" aria-hidden="true">
-      <i class="fa fa-circle fa-stack-2x"></i>
-      <i class="fa fa-{{::options.glyph}} fa-stack-1x fa-inverse"></i>
-    </span>
-    <h2>{{::options.title}}</h2>
-    <span class="text-muted">{{::options.short_description}}</span>
-  </a>
-
-  <!--// Color Box -->
-  <a ng-if="::(options.link_template == 'Color Box')" ng-href="{{::data.href}}" class="color_box {{::options.class_name}} icon-link-background-{{::options.color}} text-white" target="{{::data.target}}">
-    <div class="fa fa-{{::options.glyph}} fa-3x {{::options.class_name}}"></div>
-    <h2>{{::options.title}}</h2>
-    <span>{{::options.short_description}}</span>
-  </a>
-</div>
 </div>
 ]]></template>
     </sp_widget>

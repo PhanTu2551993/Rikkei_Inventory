@@ -238,44 +238,44 @@ a.color_box .fa {
         <sys_created_by>sonnguyen</sys_created_by>
         <sys_created_on>2024-12-12 07:04:31</sys_created_on>
         <sys_id>81d3b6af83561210260a55b6feaad37a</sys_id>
-        <sys_mod_count>8</sys_mod_count>
+        <sys_mod_count>11</sys_mod_count>
         <sys_name>linkApprovalBorrow</sys_name>
         <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
         <sys_policy/>
         <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
         <sys_update_name>sp_widget_81d3b6af83561210260a55b6feaad37a</sys_update_name>
-        <sys_updated_by>sonnguyen</sys_updated_by>
-        <sys_updated_on>2024-12-17 03:05:06</sys_updated_on>
-        <template><![CDATA[<div style="padding-top: 80px">
-	<div class="iconlink" ng-class="{'high-contrast': accessibilityModeEnabled}" ng-if="data.isAdmin">
-  <!--// Top Icon -->
-  <div class="item_inner">
-    <a class="item_link" ng-if="::(options.link_template == 'Top Icon' || !options.link_template)" ng-href="{{::data.href}}" class="top_icon {{::options.class_name}}" target="{{::data.target}}">
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-3-square-fill" viewBox="0 0 16 16">
-        <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm5.918 8.414h-.879V7.342h.838c.78 0 1.348-.522 1.342-1.237 0-.709-.563-1.195-1.348-1.195-.79 0-1.312.498-1.348 1.055H5.275c.036-1.137.95-2.115 2.625-2.121 1.594-.012 2.608.885 2.637 2.062.023 1.137-.885 1.776-1.482 1.875v.07c.703.07 1.71.64 1.734 1.917.024 1.459-1.277 2.396-2.93 2.396-1.705 0-2.707-.967-2.754-2.144H6.33c.059.597.68 1.06 1.541 1.066.973.006 1.6-.563 1.588-1.354-.006-.779-.621-1.318-1.541-1.318"/>
-      </svg>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-25 06:51:36</sys_updated_on>
+        <template><![CDATA[<div style="margin-top: 80px">
+  <div class="iconlink" ng-class="{'high-contrast': accessibilityModeEnabled}" ng-if="data.isAdmin">
+    <!--// Top Icon -->
+    <div class="item_inner">
+      <a class="item_link" ng-if="::(options.link_template == 'Top Icon' || !options.link_template)" ng-href="{{::data.href}}" class="top_icon {{::options.class_name}}" target="{{::data.target}}">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check-square-fill" viewBox="0 0 16 16">
+          <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2zm10.03 4.97a.75.75 0 0 1 .011 1.05l-3.992 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.75.75 0 0 1 1.08-.022z"/>
+        </svg>
         <h2 class="item_title">{{c.title}}</h2>
+        <span class="text-muted">{{::options.short_description}}</span>
+      </a>
+    </div>
+
+    <!--// Circle Icon -->
+    <a ng-if="::(options.link_template == 'Circle Icon')" ng-href="{{::data.href}}" class="circle_icon {{::options.class_name}} text-{{::options.color}}" target="{{::data.target}}">
+      <span class="fa fa-stack fa-2x" aria-hidden="true">
+        <i class="fa fa-circle fa-stack-2x"></i>
+        <i class="fa fa-{{::options.glyph}} fa-stack-1x fa-inverse"></i>
+      </span>
+      <h2>{{::options.title}}</h2>
       <span class="text-muted">{{::options.short_description}}</span>
     </a>
-  </div>
 
-  <!--// Circle Icon -->
-  <a ng-if="::(options.link_template == 'Circle Icon')" ng-href="{{::data.href}}" class="circle_icon {{::options.class_name}} text-{{::options.color}}" target="{{::data.target}}">
-    <span class="fa fa-stack fa-2x" aria-hidden="true">
-      <i class="fa fa-circle fa-stack-2x"></i>
-      <i class="fa fa-{{::options.glyph}} fa-stack-1x fa-inverse"></i>
-    </span>
-    <h2>{{::options.title}}</h2>
-    <span class="text-muted">{{::options.short_description}}</span>
-  </a>
-
-  <!--// Color Box -->
-  <a ng-if="::(options.link_template == 'Color Box')" ng-href="{{::data.href}}" class="color_box {{::options.class_name}} icon-link-background-{{::options.color}} text-white" target="{{::data.target}}">
-    <div class="fa fa-{{::options.glyph}} fa-3x {{::options.class_name}}"></div>
-    <h2>{{::options.title}}</h2>
-    <span>{{::options.short_description}}</span>
-  </a>
-</div>  
+    <!--// Color Box -->
+    <a ng-if="::(options.link_template == 'Color Box')" ng-href="{{::data.href}}" class="color_box {{::options.class_name}} icon-link-background-{{::options.color}} text-white" target="{{::data.target}}">
+      <div class="fa fa-{{::options.glyph}} fa-3x {{::options.class_name}}"></div>
+      <h2>{{::options.title}}</h2>
+      <span>{{::options.short_description}}</span>
+    </a>
+  </div>  
 </div>
 ]]></template>
     </sp_widget>

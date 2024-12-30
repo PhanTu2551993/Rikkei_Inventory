@@ -43,6 +43,7 @@
 			returnBorrowed: 'Return Borrowed',
 			status: 'Status',
 			totalQuantity: 'Total Quantity',
+			totalItemInventory: 'Total Item',
 			totalBorrowing: 'Total Borrowing',
 			totalPrice: 'Total Price',
 			borrowedHistory: 'Borrowed History',
@@ -259,14 +260,14 @@
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2024-12-13 03:51:54</sys_created_on>
         <sys_id>cd51573b83da5210260a55b6feaad31a</sys_id>
-        <sys_mod_count>88</sys_mod_count>
+        <sys_mod_count>89</sys_mod_count>
         <sys_name>Banner</sys_name>
         <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
         <sys_policy/>
         <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
         <sys_update_name>sp_widget_cd51573b83da5210260a55b6feaad31a</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2024-12-17 09:48:33</sys_updated_on>
+        <sys_updated_on>2024-12-25 06:46:04</sys_updated_on>
         <template><![CDATA[<div class="main">
   <div class="banner">
     <h1>

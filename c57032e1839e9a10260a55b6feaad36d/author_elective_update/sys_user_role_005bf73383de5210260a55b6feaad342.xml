@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_user_role">
+    <sys_user_role action="DELETE">
+        <assignable_by/>
+        <can_delegate>true</can_delegate>
+        <description/>
+        <elevated_privilege>false</elevated_privilege>
+        <grantable>true</grantable>
+        <includes_roles/>
+        <name>x_1568427_inventor.borrowrequests_user,x_1568427_inventor.user</name>
+        <scoped_admin>false</scoped_admin>
+        <suffix>borrowrequests_user,x_1568427_inventor.user</suffix>
+        <sys_class_name>sys_user_role</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-13 06:55:20</sys_created_on>
+        <sys_id>005bf73383de5210260a55b6feaad342</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>x_1568427_inventor.borrowrequests_user,x_1568427_inventor.user</sys_name>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_update_name>sys_user_role_005bf73383de5210260a55b6feaad342</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-13 06:55:20</sys_updated_on>
+    </sys_user_role>
+<sys_update_version action="INSERT_OR_UPDATE">
+        <action>DELETE</action>
+        <application display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</application>
+        <file_path/>
+        <instance_id>b8ca04a31bd6bd509377eb9b2d4bcb14</instance_id>
+        <instance_name>dev210352</instance_name>
+        <name>sys_user_role_005bf73383de5210260a55b6feaad342</name>
+        <payload><![CDATA[<?xml version="1.0" encoding="UTF-8"?><record_update table="sys_user_role">
+    <sys_user_role action="INSERT_OR_UPDATE">
+        <assignable_by/>
+        <can_delegate>true</can_delegate>
+        <description/>
+        <elevated_privilege>false</elevated_privilege>
+        <grantable>true</grantable>
+        <includes_roles/>
+        <name>x_1568427_inventor.borrowrequests_user,x_1568427_inventor.user</name>
+        <scoped_admin>false</scoped_admin>
+        <suffix>borrowrequests_user,x_1568427_inventor.user</suffix>
+        <sys_class_name>sys_user_role</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-13 06:55:20</sys_created_on>
+        <sys_id>005bf73383de5210260a55b6feaad342</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>x_1568427_inventor.borrowrequests_user,x_1568427_inventor.user</sys_name>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_update_name>sys_user_role_005bf73383de5210260a55b6feaad342</sys_update_name>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-13 06:55:20</sys_updated_on>
+    </sys_user_role>
+</record_update>]]></payload>
+        <payload_hash>795110766</payload_hash>
+        <record_name>x_1568427_inventor.borrowrequests_user,x_1568427_inventor.user</record_name>
+        <reverted_from/>
+        <source>a69724bfc3661210f8d83cec050131cf</source>
+        <source_table>sys_upgrade_history</source_table>
+        <state>previous</state>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-25 01:46:19</sys_created_on>
+        <sys_id>6ea72cbfc3661210f8d83cec05013104</sys_id>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_recorded_at>193fb7e4ec10000001</sys_recorded_at>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-25 01:46:19</sys_updated_on>
+        <type>Role</type>
+        <update_guid>2ea72cbf56661210d388ad7e3ec8cf04</update_guid>
+        <update_guid_history>2ea72cbf56661210d388ad7e3ec8cf04:795110766</update_guid_history>
+    </sys_update_version>
+    <sys_metadata_delete action="INSERT_OR_UPDATE">
+        <sys_audit_delete display_value="x_1568427_inventor.borrowrequests_user,x_1568427_inventor.user">b0127c24c3321610f8d83cec05013124</sys_audit_delete>
+        <sys_class_name>sys_metadata_delete</sys_class_name>
+        <sys_created_by>admin</sys_created_by>
+        <sys_created_on>2024-12-27 10:27:14</sys_created_on>
+        <sys_db_object display_value="" name="sys_user_role">sys_user_role</sys_db_object>
+        <sys_id>08b96d92388c4a1580c7687014806e29</sys_id>
+        <sys_metadata>005bf73383de5210260a55b6feaad342</sys_metadata>
+        <sys_mod_count>0</sys_mod_count>
+        <sys_name>x_1568427_inventor.borrowrequests_user,x_1568427_inventor.user</sys_name>
+        <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
+        <sys_parent/>
+        <sys_policy/>
+        <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
+        <sys_scope_delete display_value="">861d2658792a49508d448ee8b3268100</sys_scope_delete>
+        <sys_update_name>sys_user_role_005bf73383de5210260a55b6feaad342</sys_update_name>
+        <sys_update_version display_value="sys_user_role_005bf73383de5210260a55b6feaad342">6ea72cbfc3661210f8d83cec05013104</sys_update_version>
+        <sys_updated_by>admin</sys_updated_by>
+        <sys_updated_on>2024-12-27 10:27:14</sys_updated_on>
+    </sys_metadata_delete>
+</record_update>

@@ -38,9 +38,11 @@
         if (item.get(item_id)) {
             var borrowedQuantity = item.borrowed_quantity || 0; 
             var totalQuantity = item.quantity || 0; 
-            item.borrowed_quantity = borrowedQuantity + current.borrower_quantity;
+            var borrowerQuantity = current.borrower_quantity || 0; 
+
+            item.borrowed_quantity = borrowedQuantity + borrowerQuantity; 
             item.current_quantity = totalQuantity - item.borrowed_quantity;
-            
+            item.total_price_borrowed = item.borrowed_quantity * item.price;
             if (item.current_quantity < 0) {
                 gs.error('Current quantity cannot be less than 0. Please check the data.');
                 return;
@@ -60,7 +62,7 @@
         <sys_domain>global</sys_domain>
         <sys_domain_path>/</sys_domain_path>
         <sys_id>d1857fbe83da5210260a55b6feaad367</sys_id>
-        <sys_mod_count>6</sys_mod_count>
+        <sys_mod_count>7</sys_mod_count>
         <sys_name>Borrowed Quantity</sys_name>
         <sys_overrides/>
         <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
@@ -68,7 +70,7 @@
         <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
         <sys_update_name>sys_script_d1857fbe83da5210260a55b6feaad367</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2024-12-12 15:18:45</sys_updated_on>
+        <sys_updated_on>2024-12-30 04:22:36</sys_updated_on>
         <template/>
         <when>after</when>
     </sys_script>

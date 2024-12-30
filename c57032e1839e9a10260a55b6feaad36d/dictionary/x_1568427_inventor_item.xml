@@ -1,15 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?><database>
     <element db_object_id="12a076e1839e9a10260a55b6feaad364" label="Item" max_length="40" name="x_1568427_inventor_item" type="collection">
-        <element choice="1" label="Unit" max_length="40" name="unit" type="choice">
-            <choice/>
-        </element>
-        <element label="Remarks" max_length="40" name="remarks" type="string"/>
-        <element default="0" label="Borrowed Quantity" max_length="40" name="borrowed_quantity" type="integer"/>
-        <element label="Description" max_length="1000" name="description" type="string"/>
+        <element label="Total Price Borrowed" max_length="40" name="total_price_borrowed" type="integer"/>
+        <element default="0" label="Quantity" max_length="40" name="quantity" type="integer"/>
         <element default="true" label="Active" max_length="40" name="active" type="boolean"/>
-        <element label="Quantity Change" max_length="40" name="quantity_change" type="integer"/>
-        <element label="Warning Quantity" max_length="40" name="warning_quantity" type="integer"/>
-        <element label="Category" max_length="40" name="category" type="string"/>
         <element choice="1" label="Action Type" max_length="40" name="action_type" type="choice">
             <choice>
                 <element inactive_on_update="false" label="Return borrowed" value="return_borrowed"/>
@@ -17,10 +10,23 @@
                 <element inactive_on_update="false" label="Add new Item" value="add_new_item"/>
             </choice>
         </element>
+        <element label="Manager" max_length="32" name="manager" reference="sys_user" type="reference"/>
         <element attributes="ignore_filter_on_new=true" default="javascript:global.getNextObjNumberPadded();" label="Number" max_length="40" name="number" type="string"/>
-        <element label="Current Quantity" max_length="40" name="current_quantity" type="integer"/>
-        <element label="Price" max_length="40" name="price" type="integer"/>
-        <element default="0" label="Quantity" max_length="40" name="quantity" type="integer"/>
         <element label="Item Name" max_length="100" name="item_name" type="string"/>
+        <element default="0" label="Borrowed Quantity" max_length="40" name="borrowed_quantity" type="integer"/>
+        <element label="Quantity Change" max_length="40" name="quantity_change" type="integer"/>
+        <element label="Total Price" max_length="40" name="total_price" type="integer"/>
+        <element label="Warning Quantity" max_length="40" name="warning_quantity" type="integer"/>
+        <element label="Current Quantity" max_length="40" name="current_quantity" type="integer"/>
+        <element choice="1" label="Unit" max_length="40" name="unit" type="choice">
+            <choice/>
+        </element>
+        <element label="Description" max_length="1000" name="description" type="string"/>
+        <element label="Remarks" max_length="40" name="remarks" type="string"/>
+        <element label="Category" max_length="40" name="category" type="string"/>
+        <element label="Price" max_length="40" name="price" type="integer"/>
+        <index name="index">
+            <element name="manager"/>
+        </index>
     </element>
 </database>

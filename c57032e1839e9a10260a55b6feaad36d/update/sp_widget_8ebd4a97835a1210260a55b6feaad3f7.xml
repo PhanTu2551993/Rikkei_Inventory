@@ -220,14 +220,14 @@ function getHistoryCount() {
         <sys_created_by>admin</sys_created_by>
         <sys_created_on>2024-12-11 09:39:33</sys_created_on>
         <sys_id>8ebd4a97835a1210260a55b6feaad3f7</sys_id>
-        <sys_mod_count>27</sys_mod_count>
+        <sys_mod_count>29</sys_mod_count>
         <sys_name>Add_History</sys_name>
         <sys_package display_value="Inventory Management" source="x_1568427_inventor">c57032e1839e9a10260a55b6feaad36d</sys_package>
         <sys_policy/>
         <sys_scope display_value="Inventory Management">c57032e1839e9a10260a55b6feaad36d</sys_scope>
         <sys_update_name>sp_widget_8ebd4a97835a1210260a55b6feaad3f7</sys_update_name>
         <sys_updated_by>admin</sys_updated_by>
-        <sys_updated_on>2024-12-17 09:39:33</sys_updated_on>
+        <sys_updated_on>2024-12-27 03:45:01</sys_updated_on>
         <template><![CDATA[<body>
   <div class="heading">
     <h1>{{c.translations.In_Out_History}}</h1>
@@ -241,13 +241,12 @@ function getHistoryCount() {
           <tr>
             <th>{{c.translations.Time}}</th>
             <th>{{c.translations.Item_ID}}</th>
-            <th>{{c.translations.Item_Name}}</th>
-            <th>{{c.translations.Quantity_Total}}</th>
-            <th>{{c.translations.Current_Quantity}}</th>
+            <th>{{c.translations.Item_Name}}</th>  
             <th>{{c.translations.Quantity_Changed}}</th>
+            <th>{{c.translations.Current_Quantity}}</th>
+            <th>{{c.translations.Quantity_Total}}</th>
             <th>{{c.translations.Actions}}</th>
             <th>{{c.translations.Requester}}</th>
-            <th>{{c.translations.Description}}</th>
           </tr>
         </thead>
         <tbody>
@@ -255,13 +254,11 @@ function getHistoryCount() {
             <td>{{ his.time }}</td>
             <td>{{ his.item_id }}</td>
             <td>{{ his.item_name }}</td>
-            <td>{{ his.quantity_old }}</td>
-            <td>{{ his.quantity_new }}</td>
             <td>{{ his.quantity_changed }}</td>
+            <td>{{ his.quantity_new }}</td>
+            <td>{{ his.quantity_old }}</td>
             <td>{{ his.type }}</td>
             <td>{{ his.action_by }}</td>
-            <td>{{ his.description }}</td>
-
           </tr>
         </tbody>
       </table>
